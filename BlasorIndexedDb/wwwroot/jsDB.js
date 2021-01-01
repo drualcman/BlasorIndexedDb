@@ -64,7 +64,7 @@ class jsDB{
                     throw e.target.error.message;  
                 } 
                 dbconnect.onsuccess = () => {
-                    console.info('DB ' + model.name + ' open DONE');
+                    return;
                 }
             }
             else throw "Please provide db model {name: 'MyDB', version: 1, tables: [{name: 'Table1', options: {keyPath : 'Id', autoIncrement: true/false}, columns: [{name: 'ColumnName', keyPath: true/false, autoIncrement: true/false, unique: true/false }]}]}"
@@ -201,7 +201,7 @@ class jsDB{
             throw "Model can't be null.";
         }
     }
-    Connected(){
+    Connected() {
         return 'Connected to ' + this.#DB_NAME + ' with version ' + this.#DB_VERSION;
     }
     /**

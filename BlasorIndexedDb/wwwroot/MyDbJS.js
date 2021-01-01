@@ -1,4 +1,3 @@
-
 (function () {
     var db;
     window.MyDb = {
@@ -7,15 +6,30 @@
          * @param {any} model
          */
         Init: (model) => {
-            db = new jsDB(JSON.parse(model))
+            console.log(model);
+            if (model) db = new jsDB(JSON.parse(model))
         },                
         Connected: () => db.Connected(),
         /**
          * Request all data from a table name. Return the data or JSON response
          * @param {string} table table name to request the data
-         * @param {function} callBack function to receive the result.
          */
-        Select: (table, callBack) => db.Select(table, callBack),
+        Select: async function(table) {
+            let data = new Promise(function (resolve, error) {
+                try {
+                    if (db) {
+                        db.Select(table, function (result) {
+                            resolve(result);
+                        });
+                    }
+                    else error("DataBase not yet initialize");
+                } catch (e) {
+                    error(e);
+                }
+            });
+            let result = await data;        //wait till the promise is done
+            return result;                  //return the value
+        },
         /**
          * Request data from a table name with the keyPath with a value. Return the data or JSON response
          * @param {string} table table name
@@ -35,9 +49,20 @@
          * Insert data into a table. Alway return a JSON response
          * @param {string} table table name
          * @param {JSON} data data with the model format to insert
-         * @param {function} callBack function to receive result
          */
-        Insert: (table, data, callBack) => db.Insert(table, data, callBack),
+        Insert: async function (table, data) {
+            let resolve = new Promise(function (resolve, error) {
+                if (db) {
+                    db.Insert(table, data, function (result) {
+                        resolve(result.result);
+                    });
+                }
+                else error(false);
+
+            });
+            let result = await resolve;        //wait till the promise is done
+            return result;                  //return the value
+        },
         /**
          * Update data into the table. The data always must be content all the columns, if not the function retreive the actual data to keep always same data into a table. Alway return a JSON response
          * @param {string} table table name
