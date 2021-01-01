@@ -1,4 +1,5 @@
-﻿using Microsoft.JSInterop;
+﻿using BlasorIndexedDb.Helpers;
+using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
