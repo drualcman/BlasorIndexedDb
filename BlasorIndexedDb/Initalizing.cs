@@ -1,5 +1,6 @@
 ﻿using Microsoft.JSInterop;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
@@ -61,39 +62,44 @@ namespace BlasorIndexedDb
                             //add columns name from the properties names
                             tableModels.Append($"\"columns\": [");                  //open json array
 
-                            //object o = (Activator.CreateInstance(t));
-
                             for (int i = 0; i < properties.Length; i++)
                             {
-                                //  columns: [{name: 'property name', keyPath: true/false, autoIncrement: true/false, unique: true/false}]}
-                                string propName = properties[i].Name.ToLower();
-                                //main field from the model, normalize like Id or ModelNameId or IdModelName
-                                if (propName == "id")
+                                Helpers.PropertyOptions property = new Helpers.PropertyOptions(properties[i]);
+                                if (!property.ToIgnore)
                                 {
-                                    identifer = properties[i].Name;
-                                    autoIncrement = IsAutoIncrement(properties[i]);
+                                    //  columns: [{name: 'property name', keyPath: true/false, autoIncrement: true/false, unique: true/false}]}
+                                    string propName = property.Name.ToLower();
+                                    if (table.ToLower() != propName)            //if the property is other table don't do nothing
+                                    {
+                                        //main field from the model, normalize like Id or ModelNameId or IdModelName
+                                        if (propName == "id")
+                                        {
+                                            identifer = property.Name;
+                                            autoIncrement = property.IsAutoIncrement;
+                                        }
+                                        else if (propName == $"{table.ToLower()}id")
+                                        {
+                                            identifer = property.Name;
+                                            autoIncrement = property.IsRequired;
+                                        }
+                                        else if (propName == $"id{table.ToLower()}")
+                                        {
+                                            identifer = property.Name;
+                                            autoIncrement = property.IsAutoIncrement;
+                                        }
+                                        else if (propName == $"id{table.ToLower()}s")                 //plural possibility
+                                        {
+                                            identifer = property.Name;
+                                            autoIncrement = property.IsAutoIncrement;
+                                        }
+                                        else if (propName == $"id{table.ToLower().Remove(table.Length - 1, 1)}")                 //singular possibility
+                                        {
+                                            identifer = property.Name;
+                                            autoIncrement = property.IsAutoIncrement;
+                                        }
+                                        else tableModels.Append($"{{\"name\": \"{property.Name}\", \"keyPath\": {property.IsRequired.ToString().ToLower()}, \"autoIncrement\": {property.IsAutoIncrement.ToString().ToLower()}, \"unique\": false}},");
+                                    }
                                 }
-                                else if (propName == $"{table.ToLower()}id")
-                                {
-                                    identifer = properties[i].Name;
-                                    autoIncrement = IsRequired(properties[i]);
-                                }
-                                else if (propName == $"id{table.ToLower()}")
-                                {
-                                    identifer = properties[i].Name;
-                                    autoIncrement = IsAutoIncrement(properties[i]);
-                                }
-                                else if (propName == $"id{table.ToLower()}s")                 //plural possibility
-                                {
-                                    identifer = properties[i].Name;
-                                    autoIncrement = IsAutoIncrement(properties[i]);
-                                }
-                                else if (propName == $"id{table.ToLower().Remove(table.Length - 1, 1)}")                 //singular possibility
-                                {
-                                    identifer = properties[i].Name;
-                                    autoIncrement = IsAutoIncrement(properties[i]);
-                                }
-                                else tableModels.Append($"{{\"name\": \"{properties[i].Name}\", \"keyPath\": {IsRequired(properties[i]).ToString().ToLower()}, \"autoIncrement\": {IsAutoIncrement(properties[i]).ToString().ToLower()}, \"unique\": false}},");
                             }
 
                             if (string.IsNullOrEmpty(identifer)) identifer = "ssn";
@@ -119,47 +125,6 @@ namespace BlasorIndexedDb
             return jsRuntime.InvokeVoidAsync("MyDb.Init", model);
         }
 
-        #region helpers
-        private static bool IsRequired(PropertyInfo p)
-        {
-            // Using reflection.  
-            IEnumerable<Attribute> attrs = p.GetCustomAttributes();  // Reflection.  
-            bool result = false;
-            // Displaying output.  
-            foreach (Attribute attr in attrs)
-            {
-                if (attr is System.ComponentModel.DataAnnotations.RequiredAttribute) result = true;
-            }
-            return result;
-        }
-
-        private static bool IsAutoIncrement(PropertyInfo p)
-        {
-            // Using reflection.  
-            IEnumerable<Attribute> attrs = p.GetCustomAttributes();  // Reflection.  
-            bool result = false;
-            // Displaying output.  
-            foreach (Attribute attr in attrs)
-            {
-                if (attr is System.ComponentModel.DataAnnotations.RequiredAttribute)
-                {
-                    string t = p.GetMethod.ReturnType.Name.ToLower();
-                    switch (t)
-                    {
-                        case "int":
-                        case "int16":
-                        case "int32":
-                        case "int64":
-                            result = true;
-                            break;
-                        default:
-                            result = false;
-                            break;
-                    }
-                }
-            }
-            return result;
-        }
-        #endregion
+        public static ValueTask<string> DbConnected(this IJSRuntime jsRuntime) => jsRuntime.InvokeAsync<string>("MyDb.Init");
     }
 }
