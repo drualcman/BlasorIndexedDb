@@ -12,13 +12,10 @@ namespace BlasorIndexedDb
     public static class InsertActions
     {
         /// <summary>
-        /// Extent JSRuntime to get a confirm
+        /// Insert table to a db
         /// </summary>
         /// <param name="jsRuntime"></param>
-        /// <param name="name">database name</param>
-        /// <param name="version">database version</param>
-        /// <param name="tables">string array with the names of the model classes to serialize</param>
-        /// <param name="mynamespace">namespace from the models class</param>
+        /// <param name="table">database name</param>
         /// <returns></returns>
         public static async ValueTask<bool> DbInsert<T>(this IJSRuntime jsRuntime, List<T> table)
         {
