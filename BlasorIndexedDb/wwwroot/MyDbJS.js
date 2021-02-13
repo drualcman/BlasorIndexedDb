@@ -51,9 +51,11 @@
          * @param {JSON} data data with the model format to insert
          */
         Insert: async function (table, data) {
+            console.log('insert 1');
             let resolve = new Promise(function (resolve, error) {
+                console.log('insert 2', db);
                 if (db) {
-                    db.Insert(table, data, function (result) {
+                    db.Insert(table, JSON.parse(data), function (result) {
                         resolve(result.result);
                     });
                 }
@@ -69,7 +71,7 @@
          * @param {JSON} data data with the model format to update
          * @param {function} callBack function to receive the result
          */
-        Update: (table, data, callBack) => Update(table, data, callBack),
+        Update: (table, data, callBack) => Update(table, JSON.parse(data), callBack),
         /**
          * Dete one row from a table. Alway return a JSON response
          * @param {string} table table name

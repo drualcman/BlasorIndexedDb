@@ -133,11 +133,11 @@ class jsDB{
      * Check if the data send match with the table definition
      * @param {object} model 
      * @param {JSON} d data to check with the model
-     * @param {bool} keypath forse to have a keypath on the default json objet
+     * @param {bool} keypath force to have a key path on the default json object
      * @param {function} callBack function to receive the error directly
      * @param {function} method function sender
      */
-    #CheckModel(model, d, keypath, callBack, method){  
+    #CheckModel(model, d, keypath, callBack, method) {  
         let context = this;      
         if (model){
             let canContinue;
@@ -158,7 +158,7 @@ class jsDB{
                 canContinue = true;
             }
             //sure the object received have all the keys to send               
-            if (canContinue){
+            if (canContinue) {
                 let data = [];
                 //create a default json object for the table
                 let c = model.columns.length;
@@ -170,27 +170,29 @@ class jsDB{
                 let obj = JSON.parse(defaultObj);
                 for (const key in d) {
                     if (Object.hasOwnProperty.call(d, key)) {
-                        const element = d[key];                        
+                        const element = d[key];      
                         //recovery the original object to fill all the data must be updated
-                        if (element[model.options.keyPath]){
+                        if (element[model.options.keyPath]) {
                             context.SelectId(model.name, element[model.options.keyPath], function (result) {
-                                if (result){
+                                if (result) {
                                     let original = context.#MergeObjects(obj, result);
-                                    let send = context.#MergeObjects(original, element);
+                                    let send = context.#MergeObjects(element, original);
                                     data.push(send);
                                 }
                                 else {
-                                    data.push(context.#MergeObjects(obj, element));
+                                    data.push(context.#MergeObjects(element, obj));
                                 }
                             });
                         }
                         else {
+                            console.log('canContinue 8', element);
                             data.push(context.#MergeObjects(obj, element));
                         }
                     }
                 }
                 //wait a bit to ensure the transaction is completed
                 setTimeout(() => {
+                    console.log('finish send to call back');
                     method(data);   
                 }, 150 * d.length);
             }
@@ -307,9 +309,10 @@ class jsDB{
      * @param {JSON} data data with the model format to insert
      * @param {function} callBack function to receive result
      */
-    Insert(table, data, callBack){
+    Insert(table, data, callBack) {
         let context = this;
-        context.#CheckModel(context.#MODELS.find(el=> el.name = table), data, false, callBack, function (obj) {
+        context.#CheckModel(context.#MODELS.find(el => el.name = table), data, false, callBack, function (obj) { 
+            console.log('a insertar', obj);
             if (obj){
                 let dbconnect = context.#OpenDB().open(context.#DB_NAME, context.#DB_VERSION);
                 dbconnect.onsuccess = function() {
@@ -344,7 +347,7 @@ class jsDB{
      * Update data into the table. The data always must be content all the columns, if not the function retreive the actual data to keep always same data into a table. Alway return a JSON response
      * @param {string} table table name
      * @param {JSON} data data with the model format to update
-     * @param {dunction} callBack function to receive the result
+     * @param {function} callBack function to receive the result
      */
     Update(table, data, callBack){
         let context = this;
