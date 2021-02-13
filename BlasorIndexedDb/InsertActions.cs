@@ -23,12 +23,11 @@ namespace BlasorIndexedDb
             try
             {
                 string data = JsonSerializer.Serialize(table);
-                Console.WriteLine(data);
                 result = await jsRuntime.InvokeAsync<bool>("MyDb.Insert", Utils.GetName<T>(), data);
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                Console.WriteLine($"DbInsert Error: {ex.Message}");
                 result = false;
             }
             return result;
