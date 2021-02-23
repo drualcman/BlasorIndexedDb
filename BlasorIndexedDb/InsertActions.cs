@@ -1,4 +1,5 @@
 ﻿using BlasorIndexedDb.Helpers;
+using BlasorIndexedDb.Models;
 using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
@@ -17,18 +18,19 @@ namespace BlasorIndexedDb
         /// <param name="jsRuntime"></param>
         /// <param name="table">database name</param>
         /// <returns></returns>
-        public static async ValueTask<bool> DbInsert<T>(this IJSRuntime jsRuntime, List<T> table)
+        public static async ValueTask<List<ResponseJsDb>> DbInsert<T>(this IJSRuntime jsRuntime, List<T> table)
         {
-            bool result;
+            List<ResponseJsDb> result;
             try
             {
                 string data = JsonSerializer.Serialize(table);
-                result = await jsRuntime.InvokeAsync<bool>("MyDb.Insert", Utils.GetName<T>(), data);
+                result = await jsRuntime.InvokeAsync<List<ResponseJsDb>>("MyDb.Insert", Utils.GetName<T>(), data);
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"DbInsert Error: {ex.Message}");
-                result = false;
+                result = new List<ResponseJsDb>();
+                result.Add(new ResponseJsDb { Result = false, Message = ex.Message });
             }
             return result;
         }
