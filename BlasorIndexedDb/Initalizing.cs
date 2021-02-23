@@ -29,11 +29,11 @@ namespace BlasorIndexedDb
             //use reflexion to serialize the tables like
             // {name: 'table name', options:{keyPath: 'primary id to use', autoIncrement: true/false},
             //  columns: [{name: 'property name', keyPath: true/false, autoIncrement: true/false, unique: true/false}]}
-
+            
             try
             {
                 Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
-
+                
                 int c = 0;
                 do
                 {
@@ -56,7 +56,7 @@ namespace BlasorIndexedDb
                                                                         BindingFlags.Instance);         //get instance names
 
                             //main field from the model, normalize like Id or ModelNameId or IdModelName
-                            string identifer = string.Empty;
+                            string identifer = "ssn";
                             bool autoIncrement = false;     //if it's a integer must be true
                             tableModels.Append("\"options\": {\"keyPath\": \"#1\", \"autoIncrement\": #2},");
                             //add columns name from the properties names
@@ -74,30 +74,30 @@ namespace BlasorIndexedDb
                                         //main field from the model, normalize like Id or ModelNameId or IdModelName
                                         if (propName == "id")
                                         {
-                                            identifer = property.Name;
+                                            identifer += property.Name;
                                             autoIncrement = property.IsAutoIncrement;
                                         }
                                         else if (propName == $"{table.ToLower()}id")
                                         {
-                                            identifer = property.Name;
+                                            identifer += property.Name;
                                             autoIncrement = property.IsRequired;
                                         }
                                         else if (propName == $"id{table.ToLower()}")
                                         {
-                                            identifer = property.Name;
+                                            identifer += property.Name;
                                             autoIncrement = property.IsAutoIncrement;
                                         }
                                         else if (propName == $"id{table.ToLower()}s")                 //plural possibility
                                         {
-                                            identifer = property.Name;
+                                            identifer += property.Name;
                                             autoIncrement = property.IsAutoIncrement;
                                         }
                                         else if (propName == $"id{table.ToLower().Remove(table.Length - 1, 1)}")                 //singular possibility
                                         {
-                                            identifer = property.Name;
+                                            identifer += property.Name;
                                             autoIncrement = property.IsAutoIncrement;
                                         }
-                                        else tableModels.Append($"{{\"name\": \"{property.Name}\", \"keyPath\": {property.IsRequired.ToString().ToLower()}, \"autoIncrement\": {property.IsAutoIncrement.ToString().ToLower()}, \"unique\": false}},");
+                                        tableModels.Append($"{{\"name\": \"{property.Name}\", \"keyPath\": {property.IsRequired.ToString().ToLower()}, \"autoIncrement\": {property.IsAutoIncrement.ToString().ToLower()}, \"unique\": {property.IsRequired.ToString().ToLower()}}},");
                                     }
                                 }
                             }
@@ -122,6 +122,7 @@ namespace BlasorIndexedDb
             {
                 Console.WriteLine(ex.Message);
             }
+            Console.Write(model);
             return jsRuntime.InvokeVoidAsync("MyDb.Init", model);
         }
 

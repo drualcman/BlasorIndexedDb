@@ -23,7 +23,7 @@ namespace BlasorIndexedDb.Helpers
             {
                 if (attr is System.ComponentModel.DataAnnotations.RequiredAttribute)
                 {
-                    this.IsAutoIncrement = true;
+                    this.IsRequired = true;
                     string t = p.GetMethod.ReturnType.Name.ToLower();
                     switch (t)
                     {
@@ -38,6 +38,7 @@ namespace BlasorIndexedDb.Helpers
                             break;
                     }
                 }
+                else this.IsRequired = false;
                 if (attr is System.Text.Json.Serialization.JsonIgnoreAttribute) this.ToIgnore = true;
             }
         }

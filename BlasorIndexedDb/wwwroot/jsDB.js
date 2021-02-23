@@ -2,7 +2,7 @@ class jsDB {
     #DB_NAME = 'MyDB';      //db name
     #DB_VERSION = 1;        //db version
     #MODELS;                //Table model definitions
-    constructor(model) {
+    constructor(model) {        
         if (!this.#OpenDB()) {
             throw "IndexedDB not compatible!"
         }
