@@ -16,9 +16,23 @@ namespace BlasorIndexedDb
         /// <param name="jsRuntime"></param>
         /// <param name="table">table name</param>
         /// <returns></returns>
-        public static async ValueTask<T> DbSelect<T>(this IJSRuntime jsRuntime, T table)
+        public static async ValueTask<List<T>> DbSelect<T>(this IJSRuntime jsRuntime, string table)
         {
-            T data = await jsRuntime.InvokeAsync<T>("MyDb.Select", Utils.GetName<T>());
+            List<T> data = await jsRuntime.InvokeAsync<List<T>>("MyDb.Select", table);
+            return data;
+        }
+
+        /// <summary>
+        /// Get all resigster from a table
+        /// </summary>
+        /// <param name="jsRuntime"></param>
+        /// <param name="table">table name</param>
+        /// <param name="column">column to compare</param>
+        /// <param name="value">value to compare</param>
+        /// <returns></returns>
+        public static async ValueTask<List<T>> DbSelect<T>(this IJSRuntime jsRuntime, string table, string column, object value)
+        {
+            List<T> data = await jsRuntime.InvokeAsync<List<T>>("MyDb.SelectWhere", table, column, value);
             return data;
         }
 
