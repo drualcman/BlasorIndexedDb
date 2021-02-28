@@ -28,7 +28,7 @@ namespace BlasorIndexedDb
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"DbInsert Error: {ex.Message}");
+                Console.WriteLine($"DbInsert Error: {ex}");
                 result = new List<ResponseJsDb>();
                 result.Add(new ResponseJsDb { Result = false, Message = ex.Message });
             }

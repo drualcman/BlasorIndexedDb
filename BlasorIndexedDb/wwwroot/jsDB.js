@@ -2,7 +2,7 @@ class jsDB {
     #DB_NAME = 'MyDB';      //db name
     #DB_VERSION = 1;        //db version
     #MODELS;                //Table model definitions
-    constructor(model) {        
+    constructor(model) {
         if (!this.#OpenDB()) {
             throw "IndexedDB not compatible!"
         }
@@ -151,7 +151,7 @@ class jsDB {
      */
     #GetDefault(table) {
         const context = this;
-        const model = context.#MODELS.find(el => el.name = table)
+        const model = context.#MODELS.find(el => el.name === table)
         if (model) {
             let defaultObj = '{';       //to create a default json for the table
             //compare object receive with table definition
@@ -274,7 +274,6 @@ class jsDB {
      */
     SelectWhere(table, column, value) {
         const context = this;
-        console.log(table, column, value);
         return new Promise(function (resolve, error) {
             const dbconnect = context.#OpenDB().open(context.#DB_NAME, context.#DB_VERSION);
             dbconnect.onsuccess = function () {
@@ -286,17 +285,14 @@ class jsDB {
                     const request = index.getAll(value);
                     request.onerror = ev => {
                         db.close();
-                        console.log('1',ev);
                         error(context.#SetResponse(false, ev.target.error.message));
                     };
                     request.onsuccess = function () {
                         db.close();
-                        console.log('2', request.result);                        
                         resolve(request.result);
                     }
                 } catch (e) {
                     db.close();
-                    console.log('3', e);
                     error(context.#SetResponse(false, e.message));
                 }
             }
@@ -326,7 +322,7 @@ class jsDB {
                     const store = transaction.objectStore(table);
                     const defaultModel = context.#GetDefault(table);
                     //get who is the keypath
-                    const model = context.#MODELS.find(el => el.name = table);
+                    const model = context.#MODELS.find(el => el.name === table);
                     let keyPath = model.options.keyPath;
                     if (!keyPath) {
                         keyPath = 'ssnId';
@@ -374,7 +370,7 @@ class jsDB {
                     const transaction = db.transaction(table, 'readwrite');
                     const store = transaction.objectStore(table);
                     //get the keypath to retrieve the actual data must be updated
-                    const model = context.#MODELS.find(el => el.name = table);
+                    const model = context.#MODELS.find(el => el.name === table);
                     let keyPath = model.options.keyPath;
                     if (!keyPath) {
                         keyPath = 'ssnId';
