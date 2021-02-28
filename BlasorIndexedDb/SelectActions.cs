@@ -11,7 +11,7 @@ namespace BlasorIndexedDb
     public static class SelectActions
     {
         /// <summary>
-        /// Get all resigster from a table
+        /// Get all resister from a table
         /// </summary>
         /// <param name="jsRuntime"></param>
         /// <param name="table">table name</param>
@@ -23,7 +23,7 @@ namespace BlasorIndexedDb
         }
 
         /// <summary>
-        /// Get all resigster from a table
+        /// Get all resister from a table
         /// </summary>
         /// <param name="jsRuntime"></param>
         /// <param name="table">table name</param>
@@ -36,7 +36,7 @@ namespace BlasorIndexedDb
         }
 
         /// <summary>
-        /// Get all resigster from a table
+        /// Get all resister from a table
         /// </summary>
         /// <param name="jsRuntime"></param>
         /// <param name="table">table name</param>
