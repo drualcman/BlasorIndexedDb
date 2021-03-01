@@ -14,11 +14,10 @@ namespace BlasorIndexedDb
         /// Get all resister from a table
         /// </summary>
         /// <param name="jsRuntime"></param>
-        /// <param name="table">table name</param>
         /// <returns></returns>
-        public static async ValueTask<List<T>> DbSelect<T>(this IJSRuntime jsRuntime, string table)
+        public static async ValueTask<List<T>> DbSelect<T>(this IJSRuntime jsRuntime)
         {
-            List<T> data = await jsRuntime.InvokeAsync<List<T>>("MyDb.Select", table);
+            List<T> data = await jsRuntime.InvokeAsync<List<T>>("MyDb.Select", typeof(T).Name);
             return data;
         }
 
@@ -26,12 +25,11 @@ namespace BlasorIndexedDb
         /// Get all resister from a table
         /// </summary>
         /// <param name="jsRuntime"></param>
-        /// <param name="table">table name</param>
         /// <param name="id">column to compare</param>
         /// <returns></returns>
-        public static async ValueTask<List<T>> DbSelect<T>(this IJSRuntime jsRuntime, string table, int id)
+        public static async ValueTask<List<T>> DbSelect<T>(this IJSRuntime jsRuntime, int id)
         {
-            List<T> data = await jsRuntime.InvokeAsync<List<T>>("MyDb.SelectId", table, id);
+            List<T> data = await jsRuntime.InvokeAsync<List<T>>("MyDb.SelectId", typeof(T).Name, id);
             return data;
         }
 
@@ -39,13 +37,12 @@ namespace BlasorIndexedDb
         /// Get all resister from a table
         /// </summary>
         /// <param name="jsRuntime"></param>
-        /// <param name="table">table name</param>
         /// <param name="column">column to compare</param>
         /// <param name="value">value to compare</param>
         /// <returns></returns>
-        public static async ValueTask<List<T>> DbSelect<T>(this IJSRuntime jsRuntime, string table, string column, object value)
+        public static async ValueTask<List<T>> DbSelect<T>(this IJSRuntime jsRuntime, string column, object value)
         {
-            List<T> data = await jsRuntime.InvokeAsync<List<T>>("MyDb.SelectWhere", table, column, value);
+            List<T> data = await jsRuntime.InvokeAsync<List<T>>("MyDb.SelectWhere", typeof(T).Name, column, value);
             return data;
         }
 

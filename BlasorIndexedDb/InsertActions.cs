@@ -16,14 +16,14 @@ namespace BlasorIndexedDb
         /// Insert table to a db
         /// </summary>
         /// <param name="jsRuntime"></param>
-        /// <param name="table">database name</param>
+        /// <param name="rows">data to insert</param>
         /// <returns></returns>
-        public static async ValueTask<List<ResponseJsDb>> DbInsert<T>(this IJSRuntime jsRuntime, List<T> table)
+        public static async ValueTask<List<ResponseJsDb>> DbInsert<T>(this IJSRuntime jsRuntime, List<T> rows)
         {
             List<ResponseJsDb> result;
             try
             {
-                string data = JsonSerializer.Serialize(table);
+                string data = JsonSerializer.Serialize(rows);
                 result = await jsRuntime.InvokeAsync<List<ResponseJsDb>>("MyDb.Insert", Utils.GetName<T>(), data);
             }
             catch (Exception ex)
