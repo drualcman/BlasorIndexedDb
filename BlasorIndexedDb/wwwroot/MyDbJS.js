@@ -43,23 +43,23 @@
          * @param {string} table table name
          * @param {any} id value from the keypath
          */
-        Delete: (table, id) => Delete(table, id),
+        Delete: (table, id) => db.Delete(table, id),
         /**
          * Drop a table. Alway return a JSON response
          * @param {string} table table name
          */
-        Drop: (table) => Drop(table),
+        Drop: (table) => db.Drop(table),
         /**
          * To store files into a db for compatibility with most of the browsers
          * @param {bytes} buffer file buffer
          * @param {string} type file type
          */
-        HelperArrayBufferToBlob: (buffer, type) => HelperArrayBufferToBlob(buffer, type),
+        HelperArrayBufferToBlob: (buffer, type) => db.HelperArrayBufferToBlob(buffer, type),
         /**
          * Promise to get a file from a da from a DB for compatibility with most of the browsers
          * @param {bytes} blob arraybuffer byte to retrive
          */
-        HelperBlobToArrayBuffer: (blob) => HelperBlobToArrayBuffer(blob)
+        HelperBlobToArrayBuffer: (blob) => db.HelperBlobToArrayBuffer(blob)
     };
 })();
 
