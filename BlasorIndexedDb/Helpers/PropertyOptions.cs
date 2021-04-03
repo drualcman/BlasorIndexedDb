@@ -15,13 +15,21 @@ namespace BlasorIndexedDb.Helpers
         public bool IsAutoIncrement { get; set; }
 
         public PropertyOptions(PropertyInfo p)
-        {
+        {            
             this.Name = p.Name;
             IEnumerable<Attribute> attrs = p.GetCustomAttributes();  // Reflection.  
             // Displaying output.  
             foreach (Attribute attr in attrs)
             {
-                if (attr is System.ComponentModel.DataAnnotations.RequiredAttribute)
+                if (attr is System.Text.Json.Serialization.JsonIgnoreAttribute) this.ToIgnore = true;
+                else  if (attr is Attributes.IndexDb)
+                {
+                    Attributes.IndexDb a = attr as Attributes.IndexDb;
+                    this.IsRequired = a.IsKeyPath;
+                    this.IsAutoIncrement = a.IsAutoIncemental;
+                    this.ToIgnore = a.IsIgnore;
+                }
+                else if (attr is System.ComponentModel.DataAnnotations.RequiredAttribute)
                 {
                     this.IsRequired = true;
                     string t = p.GetMethod.ReturnType.Name.ToLower();
@@ -39,7 +47,7 @@ namespace BlasorIndexedDb.Helpers
                     }
                 }
                 else this.IsRequired = false;
-                if (attr is System.Text.Json.Serialization.JsonIgnoreAttribute) this.ToIgnore = true;
+                
             }
         }
     }
