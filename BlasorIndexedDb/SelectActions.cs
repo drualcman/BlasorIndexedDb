@@ -17,8 +17,15 @@ namespace BlasorIndexedDb
         /// <returns></returns>
         public static async ValueTask<List<T>> DbSelect<T>(this IJSRuntime jsRuntime)
         {
-            List<T> data = await jsRuntime.InvokeAsync<List<T>>("MyDb.Select", typeof(T).Name);
-            return data;
+            try
+            {
+                List<T> data = await jsRuntime.InvokeAsync<List<T>>("MyDb.Select", typeof(T).Name);
+                return data;
+            }
+            catch 
+            {
+                return new List<T>();
+            }
         }
 
         /// <summary>
@@ -29,8 +36,15 @@ namespace BlasorIndexedDb
         /// <returns></returns>
         public static async ValueTask<List<T>> DbSelect<T>(this IJSRuntime jsRuntime, int id)
         {
-            List<T> data = await jsRuntime.InvokeAsync<List<T>>("MyDb.SelectId", typeof(T).Name, id);
-            return data;
+            try
+            {
+                List<T> data = await jsRuntime.InvokeAsync<List<T>>("MyDb.SelectId", typeof(T).Name, id);
+                return data;
+            }
+            catch 
+            {
+                return new List<T>();
+            }
         }
 
         /// <summary>
@@ -42,8 +56,15 @@ namespace BlasorIndexedDb
         /// <returns></returns>
         public static async ValueTask<List<T>> DbSelect<T>(this IJSRuntime jsRuntime, string column, object value)
         {
-            List<T> data = await jsRuntime.InvokeAsync<List<T>>("MyDb.SelectWhere", typeof(T).Name, column, value);
-            return data;
+            try
+            {
+                List<T> data = await jsRuntime.InvokeAsync<List<T>>("MyDb.SelectWhere", typeof(T).Name, column, value);
+                return data;
+            }
+            catch (Exception)
+            {
+                return new List<T>();
+            }
         }
 
     }

@@ -17,7 +17,7 @@ namespace BlasorIndexedDb
       /// <param name="jsRuntime"></param>
       /// <param name="rows">data to insert</param>
       /// <returns></returns>
-        public static async ValueTask<List<ResponseJsDb>> DbUpdate<T>(this IJSRuntime jsRuntime, T rows)
+        public static async ValueTask<List<ResponseJsDb>> DbUpdate<T>(this IJSRuntime jsRuntime, List<T> rows)
         {
             List<ResponseJsDb> result;
             try

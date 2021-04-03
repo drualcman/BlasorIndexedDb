@@ -204,6 +204,9 @@ class jsDB {
             return null;
         }
     }
+    #IsArray(object) {
+        return object.constructor === Array;
+    }
     Connected() {
         return 'Connected to ' + this.#DB_NAME + ' with version ' + this.#DB_VERSION;
     }
@@ -307,6 +310,11 @@ class jsDB {
     Insert(table, data) {
         const context = this;
         return new Promise(function (resolve, error) {
+            if (!context.#IsArray(data)) {
+                let array = [];
+                array.push(data);
+                data = array;
+            }
             data.forEach(element => {
                 const obj = context.#CheckModel(table, element);
                 if (obj === null) {
@@ -329,7 +337,6 @@ class jsDB {
                     }
                     data.forEach(el => {
                         let o = context.#MergeObjects(defaultModel, el);
-                        delete o[keyPath];           //remove the keypath from the object
                         store.add(o);
                     });
                     transaction.onerror = ev => {
@@ -356,6 +363,11 @@ class jsDB {
     Update(table, data) {
         const context = this;
         return new Promise(function (resolve, error) {
+            if (!context.#IsArray(data)) {
+                let array = [];
+                array.push(data);
+                data = array;
+            }
             data.forEach(element => {
                 const obj = context.#CheckModel(table, element);
                 if (obj === null) {
@@ -398,7 +410,6 @@ class jsDB {
                         }
                         else {
                             let data = context.#MergeObjects(o, el);
-                            delete data[keyPath];           //remove the keypath from the object
                             store.put(data);
                         }
                     });
@@ -487,7 +498,7 @@ class jsDB {
         return new Blob([buffer], { type: type });
     }
     /**
-     * Promise to get a file from a da from a DB for compatibility with most of the browsers
+     * Promise to get a file from a DB for compatibility with most of the browsers
      * @param {bytes} blob arraybuffer byte to retrive
      */
     HelperBlobToArrayBuffer(blob) {

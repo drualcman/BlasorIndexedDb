@@ -12,7 +12,7 @@
          * Request all data from a table name. Return the data or JSON response
          * @param {string} table table name to request the data
          */
-        Select: (table) => db.Select(table),
+        Select: (table) => db.SelectId(table),
         /**
          * Request data from a table name with the keyPath with a value. Return the data or JSON response
          * @param {string} table table name
@@ -39,7 +39,7 @@
          */
         Update: (table, data) => db.Update(table, JSON.parse(data)),
         /**
-         * Dete one row from a table. Alway return a JSON response
+         * Delete one row from a table. Alway return a JSON response
          * @param {string} table table name
          * @param {any} id value from the keypath
          */
