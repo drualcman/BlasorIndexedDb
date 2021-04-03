@@ -446,12 +446,14 @@ class jsDB {
                     const store = transaction.objectStore(table);
                     store.delete(id);
                     transaction.onerror = ev => {
+                        console.log(ev);
                         db.close();
-                        resolve({ result: false, message: ev.target.error.message });
+                        resolve([context.#SetResponse(false, ev.target.error.message)]);
                     };
-                    transaction.onsuccess = () => {
+                    transaction.oncomplete = res => {
+                        console.log(res)
                         db.close();
-                        resolve({ result: true, message: 'Delete done!' });
+                        resolve([context.#SetResponse(true, 'Delete done!')]);
                     };
                 } catch (e) {
                     db.close();
@@ -473,14 +475,14 @@ class jsDB {
                 try {
                     const transaction = db.transaction(table, 'readwrite');
                     const store = transaction.objectStore(table);
-                    const req = store.clear();
-                    req.onerror = ev => {
+                    store.clear();
+                    transaction.onerror = ev => {
                         db.close();
-                        error({ result: false, message: ev.target.error.message });
+                        resolve([context.#SetResponse(false, ev.target.error.message)]);
                     };
-                    req.onsuccess = () => {
+                    transaction.oncomplete = () => {
                         db.close();
-                        resolve({ result: true, message: 'Drop done!' });
+                        resolve([context.#SetResponse(true, 'Drop done!')]);
                     };
                 } catch (e) {
                     db.close();
