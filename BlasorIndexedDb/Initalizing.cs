@@ -19,8 +19,9 @@ namespace BlasorIndexedDb
         /// <param name="tables">string array with the names of the model classes to serialize</param>
         /// <param name="mynamespace">namespace from the models class</param>
         /// <returns></returns>
-        public static ValueTask DbInit(this IJSRuntime jsRuntime, string name, int version, string[] tables, string mynamespace)
+        public async static Task DbInit(this IJSRuntime jsRuntime, string name, int version, string[] tables, string mynamespace)
         {
+            
             string model = $@"{{
                                 ""name"": ""{name}"",
                                 ""version"": {version},
@@ -101,7 +102,8 @@ namespace BlasorIndexedDb
                                     }
                                 }
                             }
-
+                            //always add control if the resiter it's offline NULL = not offline, ontry when it's true it's applicable
+                            tableModels.Append($"{{\"name\": \"OffLine\", \"keyPath\": false, \"autoIncrement\": false, \"unique\": false}},");
                             if (string.IsNullOrEmpty(identifer)) identifer = "ssn";
                             string tmpString = tableModels.ToString();
                             tableJsonArray += tmpString
@@ -123,9 +125,10 @@ namespace BlasorIndexedDb
                 Console.WriteLine(ex.Message);
             }
             //Console.Write(model);
-            return jsRuntime.InvokeVoidAsync("MyDb.Init", model);
+            _ = jsRuntime.InvokeVoidAsync("MyDb.Init", model);          //don't stop the process
         }
 
-        public static ValueTask<string> DbConnected(this IJSRuntime jsRuntime) => jsRuntime.InvokeAsync<string>("MyDb.Init");
+        public static ValueTask<string> DbConnected(this IJSRuntime jsRuntime) => 
+            jsRuntime.InvokeAsync<string>("MyDb.Connected");
     }
 }
