@@ -21,17 +21,24 @@ namespace BlasorIndexedDb
         public static async ValueTask<List<ResponseJsDb>> DbInsert<T>(this IJSRuntime jsRuntime, List<T> rows)
         {
             List<ResponseJsDb> result;
-            try
+            if (rows.Count > 0)
             {
-                string data = JsonSerializer.Serialize(rows);
-                result = await jsRuntime.InvokeAsync<List<ResponseJsDb>>("MyDb.Insert", Utils.GetName<T>(), data);
+                try
+                {
+                    string data = JsonSerializer.Serialize(rows);
+                    result = await jsRuntime.InvokeAsync<List<ResponseJsDb>>("MyDb.Insert", Utils.GetName<T>(), data);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"DbInsert Error: {ex}");
+                    result = new List<ResponseJsDb>{
+                        new ResponseJsDb { Result = false, Message = ex.Message }
+                    };
+                }
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"DbInsert Error: {ex}");
-                result = new List<ResponseJsDb>();
-                result.Add(new ResponseJsDb { Result = false, Message = ex.Message });
-            }
+            else result = new List<ResponseJsDb>{
+                        new ResponseJsDb { Result = true, Message = "No need insert!" }
+                    };
             return result;
         }
 
@@ -43,19 +50,26 @@ namespace BlasorIndexedDb
         /// <returns></returns>
         public static async ValueTask<List<ResponseJsDb>> DbInserOfline<T>(this IJSRuntime jsRuntime, List<T> rows)
         {
-            var expanded = AddOflineProperty.AddOffline(rows);
             List<ResponseJsDb> result;
-            try
+            if (rows.Count > 0)
             {
-                string data = JsonSerializer.Serialize(expanded);
-                result = await jsRuntime.InvokeAsync<List<ResponseJsDb>>("MyDb.Insert", Utils.GetName<T>(), data);
+                var expanded = AddOflineProperty.AddOffline(rows);
+                try
+                {
+                    string data = JsonSerializer.Serialize(expanded);
+                    result = await jsRuntime.InvokeAsync<List<ResponseJsDb>>("MyDb.Insert", Utils.GetName<T>(), data);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"DbInsert Error: {ex}");
+                    result = new List<ResponseJsDb>{
+                        new ResponseJsDb { Result = false, Message = ex.Message }
+                    };
+                }
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"DbInsert Error: {ex}");
-                result = new List<ResponseJsDb>();
-                result.Add(new ResponseJsDb { Result = false, Message = ex.Message });
-            }
+            else result = new List<ResponseJsDb>{
+                        new ResponseJsDb { Result = true, Message = "No need insert!" }
+                    };
             return result;
         }
 
