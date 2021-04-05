@@ -1,17 +1,17 @@
 class jsDB {
-    #DB_NAME = 'MyDB';      //db name
-    #DB_VERSION = 1;        //db version
-    #MODELS;                //Table model definitions
+    DB_NAME = 'MyDB';      //db name
+    DB_VERSION = 1;        //db version
+    MODELS;                //Table model definitions
     constructor(model) {
-        if (!this.#OpenDB()) {
+        if (!this.OpenDB()) {
             throw "IndexedDB not compatible!"
         }
         else {
             if (model.name) {
-                this.#DB_NAME = model.name;
-                this.#DB_VERSION = model.version;
-                this.#MODELS = model.tables;
-                const dbconnect = this.#OpenDB().open(this.#DB_NAME, this.#DB_VERSION);
+                this.DB_NAME = model.name;
+                this.DB_VERSION = model.version;
+                this.MODELS = model.tables;
+                const dbconnect = this.OpenDB().open(this.DB_NAME, this.DB_VERSION);
                 dbconnect.onblocked = ev => {
                     // If some other tab is loaded with the database, then it needs to be closed
                     // before we can proceed.
@@ -73,12 +73,12 @@ class jsDB {
     /**
      * Open a indexedDb with all the compatibilities from the browsers
      */
-    #OpenDB() {
+    OpenDB() {
         try {
             const dbconnect = window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB || window.OIndexedDB || window.msIndexedDB, IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction || window.OIDBTransaction || window.msIDBTransaction;
             return dbconnect;
         } catch (error) {
-            throw [this.#SetResponse(false, error.message)];
+            throw [this.SetResponse(false, error.message)];
         }
     }
     /**
@@ -86,7 +86,7 @@ class jsDB {
      * @param {bool} r 
      * @param {string} m message to show
      */
-    #SetResponse(r, m) {
+    SetResponse(r, m) {
         return { result: r, message: m };
     }
     /**
@@ -94,7 +94,7 @@ class jsDB {
      * @param {object} obj 
      * @param {string} val 
      */
-    #HasKeyPath(obj, val) {
+    HasKeyPath(obj, val) {
         let found = false;
         for (let key in obj) {
             if (Object.hasOwnProperty.call(obj, key)) {
@@ -111,7 +111,7 @@ class jsDB {
      * @param {object} obj1 object model with the fields
      * @param {object} obj2 object with the data to add into the model
      */
-    #MergeObjects(obj1, obj2) {
+    MergeObjects(obj1, obj2) {
         var obj3 = {};
         var obj4 = {};
         //set the 2 objects exactly with the same properties
@@ -134,7 +134,7 @@ class jsDB {
      * @param {object} obj1 record from a db
      * @param {object} obj2 record to update
      */
-    #UpdateModel(obj1, obj2) {
+    UpdateModel(obj1, obj2) {
         var obj3 = {};
         //set the values equal on the merged object
         for (let attrname in obj1) { obj3[attrname] = obj1[attrname]; }
@@ -149,16 +149,16 @@ class jsDB {
      * @param {string} table table to compare the model selected 
      * @returns {obj} return object with model
      */
-    #GetDefault(table) {
+    GetDefault(table) {
         const context = this;
-        const model = context.#MODELS.find(el => el.name === table)
+        const model = context.MODELS.find(el => el.name === table)
         if (model) {
             let defaultObj = '{';       //to create a default json for the table
             //compare object receive with table definition
             //check primary key            
             if (model.options && model.options.keyPath && model.options.autoIncrement && model.options.autoIncrement == false) {
                 //have a primary key required
-                if (context.#HasKeyPath(o, model.options.keyPath)) {
+                if (context.HasKeyPath(o, model.options.keyPath)) {
                     defaultObj += '"' + model.options.keyPath + '": null,';
                 }
                 else defaultObj += '"ssnId": null,';
@@ -186,9 +186,9 @@ class jsDB {
      * @param {obj} s object to compare
      * @returns {obj} return same object with all the fields
      */
-    #CheckModel(table, s) {
+    CheckModel(table, s) {
         const context = this;
-        const model = this.#GetDefault(table);
+        const model = this.GetDefault(table);
         if (model) {
             let canContinue = true;
             for (let key in s) {
@@ -197,18 +197,18 @@ class jsDB {
                     break;
                 }
             }
-            if (canContinue) return context.#MergeObjects(model, s);
+            if (canContinue) return context.MergeObjects(model, s);
             else return null;
         }
         else {
             return null;
         }
     }
-    #IsArray(object) {
+    IsArray(object) {
         return object.constructor === Array;
     }
     Connected() {
-        return 'Connected to ' + this.#DB_NAME + ' with version ' + this.#DB_VERSION;
+        return 'Connected to ' + this.DB_NAME + ' with version ' + this.DB_VERSION;
     }
     /**
      * Request all data from a table name. Return the data or JSON response
@@ -217,7 +217,7 @@ class jsDB {
     Select(table) {
         const context = this;
         return new Promise(function (resolve, error) {
-            const dbconnect = context.#OpenDB().open(context.#DB_NAME, context.#DB_VERSION);
+            const dbconnect = context.OpenDB().open(context.DB_NAME, context.DB_VERSION);
             dbconnect.onsuccess = function () {
                 const db = this.result;
                 try {
@@ -226,7 +226,7 @@ class jsDB {
                     const request = store.getAll();
                     request.onerror = ev => {
                         db.close();
-                        resolve([context.#SetResponse(false, ev.target.error.message)]);
+                        resolve([context.SetResponse(false, ev.target.error.message)]);
                     };
                     request.onsuccess = () => {
                         db.close();
@@ -234,7 +234,7 @@ class jsDB {
                     };
                 } catch (e) {
                     db.close();
-                    error([context.#SetResponse(false, e.message)]);
+                    error([context.SetResponse(false, e.message)]);
                 }
             }
         });
@@ -247,7 +247,7 @@ class jsDB {
     SelectId(table, id) {
         const context = this;
         return new Promise(function (resolve, error) {
-            const dbconnect = context.#OpenDB().open(context.#DB_NAME, context.#DB_VERSION);
+            const dbconnect = context.OpenDB().open(context.DB_NAME, context.DB_VERSION);
             dbconnect.onsuccess = function () {
                 const db = this.result;
                 try {
@@ -256,15 +256,15 @@ class jsDB {
                     const request = store.getAll(id);
                     request.onerror = ev => {
                         db.close();
-                        resolve([context.#SetResponse(false, ev.target.error.message)]);
+                        resolve([context.SetResponse(false, ev.target.error.message)]);
                     };
-                    request.onsuccess = function () {
+                    request.onsuccess = () => {
                         db.close();
                         resolve(request.result);
                     }
                 } catch (e) {
                     db.close();
-                    error([context.#SetResponse(false, e.message)]);
+                    error([context.SetResponse(false, e.message)]);
                 }
             }
         });
@@ -278,7 +278,7 @@ class jsDB {
     SelectWhere(table, column, value) {
         const context = this;
         return new Promise(function (resolve, error) {
-            const dbconnect = context.#OpenDB().open(context.#DB_NAME, context.#DB_VERSION);
+            const dbconnect = context.OpenDB().open(context.DB_NAME, context.DB_VERSION);
             dbconnect.onsuccess = function () {
                 const db = this.result;
                 try {
@@ -288,15 +288,15 @@ class jsDB {
                     const request = index.getAll(value);
                     request.onerror = ev => {
                         db.close();
-                        resolve([context.#SetResponse(false, ev.target.error.message)]);
+                        resolve([context.SetResponse(false, ev.target.error.message)]);
                     };
-                    request.onsuccess = function () {
+                    request.onsuccess = () => {
                         db.close();
                         resolve(request.result);
                     }
                 } catch (e) {
                     db.close();
-                    error([context.#SetResponse(false, e.message)]);
+                    error([context.SetResponse(false, e.message)]);
                 }
             }
         });
@@ -310,46 +310,46 @@ class jsDB {
     Insert(table, data) {
         const context = this;
         return new Promise(function (resolve, error) {
-            if (!context.#IsArray(data)) {
+            if (!context.IsArray(data)) {
                 let array = [];
                 array.push(data);
                 data = array;
             }
             data.forEach(element => {
-                const obj = context.#CheckModel(table, element);
+                const obj = context.CheckModel(table, element);
                 if (obj === null) {
-                    resolve([context.#SetResponse(false, "Model doesn't match")]);
+                    resolve([context.SetResponse(false, "Model doesn't match")]);
                     return;
                 }
             });
-            const dbconnect = context.#OpenDB().open(context.#DB_NAME, context.#DB_VERSION);
+            const dbconnect = context.OpenDB().open(context.DB_NAME, context.DB_VERSION);
             dbconnect.onsuccess = function () {
                 const db = this.result;
                 try {
                     const transaction = db.transaction(table, 'readwrite');
                     const store = transaction.objectStore(table);
-                    const defaultModel = context.#GetDefault(table);
+                    const defaultModel = context.GetDefault(table);
                     //get who is the keypath
-                    const model = context.#MODELS.find(el => el.name === table);
+                    const model = context.MODELS.find(el => el.name === table);
                     let keyPath = model.options.keyPath;
                     if (!keyPath) {
                         keyPath = 'ssnId';
                     }
                     data.forEach(el => {
-                        let o = context.#MergeObjects(defaultModel, el);
+                        let o = context.MergeObjects(defaultModel, el);
                         store.add(o);
                     });
                     transaction.onerror = ev => {
                         db.close();
-                        resolve([context.#SetResponse(false, ev.target.error.message)]);
+                        resolve([context.SetResponse(false, ev.target.error.message)]);
                     };
                     transaction.oncomplete = () => {
                         db.close();
-                        resolve([context.#SetResponse(true, 'Insert done!')]);
+                        resolve([context.SetResponse(true, 'Insert done!')]);
                     };
                 } catch (e) {
                     db.close();
-                    error([context.#SetResponse(false, e.message)]);
+                    error([context.SetResponse(false, e.message)]);
                 }
             };
 
@@ -363,59 +363,59 @@ class jsDB {
     Update(table, data) {
         const context = this;
         return new Promise(function (resolve, error) {
-            if (!context.#IsArray(data)) {
+            if (!context.IsArray(data)) {
                 let array = [];
                 array.push(data);
                 data = array;
             }
             data.forEach(element => {
-                const obj = context.#CheckModel(table, element);
+                const obj = context.CheckModel(table, element);
                 if (obj === null) {
-                    resolve([context.#SetResponse(false, "Model doesn't match")]);
+                    resolve([context.SetResponse(false, "Model doesn't match")]);
                     return;
                 }
             });
-            const dbconnect = context.#OpenDB().open(context.#DB_NAME, context.#DB_VERSION);
+            const dbconnect = context.OpenDB().open(context.DB_NAME, context.DB_VERSION);
             dbconnect.onsuccess = function () {
                 let db = this.result;
                 try {
                     const transaction = db.transaction(table, 'readwrite');
                     const store = transaction.objectStore(table);
                     //get the keypath to retrieve the actual data must be updated
-                    const model = context.#MODELS.find(el => el.name === table);
+                    const model = context.MODELS.find(el => el.name === table);
                     let keyPath = model.options.keyPath;
                     if (!keyPath) {
                         keyPath = 'ssnId';
                     }
                     let result = new Array();
                     data.forEach(el => {
-                        let o = context.#CheckModel(table, el);
+                        let o = context.CheckModel(table, el);
                         let ssnId = o[keyPath];
                         if (ssnId) {
                             //retrieve the actual data for the index about the element
                             let request = store.get(ssnId);
 
-                            request.onsuccess = function (e) {
-                                let data = context.#UpdateModel(e.target.result, o);
+                            request.onsuccess = function () {
+                                let data = context.UpdateModel(request.result, o);
                                 const objRequest = store.put(data);
 
-                                objRequest.onsuccess = function (e) {
-                                    result.push(context.#SetResponse(true, `Success in updating record ${ssnId}`));
+                                objRequest.onsuccess = () => {
+                                    result.push(context.SetResponse(true, `Success in updating record ${ssnId}`));
                                 };
 
-                                objRequest.onerror = ev => {
-                                    result.push(context.#SetResponse(false, `Error in updating record ${ssnId}`));
+                                objRequest.onerror = () => {
+                                    result.push(context.SetResponse(false, `Error in updating record ${ssnId}`));
                                 };
                             }
                         }
                         else {
-                            let data = context.#MergeObjects(o, el);
+                            let data = context.MergeObjects(o, el);
                             store.put(data);
                         }
                     });
                     transaction.onerror = ev => {
                         db.close();
-                        result.push(context.#SetResponse(false, ev.target.error.message));
+                        result.push(context.SetResponse(false, ev.target.error.message));
                         resolve(result);
                     };
                     transaction.oncomplete = () => {
@@ -424,7 +424,7 @@ class jsDB {
                     };
                 } catch (e) {
                     db.close();
-                    error([context.#SetResponse(false, e.message)]);
+                    error([context.SetResponse(false, e.message)]);
                 }
             };
 
@@ -438,7 +438,7 @@ class jsDB {
     Delete(table, id) {
         const context = this;
         return new Promise(function (resolve, error) {
-            const dbconnect = context.#OpenDB().open(context.#DB_NAME, context.#DB_VERSION);
+            const dbconnect = context.OpenDB().open(context.DB_NAME, context.DB_VERSION);
             dbconnect.onsuccess = function () {
                 const db = this.result;
                 try {
@@ -446,18 +446,16 @@ class jsDB {
                     const store = transaction.objectStore(table);
                     store.delete(id);
                     transaction.onerror = ev => {
-                        console.log(ev);
                         db.close();
-                        resolve([context.#SetResponse(false, ev.target.error.message)]);
+                        resolve([context.SetResponse(false, ev.target.error.message)]);
                     };
-                    transaction.oncomplete = res => {
-                        console.log(res)
+                    transaction.oncomplete = () => {
                         db.close();
-                        resolve([context.#SetResponse(true, 'Delete done!')]);
+                        resolve([context.SetResponse(true, 'Delete done!')]);
                     };
                 } catch (e) {
                     db.close();
-                    error([context.#SetResponse(false, e.message)]);
+                    error([context.SetResponse(false, e.message)]);
                 }
             };
         });
@@ -469,7 +467,7 @@ class jsDB {
     Drop(table) {
         const context = this;
         return new Promise(function (resolve, error) {
-            const dbconnect = context.#OpenDB().open(context.#DB_NAME, context.#DB_VERSION);
+            const dbconnect = context.OpenDB().open(context.DB_NAME, context.DB_VERSION);
             dbconnect.onsuccess = function () {
                 const db = this.result;
                 try {
@@ -478,15 +476,15 @@ class jsDB {
                     store.clear();
                     transaction.onerror = ev => {
                         db.close();
-                        resolve([context.#SetResponse(false, ev.target.error.message)]);
+                        resolve([context.SetResponse(false, ev.target.error.message)]);
                     };
                     transaction.oncomplete = () => {
                         db.close();
-                        resolve([context.#SetResponse(true, 'Drop done!')]);
+                        resolve([context.SetResponse(true, 'Drop done!')]);
                     };
                 } catch (e) {
                     db.close();
-                    error([context.#SetResponse(false, e.message)]);
+                    error([context.SetResponse(false, e.message)]);
                 }
             };
         });
@@ -506,7 +504,7 @@ class jsDB {
     HelperBlobToArrayBuffer(blob) {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
-            reader.addEventListener('loadend', (e) => {
+            reader.addEventListener('loadend', () => {
                 resolve(reader.result);
             });
             reader.addEventListener('error', reject);
