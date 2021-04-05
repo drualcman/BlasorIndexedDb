@@ -10,7 +10,7 @@ namespace BlasorIndexedDb.Helpers
 {
     public class AddOflineProperty
     {
-        public static dynamic Add<T>(T toCopy)
+        public static dynamic AddOffline<T>(T toCopy)
         {
             dynamic expando = new ExpandoObject();
             // ExpandoObject supports IDictionary so we can extend it like this
@@ -31,12 +31,12 @@ namespace BlasorIndexedDb.Helpers
             return expando;
         }
 
-        public static List<dynamic> Add<T>(List<T> toCopy)
+        public static List<dynamic> AddOffline<T>(List<T> toCopy)
         {
             List<dynamic> result = new List<dynamic>();
             foreach (T father in toCopy)
             {
-                result.Add(Add(father));
+                result.Add(AddOffline(father));
             }
             return result;
         }

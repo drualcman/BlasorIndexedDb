@@ -43,8 +43,8 @@ namespace BlasorIndexedDb
         /// <returns></returns>
         public static async ValueTask<List<ResponseJsDb>> DbInserOfline<T>(this IJSRuntime jsRuntime, List<T> rows)
         {
-            var expanded = AddOflineProperty.Add(rows);
-            List<ResponseJsDb> result = new List<ResponseJsDb>();
+            var expanded = AddOflineProperty.AddOffline(rows);
+            List<ResponseJsDb> result;
             try
             {
                 string data = JsonSerializer.Serialize(expanded);
