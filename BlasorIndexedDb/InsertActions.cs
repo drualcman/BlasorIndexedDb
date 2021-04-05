@@ -13,7 +13,7 @@ namespace BlasorIndexedDb
     public static class InsertActions
     {
         /// <summary>
-        /// Insert table to a db
+        /// Insert into a table to a db
         /// </summary>
         /// <param name="jsRuntime"></param>
         /// <param name="rows">data to insert</param>
@@ -36,7 +36,7 @@ namespace BlasorIndexedDb
         }
 
         /// <summary>
-        /// Insert table to a db
+        /// Insert int a table to a db with offline property
         /// </summary>
         /// <param name="jsRuntime"></param>
         /// <param name="rows">data to insert</param>
