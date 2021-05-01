@@ -17,10 +17,22 @@ namespace BlasorIndexedDb
         /// <param name="name">database name</param>
         /// <param name="version">database version</param>
         /// <param name="tables">string array with the names of the model classes to serialize</param>
-        /// <param name="mynamespace">namespace from the models class</param>
+        /// <param name="assemblyName">namespace from the models class</param>
         /// <returns></returns>
-        public static Task DbInit(this IJSRuntime jsRuntime, string name, int version, string[] tables, string mynamespace)
-        {            
+        public static async Task DbInit(this IJSRuntime jsRuntime, string name, int version, string[] tables, string assemblyName)
+            => await DbInit(jsRuntime, name, version, tables, assemblyName, assemblyName);
+
+        /// <summary>
+        /// Extent JSRuntime to get a confirm
+        /// </summary>
+        /// <param name="jsRuntime"></param>
+        /// <param name="name">database name</param>
+        /// <param name="version">database version</param>
+        /// <param name="tables">string array with the names of the model classes to serialize</param>
+        /// <param name="myNamespace">namespace from the models class</param>
+        /// <returns></returns>
+        public static Task DbInit(this IJSRuntime jsRuntime, string name, int version, string[] tables, string assemblyName, string myNamespace)
+        {
             string model = $@"{{
                                 ""name"": ""{name}"",
                                 ""version"": {version},
@@ -29,15 +41,14 @@ namespace BlasorIndexedDb
             //use reflexion to serialize the tables like
             // {name: 'table name', options:{keyPath: 'primary id to use', autoIncrement: true/false},
             //  columns: [{name: 'property name', keyPath: true/false, autoIncrement: true/false, unique: true/false}]}
-            
+
             try
             {
                 Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
-                
                 int c = 0;
                 do
                 {
-                    if (assemblies[c].GetName().Name == mynamespace)
+                    if (assemblies[c].GetName().Name == assemblyName)
                     {
                         Assembly assembly = assemblies[c];
 
@@ -45,7 +56,7 @@ namespace BlasorIndexedDb
                         foreach (string table in tables)
                         {
                             StringBuilder tableModels = new StringBuilder();
-                            string TableModel = $"{mynamespace}.{table}";
+                            string TableModel = $"{myNamespace}.{table}";
 
                             // {name: 'table name', options:{keyPath: 'primary id to use', autoIncrement: true/false},
                             Type t = assembly.GetType(TableModel, true, true);
