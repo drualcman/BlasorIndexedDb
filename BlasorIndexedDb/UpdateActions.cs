@@ -16,6 +16,19 @@ namespace BlasorIndexedDb
         /// Update table to a db
         /// </summary>
         /// <param name="jsRuntime"></param>
+        /// <param name="data">data to insert</param>
+        /// <returns></returns>
+        public static async ValueTask<List<ResponseJsDb>> DbUpdate<T>(this IJSRuntime jsRuntime, T data)
+        {
+            List<T> rows = new List<T>();
+            rows.Add(data);
+            return await DbUpdate(jsRuntime, rows);
+        }
+
+        /// <summary>
+        /// Update table to a db
+        /// </summary>
+        /// <param name="jsRuntime"></param>
         /// <param name="rows">data to insert</param>
         /// <returns></returns>
         public static async ValueTask<List<ResponseJsDb>> DbUpdate<T>(this IJSRuntime jsRuntime, List<T> rows)

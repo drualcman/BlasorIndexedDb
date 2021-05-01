@@ -19,9 +19,8 @@ namespace BlasorIndexedDb
         /// <param name="tables">string array with the names of the model classes to serialize</param>
         /// <param name="mynamespace">namespace from the models class</param>
         /// <returns></returns>
-        public async static Task DbInit(this IJSRuntime jsRuntime, string name, int version, string[] tables, string mynamespace)
-        {
-            
+        public static Task DbInit(this IJSRuntime jsRuntime, string name, int version, string[] tables, string mynamespace)
+        {            
             string model = $@"{{
                                 ""name"": ""{name}"",
                                 ""version"": {version},
@@ -126,6 +125,7 @@ namespace BlasorIndexedDb
             }
             //Console.Write(model);
             _ = jsRuntime.InvokeVoidAsync("MyDb.Init", model);          //don't stop the process
+            return Task.CompletedTask;
         }
 
         public static ValueTask<string> DbConnected(this IJSRuntime jsRuntime) => 
