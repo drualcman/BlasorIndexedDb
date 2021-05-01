@@ -17,11 +17,12 @@ namespace BlasorIndexedDb
         /// <param name="jsRuntime"></param>
         /// <param name="data">data to insert</param>
         /// <returns></returns>
-        public static async ValueTask<List<ResponseJsDb>> DbInsert<T>(this IJSRuntime jsRuntime, T data)
+        public static async ValueTask<ResponseJsDb> DbInsert<T>(this IJSRuntime jsRuntime, T data)
         {
             List<T> rows = new List<T>();
-            rows.Add(data);           
-            return await DbInsert(jsRuntime, rows);
+            rows.Add(data);
+            List<ResponseJsDb> response = await DbInsert(jsRuntime, rows);
+            return response[0];
         }
 
         /// <summary>
