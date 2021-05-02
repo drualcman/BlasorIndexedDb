@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BlasorIndexedDb.Helpers
+namespace BlazorIndexedDb.Helpers
 {
     public class PropertyOptions
     {

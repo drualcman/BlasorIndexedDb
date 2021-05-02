@@ -1,4 +1,4 @@
-﻿using BlasorIndexedDb.Helpers;
+﻿using BlazorIndexedDb.Helpers;
 using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BlasorIndexedDb
+namespace BlazorIndexedDb
 {
     public static class SelectActions
     {

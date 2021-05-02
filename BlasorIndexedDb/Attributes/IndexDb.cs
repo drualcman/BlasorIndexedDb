@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BlasorIndexedDb.Attributes
+namespace BlazorIndexedDb.Attributes
 {
     public class IndexDb : Attribute
     {

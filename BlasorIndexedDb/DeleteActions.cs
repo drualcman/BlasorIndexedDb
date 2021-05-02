@@ -1,5 +1,5 @@
-﻿using BlasorIndexedDb.Helpers;
-using BlasorIndexedDb.Models;
+﻿using BlazorIndexedDb.Helpers;
+using BlazorIndexedDb.Models;
 using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BlasorIndexedDb
+namespace BlazorIndexedDb
 {
     public static class DeleteActions
     {

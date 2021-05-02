@@ -13,6 +13,9 @@
     <PackageReleaseNotes>First publish</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/drualcman/BlasorIndexedDb</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
+    <PackageId>DrUalcman-BlazorIndexedDb</PackageId>
+    <Product>BlazorIndexedDb</Product>
+    <PackageProjectUrl>https://blazorindexdb.community-mall.com/</PackageProjectUrl>
   </PropertyGroup>
 
   
