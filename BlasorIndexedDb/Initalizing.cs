@@ -91,7 +91,7 @@ namespace BlazorIndexedDb
                                         else if (propName == $"{table.ToLower()}id")
                                         {
                                             identifer = property.Name;
-                                            autoIncrement = property.IsRequired;
+                                            autoIncrement = property.IsKeyPath;
                                         }
                                         else if (propName == $"id{table.ToLower()}")
                                         {
@@ -108,11 +108,16 @@ namespace BlazorIndexedDb
                                             identifer = property.Name;
                                             autoIncrement = property.IsAutoIncrement;
                                         }
-                                        else tableModels.Append($"{{\"name\": \"{property.Name}\", \"keyPath\": {property.IsRequired.ToString().ToLower()}, \"autoIncrement\": {property.IsAutoIncrement.ToString().ToLower()}, \"unique\": {property.IsRequired.ToString().ToLower()}}},");
+                                        else if (property.IsKeyPath)
+                                        {
+                                            identifer = property.Name;
+                                            autoIncrement = property.IsAutoIncrement;
+                                        }
+                                        else tableModels.Append($"{{\"name\": \"{property.Name}\", \"keyPath\": {property.IsKeyPath.ToString().ToLower()}, \"autoIncrement\": {property.IsAutoIncrement.ToString().ToLower()}, \"unique\": {property.IsUnique.ToString().ToLower()}}},");
                                     }
                                 }
                             }
-                            //always add control if the resiter it's offline NULL = not offline, ontry when it's true it's applicable
+                            //always add control if the register it's offline NULL = not offline, only when it's true it's applicable
                             tableModels.Append($"{{\"name\": \"OffLine\", \"keyPath\": false, \"autoIncrement\": false, \"unique\": false}},");
                             if (string.IsNullOrEmpty(identifer)) identifer = "ssn";
                             string tmpString = tableModels.ToString();

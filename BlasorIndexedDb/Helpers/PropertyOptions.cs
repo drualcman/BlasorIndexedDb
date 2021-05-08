@@ -11,8 +11,9 @@ namespace BlazorIndexedDb.Helpers
     {
         public string Name { get; set; }
         public bool ToIgnore { get; set; }
-        public bool IsRequired { get; set; }
+        public bool IsKeyPath { get; set; }
         public bool IsAutoIncrement { get; set; }
+        public bool IsUnique { get; set; }
 
         public PropertyOptions(PropertyInfo p)
         {            
@@ -22,16 +23,17 @@ namespace BlazorIndexedDb.Helpers
             foreach (Attribute attr in attrs)
             {
                 if (attr is System.Text.Json.Serialization.JsonIgnoreAttribute) this.ToIgnore = true;
-                else  if (attr is Attributes.IndexDb)
+                else if (attr is Attributes.IndexDb)
                 {
                     Attributes.IndexDb a = attr as Attributes.IndexDb;
-                    this.IsRequired = a.IsKeyPath;
-                    this.IsAutoIncrement = a.IsAutoIncemental;
+                    this.IsKeyPath = a.IsKeyPath;
+                    this.IsAutoIncrement = a.IsAutoIncremental;
                     this.ToIgnore = a.IsIgnore;
+                    this.IsUnique = a.IsUnique;
                 }
                 else if (attr is System.ComponentModel.DataAnnotations.RequiredAttribute)
                 {
-                    this.IsRequired = true;
+                    this.IsKeyPath = true;
                     string t = p.GetMethod.ReturnType.Name.ToLower();
                     switch (t)
                     {
@@ -46,7 +48,13 @@ namespace BlazorIndexedDb.Helpers
                             break;
                     }
                 }
-                else this.IsRequired = false;
+                else 
+                {
+                    this.IsKeyPath = false;
+                    this.IsAutoIncrement = false;
+                    this.ToIgnore = false;
+                    this.IsUnique = false;
+                }
                 
             }
         }
