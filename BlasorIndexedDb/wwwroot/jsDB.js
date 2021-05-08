@@ -315,13 +315,15 @@ class jsDB {
                 array.push(data);
                 data = array;
             }
+            let exit = false;
             data.forEach(element => {
                 const obj = context.CheckModel(table, element);
                 if (obj === null) {
+                    exit = true;
                     resolve([context.SetResponse(false, "Model doesn't match")]);
-                    return;
                 }
             });
+            if (exit) return;
             const dbconnect = context.OpenDB().open(context.DB_NAME, context.DB_VERSION);
             dbconnect.onsuccess = function () {
                 const db = this.result;
@@ -341,6 +343,7 @@ class jsDB {
                     });
                     transaction.onerror = ev => {
                         db.close();
+                        console.warn(ev.target.error.message);
                         resolve([context.SetResponse(false, ev.target.error.message)]);
                     };
                     transaction.oncomplete = () => {
@@ -368,13 +371,15 @@ class jsDB {
                 array.push(data);
                 data = array;
             }
+            let exit = false;
             data.forEach(element => {
                 const obj = context.CheckModel(table, element);
                 if (obj === null) {
-                    resolve([context.SetResponse(false, "Model doesn't match")]);
-                    return;
+                    exit = true;
+                    resolve([context.SetResponse(false, "Model doesn't match")]);                    
                 }
             });
+            if (exit) return;
             const dbconnect = context.OpenDB().open(context.DB_NAME, context.DB_VERSION);
             dbconnect.onsuccess = function () {
                 let db = this.result;
