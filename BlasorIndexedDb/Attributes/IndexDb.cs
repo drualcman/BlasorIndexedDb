@@ -9,7 +9,7 @@ namespace BlazorIndexedDb.Attributes
     public class IndexDb : Attribute
     {
         public bool IsKeyPath { get; set; } = false;
-        public bool IsAutoIncemental { get; set; } = false;
+        public bool IsAutoIncremental { get; set; } = false;
         public bool IsUnique { get; set; } = false;
         public bool IsIgnore { get; set; } = false;
     }
