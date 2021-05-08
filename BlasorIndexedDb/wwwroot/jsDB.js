@@ -61,6 +61,7 @@ class jsDB {
                     else throw "No tables defined.";
                 };
                 dbconnect.onerror = e => {
+                    console.warn(e.error.message);
                     throw e.target.error.message;
                 }
                 dbconnect.onsuccess = () => {
@@ -193,7 +194,7 @@ class jsDB {
             let canContinue = true;
             for (let key in s) {
                 if (!Object.hasOwnProperty.call(model, key)) {
-                    canContinue = false;
+                    if (key !== 'OffLine') canContinue = false;
                     break;
                 }
             }
@@ -225,6 +226,7 @@ class jsDB {
                     const store = transaction.objectStore(table);
                     const request = store.getAll();
                     request.onerror = ev => {
+                        console.warn(ev.target.error.message);
                         db.close();
                         resolve([context.SetResponse(false, ev.target.error.message)]);
                     };
@@ -255,6 +257,7 @@ class jsDB {
                     const store = transaction.objectStore(table);
                     const request = store.getAll(id);
                     request.onerror = ev => {
+                        console.warn(ev.target.error.message);
                         db.close();
                         resolve([context.SetResponse(false, ev.target.error.message)]);
                     };
@@ -287,6 +290,7 @@ class jsDB {
                     const index = store.index(column);
                     const request = index.getAll(value);
                     request.onerror = ev => {
+                        console.warn(ev.target.error.message);
                         db.close();
                         resolve([context.SetResponse(false, ev.target.error.message)]);
                     };
@@ -342,8 +346,8 @@ class jsDB {
                         store.add(o);
                     });
                     transaction.onerror = ev => {
-                        db.close();
                         console.warn(ev.target.error.message);
+                        db.close();
                         resolve([context.SetResponse(false, ev.target.error.message)]);
                     };
                     transaction.oncomplete = () => {
@@ -419,6 +423,7 @@ class jsDB {
                         }
                     });
                     transaction.onerror = ev => {
+                        console.warn(ev.target.error.message);
                         db.close();
                         result.push(context.SetResponse(false, ev.target.error.message));
                         resolve(result);
@@ -451,6 +456,7 @@ class jsDB {
                     const store = transaction.objectStore(table);
                     store.delete(id);
                     transaction.onerror = ev => {
+                        console.warn(ev.target.error.message);
                         db.close();
                         resolve([context.SetResponse(false, ev.target.error.message)]);
                     };
@@ -480,6 +486,7 @@ class jsDB {
                     const store = transaction.objectStore(table);
                     store.clear();
                     transaction.onerror = ev => {
+                        console.warn(ev.target.error.message);
                         db.close();
                         resolve([context.SetResponse(false, ev.target.error.message)]);
                     };

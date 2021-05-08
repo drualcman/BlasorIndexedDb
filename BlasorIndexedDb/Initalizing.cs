@@ -29,10 +29,16 @@ namespace BlazorIndexedDb
         /// <param name="name">database name</param>
         /// <param name="version">database version</param>
         /// <param name="tables">string array with the names of the model classes to serialize</param>
-        /// <param name="myNamespace">namespace from the models class</param>
+        /// <param name="entitiesNamespace">namespace from the models class</param>
         /// <returns></returns>
-        public static Task DbInit(this IJSRuntime jsRuntime, string name, int version, string[] tables, string assemblyName, string myNamespace)
+        public static Task DbInit(this IJSRuntime jsRuntime, string name, int version, string[] tables, string assemblyName, string entitiesNamespace)
         {
+            ConfigData.DBName = name;
+            ConfigData.Version = version;
+            ConfigData.AssemblyName = assemblyName;
+            ConfigData.EntitiesNamespace = entitiesNamespace;
+            ConfigData.Tables = tables;
+
             string model = $@"{{
                                 ""name"": ""{name}"",
                                 ""version"": {version},
@@ -56,7 +62,7 @@ namespace BlazorIndexedDb
                         foreach (string table in tables)
                         {
                             StringBuilder tableModels = new StringBuilder();
-                            string TableModel = $"{myNamespace}.{table}";
+                            string TableModel = $"{entitiesNamespace}.{table}";
 
                             // {name: 'table name', options:{keyPath: 'primary id to use', autoIncrement: true/false},
                             Type t = assembly.GetType(TableModel, true, true);
@@ -145,6 +151,6 @@ namespace BlazorIndexedDb
         }
 
         public static ValueTask<string> DbConnected(this IJSRuntime jsRuntime) => 
-            jsRuntime.InvokeAsync<string>("MyDb.Connected");
+            jsRuntime.InvokeAsync<string>("MyDb.Connected");        
     }
 }

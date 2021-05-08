@@ -38,7 +38,7 @@ namespace BlazorIndexedDb
             {
                 try
                 {
-                    string data = JsonSerializer.Serialize(rows);
+                    string data = ObjectConverter.ToJson(rows);
                     result = await jsRuntime.InvokeAsync<List<ResponseJsDb>>("MyDb.Insert", Utils.GetName<T>(), data);
                 }
                 catch (Exception ex)
@@ -55,21 +55,34 @@ namespace BlazorIndexedDb
             return result;
         }
 
+        /// Insert into a table to a db
+        /// </summary>
+        /// <param name="jsRuntime"></param>
+        /// <param name="data">data to insert</param>
+        /// <returns></returns>
+        public static async ValueTask<ResponseJsDb> DbInserOffline<T>(this IJSRuntime jsRuntime, T data)
+        {
+            List<T> rows = new List<T>();
+            rows.Add(data);
+            List<ResponseJsDb> response = await DbInserOffline(jsRuntime, rows);
+            return response[0];
+        }
+
         /// <summary>
         /// Insert int a table to a db with offline property
         /// </summary>
         /// <param name="jsRuntime"></param>
         /// <param name="rows">data to insert</param>
         /// <returns></returns>
-        public static async ValueTask<List<ResponseJsDb>> DbInserOfline<T>(this IJSRuntime jsRuntime, List<T> rows)
+        public static async ValueTask<List<ResponseJsDb>> DbInserOffline<T>(this IJSRuntime jsRuntime, List<T> rows)
         {
             List<ResponseJsDb> result;
             if (rows.Count > 0)
             {
-                var expanded = AddOflineProperty.AddOffline(rows);
+                List<dynamic> expanded = AddOflineProperty.AddOffline(rows);
                 try
                 {
-                    string data = JsonSerializer.Serialize(expanded);
+                    string data = ObjectConverter.ToJson(expanded);
                     result = await jsRuntime.InvokeAsync<List<ResponseJsDb>>("MyDb.Insert", Utils.GetName<T>(), data);
                 }
                 catch (Exception ex)

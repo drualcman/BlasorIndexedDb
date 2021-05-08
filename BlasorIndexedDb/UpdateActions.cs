@@ -39,7 +39,7 @@ namespace BlazorIndexedDb
             {
                 try
                 {
-                    string data = JsonSerializer.Serialize(rows);
+                    string data = ObjectConverter.ToJson(rows);
                     result = await jsRuntime.InvokeAsync<List<ResponseJsDb>>("MyDb.Update", Utils.GetName<T>(), data);
                 }
                 catch (Exception ex)
@@ -56,6 +56,21 @@ namespace BlazorIndexedDb
             return result;
         }
 
+
+        /// <summary>
+        /// Update table to a db
+        /// </summary>
+        /// <param name="jsRuntime"></param>
+        /// <param name="data">data to insert</param>
+        /// <returns></returns>
+        public static async ValueTask<ResponseJsDb> DbUpdateOffLine<T>(this IJSRuntime jsRuntime, T data)
+        {
+            List<T> rows = new List<T>();
+            rows.Add(data);
+            List<ResponseJsDb> response = await DbUpdateOffLine(jsRuntime, rows);
+            return response[0];
+        }
+
         /// <summary>
         /// Update table to a db with offline property
         /// </summary>
@@ -67,10 +82,10 @@ namespace BlazorIndexedDb
             List<ResponseJsDb> result;
             if (rows.Count > 0)
             {
-                var expanded = AddOflineProperty.AddOffline(rows);
+                List<dynamic> expanded = AddOflineProperty.AddOffline(rows);
                 try
                 {
-                    string data = JsonSerializer.Serialize(expanded);
+                    string data = ObjectConverter.ToJson(expanded);
                     result = await jsRuntime.InvokeAsync<List<ResponseJsDb>>("MyDb.Update", Utils.GetName<T>(), data);
                 }
                 catch (Exception ex)
