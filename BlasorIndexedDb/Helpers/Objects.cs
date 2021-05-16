@@ -64,7 +64,6 @@ namespace BlazorIndexedDb.Helpers
                     if (!property.ToIgnore)
                     {
                         string propName = property.Name.ToLower();
-                        Console.WriteLine(propName);
                         jsonString.Append($"\"{property.Name}\":");
 
                         string pName = properties[i].PropertyType.Name;

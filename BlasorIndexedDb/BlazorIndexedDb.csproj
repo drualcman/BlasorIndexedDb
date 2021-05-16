@@ -3,14 +3,18 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.3.10</Version>
+    <Version>1.3.11</Version>
     <Authors>Sergi Ortiz Gomez</Authors>
     <Company>DrUalcman</Company>
     <Description>Manage IndexedDb from Blazor WebAssembly applications</Description>
     <Copyright>Free</Copyright>
     <PackageLicenseFile>License.txt</PackageLicenseFile>
     <PackageTags>webassembly, blazor, indexDb, interop, javascript</PackageTags>
-    <PackageReleaseNotes>First publish</PackageReleaseNotes>
+    <PackageReleaseNotes>Fix wrong spellings
+Add new add and insert ofline for single register
+Add config static class
+Fix add register with a column from a table reference
+Add console.warning in javascript for dev know the error when have a exception</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/drualcman/BlasorIndexedDb</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
     <PackageId>DrUalcman-BlazorIndexedDb</PackageId>
