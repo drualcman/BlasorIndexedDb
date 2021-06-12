@@ -6,16 +6,19 @@ using System.Threading.Tasks;
 
 namespace BlazorIndexedDb.Helpers
 {
-    public class Utils
+    /// <summary>
+    /// Internal utilities
+    /// </summary>
+    class Utils
     {
         /// <summary>
         /// Get class name
         /// </summary>
-        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TModel"></typeparam>
         /// <returns></returns>
-        public static string GetName<T>()
+        public static string GetName<TModel>()
         {
-            Type myType = typeof(T);
+            Type myType = typeof(TModel);
             string name = myType.Name;
             return name;
         }

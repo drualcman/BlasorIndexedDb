@@ -3,12 +3,16 @@ using BlazorIndexedDb.Models;
 using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BlazorIndexedDb
+namespace BlazorIndexedDb.Commands
 {
+    /// <summary>
+    /// Delete commands
+    /// </summary>
     public static class DeleteActions
     {
         /// <summary>
@@ -17,7 +21,7 @@ namespace BlazorIndexedDb
         /// <param name="jsRuntime"></param>
         /// <param name="id">id from the row to delete</param>
         /// <returns></returns>
-        public static async ValueTask<ResponseJsDb> DbDelete<T>(this IJSRuntime jsRuntime, int id)
+        public static async ValueTask<ResponseJsDb> DbDelete<T>(this IJSRuntime jsRuntime, [NotNull] int id)
         {
             List<ResponseJsDb> result;
             try
@@ -39,7 +43,7 @@ namespace BlazorIndexedDb
         /// <param name="jsRuntime"></param>
         /// <param name="id">id from the row to delete</param>
         /// <returns></returns>
-        public static async ValueTask<ResponseJsDb> DbDelete<T>(this IJSRuntime jsRuntime, double id)
+        public static async ValueTask<ResponseJsDb> DbDelete<T>(this IJSRuntime jsRuntime, [NotNull] double id)
         {
             List<ResponseJsDb> result;
             try
@@ -62,7 +66,7 @@ namespace BlazorIndexedDb
         /// <param name="jsRuntime"></param>
         /// <param name="id">id from the row to delete</param>
         /// <returns></returns>
-        public static async ValueTask<ResponseJsDb> DbDelete<T>(this IJSRuntime jsRuntime, decimal id)
+        public static async ValueTask<ResponseJsDb> DbDelete<T>(this IJSRuntime jsRuntime, [NotNull] decimal id)
         {
             List<ResponseJsDb> result;
             try
@@ -85,7 +89,7 @@ namespace BlazorIndexedDb
         /// <param name="jsRuntime"></param>
         /// <param name="id">id from the row to delete</param>
         /// <returns></returns>
-        public static async ValueTask<ResponseJsDb> DbDelete<T>(this IJSRuntime jsRuntime, string id)
+        public static async ValueTask<ResponseJsDb> DbDelete<T>(this IJSRuntime jsRuntime, [NotNull] string id)
         {
             List<ResponseJsDb> result;
             try
@@ -107,7 +111,7 @@ namespace BlazorIndexedDb
         /// <param name="jsRuntime"></param>
         /// <param name="id">id from the row to delete</param>
         /// <returns></returns>
-        public static async ValueTask<ResponseJsDb> DbDelete<T>(this IJSRuntime jsRuntime, DateTime id)
+        public static async ValueTask<ResponseJsDb> DbDelete<T>(this IJSRuntime jsRuntime, [NotNull] DateTime id)
         {
             List<ResponseJsDb> result;
             try

@@ -7,7 +7,10 @@ using System.Threading.Tasks;
 
 namespace BlazorIndexedDb.Helpers
 {
-    public class PropertyOptions
+    /// <summary>
+    /// Get the options from the attributes setup into the model
+    /// </summary>
+    class PropertyOptions
     {
         public string Name { get; set; }
         public bool ToIgnore { get; set; }
@@ -15,6 +18,10 @@ namespace BlazorIndexedDb.Helpers
         public bool IsAutoIncrement { get; set; }
         public bool IsUnique { get; set; }
 
+        /// <summary>
+        /// Get all the indexdb attributes from the porperty
+        /// </summary>
+        /// <param name="p"></param>
         public PropertyOptions(PropertyInfo p)
         {            
             this.Name = p.Name;

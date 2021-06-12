@@ -6,17 +6,27 @@ using System.Threading.Tasks;
 using System.Text.Json;
 using System.Data;
 using System.Reflection;
+using BlazorIndexedDb.Configuration;
 
 namespace BlazorIndexedDb.Helpers
 {
-    public static class ObjectConverter
+    /// <summary>
+    /// Tools to work with objects
+    /// </summary>
+    class ObjectConverter
     {
         #region Methods
-        public static string ToJson<T>(List<T> sender)
+        /// <summary>
+        /// Convert into a Json string the model send
+        /// </summary>
+        /// <typeparam name="TModel"></typeparam>
+        /// <param name="sender"></param>
+        /// <returns></returns>
+        public static string ToJson<TModel>(List<TModel> sender)
         {
             StringBuilder jsonString = new StringBuilder();
             jsonString.Append("[");
-            foreach (T item in sender)
+            foreach (TModel item in sender)
             {
                 jsonString.Append(ToJson(item));
                 jsonString.Append(",");
@@ -26,11 +36,17 @@ namespace BlazorIndexedDb.Helpers
             return jsonString.ToString();
         }
 
-        public static string ToJson<T>(IEnumerable<T> sender) 
+        /// <summary>
+        /// Convert into a Json string the model send
+        /// </summary>
+        /// <typeparam name="TModel"></typeparam>
+        /// <param name="sender"></param>
+        /// <returns></returns>
+        public static string ToJson<TModel>(IEnumerable<TModel> sender) 
         {
             StringBuilder jsonString = new StringBuilder();
             jsonString.Append("[");
-            foreach (T item in sender)
+            foreach (TModel item in sender)
             {
                 jsonString.Append(ToJson(item));
                 jsonString.Append(",");
@@ -40,6 +56,11 @@ namespace BlazorIndexedDb.Helpers
             return jsonString.ToString();
         }
 
+        /// <summary>
+        /// Convert into a Json string the object send
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <returns></returns>
         public static string ToJson(object sender)
         {
             StringBuilder jsonString = new StringBuilder();
@@ -67,7 +88,7 @@ namespace BlazorIndexedDb.Helpers
                         jsonString.Append($"\"{property.Name}\":");
 
                         string pName = properties[i].PropertyType.Name;
-                        if (ConfigData.Tables.Contains(pName))
+                        if (Settings.Tables.Contains(pName))
                             jsonString.Append(ToJson(properties[i].GetValue(sender)));
                         else
                         {
@@ -133,6 +154,28 @@ namespace BlazorIndexedDb.Helpers
         #endregion
 
         #region async
+        /// <summary>
+        /// Convert into a Json string the model send
+        /// </summary>
+        /// <typeparam name="TModel"></typeparam>
+        /// <param name="sender"></param>
+        /// <returns></returns>
+        public static Task<string> ToJsonAsync<TModel>(List<TModel> sender)
+            => Task.FromResult(ToJson(sender));
+
+        /// <summary>
+        /// Convert into a Json string the model send
+        /// </summary>
+        /// <typeparam name="TModel"></typeparam>
+        /// <param name="sender"></param>
+        /// <returns></returns>
+        public static Task<string> ToJsonAsync<TModel>(IEnumerable<TModel> sender)
+            => Task.FromResult(ToJson(sender));
+        /// <summary>
+        /// Convert into a Json string the model send
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <returns></returns>
         public static Task<string> ToJsonAsync(object sender)
             => Task.FromResult(ToJson(sender));
         #endregion

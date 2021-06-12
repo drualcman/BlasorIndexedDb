@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.3.11</Version>
+    <Version>1.5.13</Version>
     <Authors>Sergi Ortiz Gomez</Authors>
     <Company>DrUalcman</Company>
     <Description>Manage IndexedDb from Blazor WebAssembly applications</Description>
@@ -20,6 +20,14 @@ Add console.warning in javascript for dev know the error when have a exception</
     <PackageId>DrUalcman-BlazorIndexedDb</PackageId>
     <Product>BlazorIndexedDb</Product>
     <PackageProjectUrl>https://blazorindexdb.community-mall.com/</PackageProjectUrl>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <AssemblyVersion>1.5.13.1</AssemblyVersion>
+    <FileVersion>1.5.13.1</FileVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>C:\DrUalcman\BlasorIndexedDb\BlasorIndexedDb\BlazorIndexedDb.xml</DocumentationFile>
+    <GenerateSerializationAssemblies>On</GenerateSerializationAssemblies>
   </PropertyGroup>
 
   

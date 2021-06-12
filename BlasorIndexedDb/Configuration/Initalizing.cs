@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BlazorIndexedDb
+namespace BlazorIndexedDb.Configuration
 {
     public static class Initalizing
     {
@@ -33,11 +33,11 @@ namespace BlazorIndexedDb
         /// <returns></returns>
         public static Task DbInit(this IJSRuntime jsRuntime, string name, int version, string[] tables, string assemblyName, string entitiesNamespace)
         {
-            ConfigData.DBName = name;
-            ConfigData.Version = version;
-            ConfigData.AssemblyName = assemblyName;
-            ConfigData.EntitiesNamespace = entitiesNamespace;
-            ConfigData.Tables = tables;
+            Settings.DBName = name;
+            Settings.Version = version;
+            Settings.AssemblyName = assemblyName;
+            Settings.EntitiesNamespace = entitiesNamespace;
+            Settings.Tables = tables;
 
             string model = $@"{{
                                 ""name"": ""{name}"",

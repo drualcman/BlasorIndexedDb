@@ -8,9 +8,18 @@ using System.Threading.Tasks;
 
 namespace BlazorIndexedDb.Helpers
 {
-    public class AddOflineProperty
+    /// <summary>
+    /// Add offline property to the entities to control when the transaction can't be saved into a live db
+    /// </summary>
+    class AddOflineProperty
     {
-        public static dynamic AddOffline<T>(T toCopy)
+        /// <summary>
+        /// Add offline property
+        /// </summary>
+        /// <typeparam name="TModel"></typeparam>
+        /// <param name="toCopy"></param>
+        /// <returns></returns>
+        static dynamic AddOffline<TModel>(TModel toCopy)
         {
             dynamic expando = new ExpandoObject();
             // ExpandoObject supports IDictionary so we can extend it like this
@@ -31,14 +40,30 @@ namespace BlazorIndexedDb.Helpers
             return expando;
         }
 
-        public static List<dynamic> AddOffline<T>(List<T> toCopy)
+        /// <summary>
+        /// Add offline property
+        /// </summary>
+        /// <typeparam name="TModel"></typeparam>
+        /// <param name="toCopy"></param>
+        /// <returns></returns>
+        static List<dynamic> AddOffline<TModel>(List<TModel> toCopy)
         {
             List<dynamic> result = new List<dynamic>();
-            foreach (T father in toCopy)
+            foreach (TModel father in toCopy)
             {
                 result.Add(AddOffline(father));
             }
             return result;
         }
+
+
+        /// <summary>
+        /// Add offline property
+        /// </summary>
+        /// <typeparam name="TModel"></typeparam>
+        /// <param name="toCopy"></param>
+        /// <returns></returns>
+        public static Task<List<dynamic>> AddOfflineAsync<TModel>(List<TModel> toCopy) =>
+            Task.FromResult(AddOffline(toCopy));
     }
 }

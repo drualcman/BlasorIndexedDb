@@ -2,12 +2,16 @@
 using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BlazorIndexedDb
+namespace BlazorIndexedDb.Commands
 {
+    /// <summary>
+    /// Select commands
+    /// </summary>
     public static class SelectActions
     {
         #region lists
@@ -36,7 +40,7 @@ namespace BlazorIndexedDb
         /// <param name="column">column to compare</param>
         /// <param name="value">value to compare</param>
         /// <returns></returns>
-        public static async ValueTask<List<T>> DbSelect<T>(this IJSRuntime jsRuntime, string column, object value)
+        public static async ValueTask<List<T>> DbSelect<T>(this IJSRuntime jsRuntime, [NotNull] string column, [NotNull] object value)
         {
             try
             {
@@ -58,7 +62,7 @@ namespace BlazorIndexedDb
         /// <param name="jsRuntime"></param>
         /// <param name="id">column to compare</param>
         /// <returns></returns>
-        public static async ValueTask<T> DbSelect<T>(this IJSRuntime jsRuntime, int id) where T : new()
+        public static async ValueTask<T> DbSelect<T>(this IJSRuntime jsRuntime, [NotNull] int id) where T : new()
         {
             try
             {
@@ -78,7 +82,7 @@ namespace BlazorIndexedDb
         /// <param name="jsRuntime"></param>
         /// <param name="id">column to compare</param>
         /// <returns></returns>
-        public static async ValueTask<T> DbSelect<T>(this IJSRuntime jsRuntime, double id) where T : new()
+        public static async ValueTask<T> DbSelect<T>(this IJSRuntime jsRuntime, [NotNull] double id) where T : new()
         {
             try
             {
@@ -98,7 +102,7 @@ namespace BlazorIndexedDb
         /// <param name="jsRuntime"></param>
         /// <param name="id">column to compare</param>
         /// <returns></returns>
-        public static async ValueTask<T> DbSelect<T>(this IJSRuntime jsRuntime, decimal id) where T : new()
+        public static async ValueTask<T> DbSelect<T>(this IJSRuntime jsRuntime, [NotNull] decimal id) where T : new()
         {
             try
             {
@@ -117,7 +121,7 @@ namespace BlazorIndexedDb
         /// <param name="jsRuntime"></param>
         /// <param name="id">column to compare</param>
         /// <returns></returns>
-        public static async ValueTask<T> DbSelect<T>(this IJSRuntime jsRuntime, string id) where T : new()
+        public static async ValueTask<T> DbSelect<T>(this IJSRuntime jsRuntime, [NotNull] string id) where T : new()
         {
             try
             {
@@ -137,7 +141,7 @@ namespace BlazorIndexedDb
         /// <param name="jsRuntime"></param>
         /// <param name="id">column to compare</param>
         /// <returns></returns>
-        public static async ValueTask<T> DbSelect<T>(this IJSRuntime jsRuntime, DateTime id) where T : new()
+        public static async ValueTask<T> DbSelect<T>(this IJSRuntime jsRuntime, [NotNull] DateTime id) where T : new()
         {
             try
             {
