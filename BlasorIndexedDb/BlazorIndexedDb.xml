@@ -1,0 +1,560 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>BlazorIndexedDb</name>
+    </assembly>
+    <members>
+        <member name="T:BlazorIndexedDb.Attributes.IndexDb">
+            <summary>
+            Custom Attribute to setup the model
+            </summary>
+        </member>
+        <member name="P:BlazorIndexedDb.Attributes.IndexDb.IsKeyPath">
+            <summary>
+            If the proerty is a keypath or requered
+            </summary>
+        </member>
+        <member name="P:BlazorIndexedDb.Attributes.IndexDb.IsAutoIncremental">
+            <summary>
+            If the property is auto incremental
+            </summary>
+        </member>
+        <member name="P:BlazorIndexedDb.Attributes.IndexDb.IsUnique">
+            <summary>
+            If the property are unique
+            </summary>
+        </member>
+        <member name="P:BlazorIndexedDb.Attributes.IndexDb.IsIgnore">
+            <summary>
+            If the property must be ignored when parse into a indexedDb
+            </summary>
+        </member>
+        <member name="T:BlazorIndexedDb.Commands.Commands">
+            <summary>
+            Other commands to execute
+            </summary>
+        </member>
+        <member name="M:BlazorIndexedDb.Commands.Commands.DbConnected(Microsoft.JSInterop.IJSRuntime)">
+            <summary>
+            Get is we are connected to a indexed db
+            </summary>
+            <param name="jsRuntime"></param>
+            <returns></returns>
+        </member>
+        <member name="T:BlazorIndexedDb.Commands.DeleteActions">
+            <summary>
+            Delete commands
+            </summary>
+        </member>
+        <member name="M:BlazorIndexedDb.Commands.DeleteActions.DbDelete``1(Microsoft.JSInterop.IJSRuntime,System.Int32)">
+            <summary>
+            Detete one row from a table
+            </summary>
+            <typeparam name="TModel">Table or store to use</typeparam>
+            <param name="jsRuntime"></param>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Commands.DeleteActions.DbDelete``1(Microsoft.JSInterop.IJSRuntime,System.Double)">
+            <summary>
+            Detete one row from a table
+            </summary>
+            <typeparam name="TModel">Table or store to use</typeparam>
+            <param name="jsRuntime"></param>
+            <param name="id">id from the row to delete</param>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Commands.DeleteActions.DbDelete``1(Microsoft.JSInterop.IJSRuntime,System.Decimal)">
+            <summary>
+            Detete one row from a table
+            </summary>
+            <typeparam name="TModel">Table or store to use</typeparam>
+            <param name="jsRuntime"></param>
+            <param name="id">id from the row to delete</param>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Commands.DeleteActions.DbDelete``1(Microsoft.JSInterop.IJSRuntime,System.String)">
+            <summary>
+            Detete one row from a table
+            </summary>
+            <typeparam name="TModel">Table or store to use</typeparam>
+            <param name="jsRuntime"></param>
+            <param name="id">id from the row to delete</param>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Commands.DeleteActions.DbDelete``1(Microsoft.JSInterop.IJSRuntime,System.DateTime)">
+            <summary>
+            Detete one row from a table
+            </summary>
+            <typeparam name="TModel">Table or store to use</typeparam>
+            <param name="jsRuntime"></param>
+            <param name="id">id from the row to delete</param>
+            <returns></returns>
+        </member>
+        <member name="T:BlazorIndexedDb.Commands.InsertActions">
+            <summary>
+            Insert commands
+            </summary>
+        </member>
+        <member name="M:BlazorIndexedDb.Commands.InsertActions.DbInsert``1(Microsoft.JSInterop.IJSRuntime,``0)">
+            <summary>
+            Insert into a table to a db
+            </summary>
+            <typeparam name="TModel">Table or store to use</typeparam>
+            <param name="jsRuntime"></param>
+            <param name="data"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Commands.InsertActions.DbInsert``1(Microsoft.JSInterop.IJSRuntime,System.Collections.Generic.List{``0})">
+            <summary>
+            Insert into a table to a db
+            </summary>
+            <typeparam name="TModel">Table or store to use</typeparam>
+            <param name="jsRuntime"></param>
+            <param name="rows">data to insert</param>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Commands.InsertActions.DbInserOffline``1(Microsoft.JSInterop.IJSRuntime,``0)">
+            <summary>
+            Insert into a table to a db
+            </summary>
+            <typeparam name="TModel">Table or store to use</typeparam>
+            <param name="jsRuntime"></param>
+            <param name="data">data to insert</param>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Commands.InsertActions.DbInserOffline``1(Microsoft.JSInterop.IJSRuntime,System.Collections.Generic.List{``0})">
+            <summary>
+            Insert int a table to a db with offline property
+            </summary>
+            <typeparam name="TModel">Table or store to use</typeparam>
+            <param name="jsRuntime"></param>
+            <param name="rows">data to insert</param>
+            <returns></returns>
+        </member>
+        <member name="T:BlazorIndexedDb.Commands.SelectActions">
+            <summary>
+            Select commands
+            </summary>
+        </member>
+        <member name="M:BlazorIndexedDb.Commands.SelectActions.DbSelect``1(Microsoft.JSInterop.IJSRuntime)">
+            <summary>
+            Get all resister from a table
+            </summary>
+            <typeparam name="TModel">Table or store to use</typeparam>
+            <param name="jsRuntime"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Commands.SelectActions.DbSelect``1(Microsoft.JSInterop.IJSRuntime,System.String,System.Object)">
+            <summary>
+            Get all resister from a table
+            </summary>
+            <typeparam name="TModel">Table or store to use</typeparam>
+            <param name="jsRuntime"></param>
+            <param name="column">column to compare</param>
+            <param name="value">value to compare</param>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Commands.SelectActions.SingleRecord``1(Microsoft.JSInterop.IJSRuntime,System.Object)">
+            <summary>
+            Get a single record from store model
+            </summary>
+            <typeparam name="TModel">Table or store to use</typeparam>
+            <param name="jsRuntime"></param>
+            <param name="id">column to compare</param>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Commands.SelectActions.SingleRecord``1(Microsoft.JSInterop.IJSRuntime,System.Int32)">
+            <summary>
+            Get a single record from store model
+            </summary>
+            <typeparam name="TModel">Table or store to use</typeparam>
+            <param name="jsRuntime"></param>
+            <param name="id">column to compare</param>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Commands.SelectActions.SingleRecord``1(Microsoft.JSInterop.IJSRuntime,System.Double)">
+            <summary>
+            Get a single record from store model
+            </summary>
+            <typeparam name="TModel">Table or store to use</typeparam>
+            <param name="jsRuntime"></param>
+            <param name="id">column to compare</param>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Commands.SelectActions.SingleRecord``1(Microsoft.JSInterop.IJSRuntime,System.Decimal)">
+            <summary>
+            Get a single record from store model
+            </summary>
+            <typeparam name="TModel">Table or store to use</typeparam>
+            <param name="jsRuntime"></param>
+            <param name="id">column to compare</param>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Commands.SelectActions.SingleRecord``1(Microsoft.JSInterop.IJSRuntime,System.Int64)">
+            <summary>
+            Get a single record from store model
+            </summary>
+            <typeparam name="TModel">Table or store to use</typeparam>
+            <param name="jsRuntime"></param>
+            <param name="id">column to compare</param>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Commands.SelectActions.SingleRecord``1(Microsoft.JSInterop.IJSRuntime,System.String)">
+            <summary>
+            Get a single record from store model
+            </summary>
+            <typeparam name="TModel">Table or store to use</typeparam>
+            <param name="jsRuntime"></param>
+            <param name="id">column to compare</param>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Commands.SelectActions.SingleRecord``1(Microsoft.JSInterop.IJSRuntime,System.DateTime)">
+            <summary>
+            Get a single record from store model
+            </summary>
+            <typeparam name="TModel">Table or store to use</typeparam>
+            <param name="jsRuntime"></param>
+            <param name="id">column to compare</param>
+            <returns></returns>
+        </member>
+        <member name="T:BlazorIndexedDb.Commands.UpdateActions">
+            <summary>
+            Update commands
+            </summary>
+        </member>
+        <member name="M:BlazorIndexedDb.Commands.UpdateActions.DbUpdate``1(Microsoft.JSInterop.IJSRuntime,``0)">
+            <summary>
+            Update table to a db
+            </summary>
+            <typeparam name="TModel">Table or store to use</typeparam>
+            <param name="jsRuntime"></param>
+            <param name="data">data to insert</param>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Commands.UpdateActions.DbUpdate``1(Microsoft.JSInterop.IJSRuntime,System.Collections.Generic.List{``0})">
+            <summary>
+            Update table to a db
+            </summary>
+            <typeparam name="TModel">Table or store to use</typeparam>
+            <param name="jsRuntime"></param>
+            <param name="rows">data to insert</param>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Commands.UpdateActions.DbUpdateOffLine``1(Microsoft.JSInterop.IJSRuntime,``0)">
+            <summary>
+            Update table to a db
+            </summary>
+            <typeparam name="TModel">Table or store to use</typeparam>
+            <param name="jsRuntime"></param>
+            <param name="data">data to insert</param>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Commands.UpdateActions.DbUpdateOffLine``1(Microsoft.JSInterop.IJSRuntime,System.Collections.Generic.List{``0})">
+            <summary>
+            Update table to a db with offline property
+            </summary>
+            <typeparam name="TModel">Table or store to use</typeparam>
+            <param name="jsRuntime"></param>
+            <param name="rows">data to insert</param>
+            <returns></returns>
+        </member>
+        <member name="T:BlazorIndexedDb.Configuration.Initalizing">
+            <summary>
+            Setup de connection with the indexedDb in the browser
+            </summary>
+        </member>
+        <member name="M:BlazorIndexedDb.Configuration.Initalizing.DbInit(Microsoft.JSInterop.IJSRuntime)">
+            <summary>
+            Setup a indexedDb in a browser
+            </summary>
+            <param name="jsRuntime"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Configuration.Initalizing.DbInit(Microsoft.JSInterop.IJSRuntime,BlazorIndexedDb.Configuration.Settings)">
+            <summary>
+            Setup a indexedDb in a browser
+            </summary>
+            <param name="jsRuntime"></param>
+            <param name="settings">database name</param>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Configuration.Initalizing.DbInit(Microsoft.JSInterop.IJSRuntime,System.String,System.Int32,System.String,System.String,System.String[])">
+            <summary>
+            Setup a indexedDb in a browser
+            </summary>
+            <param name="jsRuntime"></param>
+            <param name="name">database name</param>
+            <param name="version">database version</param>
+            <param name="assemblyName">assembly contenies the namespaces from the model class to use</param>
+            <param name="entitiesNamespace">namespace from the models class to use</param>
+            <param name="tables">string array with the names of the model classes to serialize</param>
+            <returns></returns>
+        </member>
+        <member name="T:BlazorIndexedDb.Configuration.Settings">
+            <summary>
+            Configuration class to setup a IndexedDb in a browser
+            </summary>
+        </member>
+        <member name="P:BlazorIndexedDb.Configuration.Settings.DBName">
+            <summary>
+            Dabatase name
+            </summary>
+        </member>
+        <member name="P:BlazorIndexedDb.Configuration.Settings.Version">
+            <summary>
+            Version of the database
+            </summary>
+        </member>
+        <member name="P:BlazorIndexedDb.Configuration.Settings.AssemblyName">
+            <summary>
+            Assembly name to search the entities
+            </summary>
+        </member>
+        <member name="P:BlazorIndexedDb.Configuration.Settings.EntitiesNamespace">
+            <summary>
+            Namespace where is located the entities if it's different from the assembly name
+            </summary>
+        </member>
+        <member name="P:BlazorIndexedDb.Configuration.Settings.Tables">
+            <summary>
+            Names about the models to use
+            </summary>
+        </member>
+        <member name="F:BlazorIndexedDb.Configuration.Settings.Initiallezed">
+            <summary>
+            Know if the instance of a indexDb it's already initiallized
+            </summary>
+        </member>
+        <member name="T:BlazorIndexedDb.Helpers.AddOflineProperty">
+            <summary>
+            Add offline property to the entities to control when the transaction can't be saved into a live db
+            </summary>
+        </member>
+        <member name="M:BlazorIndexedDb.Helpers.AddOflineProperty.AddOffline``1(``0)">
+            <summary>
+            Add offline property
+            </summary>
+            <typeparam name="TModel"></typeparam>
+            <param name="toCopy"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Helpers.AddOflineProperty.AddOffline``1(System.Collections.Generic.List{``0})">
+            <summary>
+            Add offline property
+            </summary>
+            <typeparam name="TModel"></typeparam>
+            <param name="toCopy"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Helpers.AddOflineProperty.AddOfflineAsync``1(System.Collections.Generic.List{``0})">
+            <summary>
+            Add offline property
+            </summary>
+            <typeparam name="TModel"></typeparam>
+            <param name="toCopy"></param>
+            <returns></returns>
+        </member>
+        <member name="T:BlazorIndexedDb.Helpers.ObjectConverter">
+            <summary>
+            Tools to work with objects
+            </summary>
+        </member>
+        <member name="M:BlazorIndexedDb.Helpers.ObjectConverter.ToJson``1(System.Collections.Generic.List{``0})">
+            <summary>
+            Convert into a Json string the model send
+            </summary>
+            <typeparam name="TModel"></typeparam>
+            <param name="sender"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Helpers.ObjectConverter.ToJson``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Convert into a Json string the model send
+            </summary>
+            <typeparam name="TModel"></typeparam>
+            <param name="sender"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Helpers.ObjectConverter.ToJson(System.Object)">
+            <summary>
+            Convert into a Json string the object send
+            </summary>
+            <param name="sender"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Helpers.ObjectConverter.ToJsonAsync``1(System.Collections.Generic.List{``0})">
+            <summary>
+            Convert into a Json string the model send
+            </summary>
+            <typeparam name="TModel"></typeparam>
+            <param name="sender"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Helpers.ObjectConverter.ToJsonAsync``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Convert into a Json string the model send
+            </summary>
+            <typeparam name="TModel"></typeparam>
+            <param name="sender"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Helpers.ObjectConverter.ToJsonAsync(System.Object)">
+            <summary>
+            Convert into a Json string the model send
+            </summary>
+            <param name="sender"></param>
+            <returns></returns>
+        </member>
+        <member name="T:BlazorIndexedDb.Helpers.PropertyOptions">
+            <summary>
+            Get the options from the attributes setup into the model
+            </summary>
+        </member>
+        <member name="M:BlazorIndexedDb.Helpers.PropertyOptions.#ctor(System.Reflection.PropertyInfo)">
+            <summary>
+            Get all the indexdb attributes from the porperty
+            </summary>
+            <param name="p"></param>
+        </member>
+        <member name="T:BlazorIndexedDb.Helpers.Utils">
+            <summary>
+            Internal utilities
+            </summary>
+        </member>
+        <member name="M:BlazorIndexedDb.Helpers.Utils.GetName``1">
+            <summary>
+            Get class name
+            </summary>
+            <typeparam name="TModel"></typeparam>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Helpers.Utils.GetNameToLower(System.Object)">
+            <summary>
+            Get object type name in lower case
+            </summary>
+            <param name="sender"></param>
+            <returns></returns>
+        </member>
+        <member name="T:BlazorIndexedDb.Models.ResponseJsDb">
+            <summary>
+            Response object for the commands
+            </summary>
+        </member>
+        <member name="P:BlazorIndexedDb.Models.ResponseJsDb.Result">
+            <summary>
+            Transaction result
+            </summary>
+        </member>
+        <member name="P:BlazorIndexedDb.Models.ResponseJsDb.Message">
+            <summary>
+            Transaction message
+            </summary>
+        </member>
+        <member name="T:BlazorIndexedDb.Store.StoreContext">
+            <summary>
+                A StoreContext instance represents a instance of a indexedDb into the browser
+                with the stores and can be used to query and save instances of your entities.
+            </summary>
+        </member>
+        <member name="M:BlazorIndexedDb.Store.StoreContext.#ctor(Microsoft.JSInterop.IJSRuntime)">
+            <summary>
+            Constructor to get the connection
+            </summary>
+            <param name="js"></param>
+        </member>
+        <member name="M:BlazorIndexedDb.Store.StoreContext.Init(BlazorIndexedDb.Configuration.Settings)">
+            <summary>
+            Initialize the connection with a indexedDb
+            </summary>
+            <param name="settings"></param>
+        </member>
+        <member name="T:BlazorIndexedDb.Store.StoreSet`1">
+            <summary>
+            Class represent
+            </summary>
+        </member>
+        <member name="M:BlazorIndexedDb.Store.StoreSet`1.#ctor(Microsoft.JSInterop.IJSRuntime)">
+            <summary>
+            Constructor to get the connection
+            </summary>
+            <param name="js"></param>
+        </member>
+        <member name="M:BlazorIndexedDb.Store.StoreSet`1.SelectAsync">
+            <summary>
+            Get a list with the content about the store model
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Store.StoreSet`1.SelectAsync(System.Object)">
+            <summary>
+            Get a single record from store model
+            </summary>
+            <param name="id">primary key id to search</param>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Store.StoreSet`1.SelectAsync(System.Int32)">
+            <summary>
+            Get a single record from store model
+            </summary>
+            <param name="id">primary key id to search</param>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Store.StoreSet`1.SelectAsync(System.Double)">
+            <summary>
+            Get a single record from store model
+            </summary>
+            <param name="id">primary key id to search</param>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Store.StoreSet`1.SelectAsync(System.Decimal)">
+            <summary>
+            Get a single record from store model
+            </summary>
+            <param name="id">primary key id to search</param>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Store.StoreSet`1.SelectAsync(System.Int64)">
+            <summary>
+            Get a single record from store model
+            </summary>
+            <param name="id">primary key id to search</param>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Store.StoreSet`1.SelectAsync(System.String)">
+            <summary>
+            Get a single record from store model
+            </summary>
+            <param name="id">primary key id to search</param>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Store.StoreSet`1.SelectAsync(System.DateTime)">
+            <summary>
+            Get a single record from store model
+            </summary>
+            <param name="id">primary key id to search</param>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Store.StoreSet`1.AddAsync(`0)">
+            <summary>
+            Add record in a table store
+            </summary>
+            <param name="toAdd"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Store.StoreSet`1.UpdateAsync(`0)">
+            <summary>
+            Update record in a table store
+            </summary>
+            <param name="toAdd"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Store.StoreSet`1.DeleteAsync(System.String)">
+            <summary>
+            Detele record from a table sotre
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

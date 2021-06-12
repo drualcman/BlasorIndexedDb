@@ -1,4 +1,5 @@
-﻿using BlazorIndexedDb.Helpers;
+﻿using BlazorIndexedDb.Configuration;
+using BlazorIndexedDb.Helpers;
 using BlazorIndexedDb.Models;
 using Microsoft.JSInterop;
 using System;
@@ -16,90 +17,158 @@ namespace BlazorIndexedDb.Commands
     /// </summary>
     public static class InsertActions
     {
+        /// <summary>
         /// Insert into a table to a db
         /// </summary>
+        /// <typeparam name="TModel">Table or store to use</typeparam>
         /// <param name="jsRuntime"></param>
-        /// <param name="data">data to insert</param>
+        /// <param name="data"></param>
         /// <returns></returns>
-        public static async ValueTask<ResponseJsDb> DbInsert<T>(this IJSRuntime jsRuntime, [NotNull] T data)
+        public static async ValueTask<ResponseJsDb> DbInsert<TModel>(this IJSRuntime jsRuntime, [NotNull] TModel data)
         {
-            List<T> rows = new List<T>();
-            rows.Add(data);
-            List<ResponseJsDb> response = await DbInsert(jsRuntime, rows);
+            List<ResponseJsDb> response;
+            if (Settings.Initiallezed)
+            {
+                List<TModel> rows = new List<TModel>();
+                rows.Add(data);
+                response = await DbInsert(jsRuntime, rows);
+            }
+            else
+            {
+                Console.WriteLine($"IndexedDb not initiallized yet!");
+                response = new List<ResponseJsDb>()
+                {
+                    new ResponseJsDb()
+                    {
+                         Message = $"IndexedDb not initiallized yet!",
+                         Result = false
+                    }
+                };
+            }
             return response[0];
         }
 
         /// <summary>
         /// Insert into a table to a db
         /// </summary>
+        /// <typeparam name="TModel">Table or store to use</typeparam>
         /// <param name="jsRuntime"></param>
         /// <param name="rows">data to insert</param>
         /// <returns></returns>
-        public static async ValueTask<List<ResponseJsDb>> DbInsert<T>(this IJSRuntime jsRuntime, [NotNull] List<T> rows)
+        public static async ValueTask<List<ResponseJsDb>> DbInsert<TModel>(this IJSRuntime jsRuntime, [NotNull] List<TModel> rows)
         {
             List<ResponseJsDb> result;
-            if (rows.Count > 0)
+            if (Settings.Initiallezed)
             {
-                try
+                if (rows.Count > 0)
                 {
-                    string data = await ObjectConverter.ToJsonAsync(rows);
-                    result = await jsRuntime.InvokeAsync<List<ResponseJsDb>>("MyDb.Insert", Utils.GetName<T>(), data);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"DbInsert Error: {ex}");
-                    result = new List<ResponseJsDb>{
+                    try
+                    {
+                        string data = await ObjectConverter.ToJsonAsync(rows);
+                        result = await jsRuntime.InvokeAsync<List<ResponseJsDb>>("MyDb.Insert", Utils.GetName<TModel>(), data);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"DbInsert Error: {ex}");
+                        result = new List<ResponseJsDb>{
                         new ResponseJsDb { Result = false, Message = ex.Message }
                     };
+                    }
                 }
-            }
-            else result = new List<ResponseJsDb>{
+                else result = new List<ResponseJsDb>{
                         new ResponseJsDb { Result = true, Message = "No need insert!" }
                     };
+            }
+            else
+            {
+                Console.WriteLine($"IndexedDb not initiallized yet!");
+                result = new List<ResponseJsDb>()
+                {
+                    new ResponseJsDb()
+                    {
+                         Message = $"IndexedDb not initiallized yet!",
+                         Result = false
+                    }
+                };
+            }
             return result;
         }
 
+        /// <summary>
         /// Insert into a table to a db
         /// </summary>
+        /// <typeparam name="TModel">Table or store to use</typeparam>
         /// <param name="jsRuntime"></param>
         /// <param name="data">data to insert</param>
         /// <returns></returns>
-        public static async ValueTask<ResponseJsDb> DbInserOffline<T>(this IJSRuntime jsRuntime, [NotNull] T data)
+        public static async ValueTask<ResponseJsDb> DbInserOffline<TModel>(this IJSRuntime jsRuntime, [NotNull] TModel data)
         {
-            List<T> rows = new List<T>();
-            rows.Add(data);
-            List<ResponseJsDb> response = await DbInserOffline(jsRuntime, rows);
+            List<ResponseJsDb> response;
+            if (Settings.Initiallezed)
+            {
+                List<TModel> rows = new List<TModel>();
+                rows.Add(data);
+                response = await DbInserOffline(jsRuntime, rows);
+            }
+            else
+            {
+                Console.WriteLine($"IndexedDb not initiallized yet!");
+                response = new List<ResponseJsDb>()
+                {
+                    new ResponseJsDb()
+                    {
+                         Message = $"IndexedDb not initiallized yet!",
+                         Result = false
+                    }
+                };
+            }
             return response[0];
         }
 
         /// <summary>
         /// Insert int a table to a db with offline property
         /// </summary>
+        /// <typeparam name="TModel">Table or store to use</typeparam>
         /// <param name="jsRuntime"></param>
         /// <param name="rows">data to insert</param>
         /// <returns></returns>
-        public static async ValueTask<List<ResponseJsDb>> DbInserOffline<T>(this IJSRuntime jsRuntime, [NotNull] List<T> rows)
+        public static async ValueTask<List<ResponseJsDb>> DbInserOffline<TModel>(this IJSRuntime jsRuntime, [NotNull] List<TModel> rows)
         {
             List<ResponseJsDb> result;
-            if (rows.Count > 0)
+            if (Settings.Initiallezed)
             {
-                List<dynamic> expanded = await AddOflineProperty.AddOfflineAsync(rows);
-                try
+                if (rows.Count > 0)
                 {
-                    string data = await ObjectConverter.ToJsonAsync(expanded);
-                    result = await jsRuntime.InvokeAsync<List<ResponseJsDb>>("MyDb.Insert", Utils.GetName<T>(), data);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"DbInsert Error: {ex}");
-                    result = new List<ResponseJsDb>{
+                    List<dynamic> expanded = await AddOflineProperty.AddOfflineAsync(rows);
+                    try
+                    {
+                        string data = await ObjectConverter.ToJsonAsync(expanded);
+                        result = await jsRuntime.InvokeAsync<List<ResponseJsDb>>("MyDb.Insert", Utils.GetName<TModel>(), data);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"DbInsert Error: {ex}");
+                        result = new List<ResponseJsDb>{
                         new ResponseJsDb { Result = false, Message = ex.Message }
                     };
+                    }
                 }
-            }
-            else result = new List<ResponseJsDb>{
+                else result = new List<ResponseJsDb>{
                         new ResponseJsDb { Result = true, Message = "No need insert!" }
                     };
+            }
+            else
+            {
+                Console.WriteLine($"IndexedDb not initiallized yet!");
+                result = new List<ResponseJsDb>()
+                {
+                    new ResponseJsDb()
+                    {
+                         Message = $"IndexedDb not initiallized yet!",
+                         Result = false
+                    }
+                };
+            }            
             return result;
         }
 

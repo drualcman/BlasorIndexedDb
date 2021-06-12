@@ -5,152 +5,165 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics.CodeAnalysis;
 
 namespace BlazorIndexedDb.Configuration
 {
-    public static class Initalizing
+    /// <summary>
+    /// Setup de connection with the indexedDb in the browser
+    /// </summary>
+    sealed class Initalizing
     {
         /// <summary>
-        /// Extent JSRuntime to get a confirm
+        /// Setup a indexedDb in a browser
         /// </summary>
         /// <param name="jsRuntime"></param>
-        /// <param name="name">database name</param>
-        /// <param name="version">database version</param>
-        /// <param name="tables">string array with the names of the model classes to serialize</param>
-        /// <param name="assemblyName">namespace from the models class</param>
         /// <returns></returns>
-        public static async Task DbInit(this IJSRuntime jsRuntime, string name, int version, string[] tables, string assemblyName)
-            => await DbInit(jsRuntime, name, version, tables, assemblyName, assemblyName);
+        public async static Task DbInit(IJSRuntime jsRuntime)
+        {
+            string assemblyName = AppDomain.CurrentDomain.FriendlyName;
+            await DbInit(jsRuntime, assemblyName, 1, assemblyName,
+                string.Empty, Settings.Tables);
+        }
 
         /// <summary>
-        /// Extent JSRuntime to get a confirm
+        /// Setup a indexedDb in a browser
+        /// </summary>
+        /// <param name="jsRuntime"></param>
+        /// <param name="settings">database name</param>
+        /// <returns></returns>
+        public async static Task DbInit(IJSRuntime jsRuntime, [NotNull] Settings settings) 
+        {
+            await DbInit(jsRuntime, settings.DBName, settings.Version, settings.AssemblyName, 
+                settings.EntitiesNamespace, Settings.Tables);
+        }
+
+        /// <summary>
+        /// Setup a indexedDb in a browser
         /// </summary>
         /// <param name="jsRuntime"></param>
         /// <param name="name">database name</param>
         /// <param name="version">database version</param>
+        /// <param name="assemblyName">assembly contenies the namespaces from the model class to use</param>
+        /// <param name="entitiesNamespace">namespace from the models class to use</param>
         /// <param name="tables">string array with the names of the model classes to serialize</param>
-        /// <param name="entitiesNamespace">namespace from the models class</param>
         /// <returns></returns>
-        public static Task DbInit(this IJSRuntime jsRuntime, string name, int version, string[] tables, string assemblyName, string entitiesNamespace)
+        public async static Task DbInit(IJSRuntime jsRuntime, string name, int version, string assemblyName, string entitiesNamespace, string[] tables)
         {
-            Settings.DBName = name;
-            Settings.Version = version;
-            Settings.AssemblyName = assemblyName;
-            Settings.EntitiesNamespace = entitiesNamespace;
-            Settings.Tables = tables;
+            if (!Settings.Initiallezed) 
+            {
+                Settings.Tables = tables;
 
-            string model = $@"{{
+                string model = $@"{{
                                 ""name"": ""{name}"",
                                 ""version"": {version},
                                 ""tables"": []
                              }}";
-            //use reflexion to serialize the tables like
-            // {name: 'table name', options:{keyPath: 'primary id to use', autoIncrement: true/false},
-            //  columns: [{name: 'property name', keyPath: true/false, autoIncrement: true/false, unique: true/false}]}
+                //use reflexion to serialize the tables like
+                // {name: 'table name', options:{keyPath: 'primary id to use', autoIncrement: true/false},
+                //  columns: [{name: 'property name', keyPath: true/false, autoIncrement: true/false, unique: true/false}]}
 
-            try
-            {
-                Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
-                int c = 0;
-                do
+                try
                 {
-                    if (assemblies[c].GetName().Name == assemblyName)
+                    Assembly[] assemblies = AppDomain.CurrentDomain.ReflectionOnlyGetAssemblies();
+                    int c = 0;
+                    do
                     {
-                        Assembly assembly = assemblies[c];
-
-                        string tableJsonArray = string.Empty;
-                        foreach (string table in tables)
+                        if (assemblies[c].GetName().Name == assemblyName)
                         {
-                            StringBuilder tableModels = new StringBuilder();
-                            string TableModel = $"{entitiesNamespace}.{table}";
+                            Assembly assembly = assemblies[c];
 
-                            // {name: 'table name', options:{keyPath: 'primary id to use', autoIncrement: true/false},
-                            Type t = assembly.GetType(TableModel, true, true);
-                            tableModels.Append($"{{\"name\": \"{table}\",");
-
-                            //read all properties
-                            PropertyInfo[] properties = t.GetProperties(BindingFlags.Public |           //get public names
-                                                                        BindingFlags.Instance);         //get instance names
-
-                            //main field from the model, normalize like Id or ModelNameId or IdModelName
-                            string identifer = "ssn";
-                            bool autoIncrement = false;     //if it's a integer must be true
-                            tableModels.Append("\"options\": {\"keyPath\": \"#1\", \"autoIncrement\": #2},");
-                            //add columns name from the properties names
-                            tableModels.Append($"\"columns\": [");                  //open json array
-
-                            for (int i = 0; i < properties.Length; i++)
+                            string tableJsonArray = string.Empty;
+                            foreach (string table in tables)
                             {
-                                Helpers.PropertyOptions property = new Helpers.PropertyOptions(properties[i]);
-                                if (!property.ToIgnore)
+                                StringBuilder tableModels = new StringBuilder();
+                                string TableModel = $"{entitiesNamespace}.{table}";
+
+                                // {name: 'table name', options:{keyPath: 'primary id to use', autoIncrement: true/false},
+                                Type t = assembly.GetType(TableModel, true, true);
+                                tableModels.Append($"{{\"name\": \"{table}\",");
+
+                                //read all properties
+                                PropertyInfo[] properties = t.GetProperties(BindingFlags.Public |           //get public names
+                                                                            BindingFlags.Instance);         //get instance names
+
+                                //main field from the model, normalize like Id or ModelNameId or IdModelName
+                                string identifer = "ssn";
+                                bool autoIncrement = false;     //if it's a integer must be true
+                                tableModels.Append("\"options\": {\"keyPath\": \"#1\", \"autoIncrement\": #2},");
+                                //add columns name from the properties names
+                                tableModels.Append($"\"columns\": [");                  //open json array
+
+                                for (int i = 0; i < properties.Length; i++)
                                 {
-                                    //  columns: [{name: 'property name', keyPath: true/false, autoIncrement: true/false, unique: true/false}]}
-                                    string propName = property.Name.ToLower();
-                                    if (table.ToLower() != propName)            //if the property is other table don't do nothing
+                                    Helpers.PropertyOptions property = new Helpers.PropertyOptions(properties[i]);
+                                    if (!property.ToIgnore)
                                     {
-                                        //main field from the model, normalize like Id or ModelNameId or IdModelName
-                                        if (propName == "id")
+                                        //  columns: [{name: 'property name', keyPath: true/false, autoIncrement: true/false, unique: true/false}]}
+                                        string propName = property.Name.ToLower();
+                                        if (table.ToLower() != propName)            //if the property is other table don't do nothing
                                         {
-                                            identifer = property.Name;
-                                            autoIncrement = property.IsAutoIncrement;
+                                            //main field from the model, normalize like Id or ModelNameId or IdModelName
+                                            if (propName == "id")
+                                            {
+                                                identifer = property.Name;
+                                                autoIncrement = property.IsAutoIncrement;
+                                            }
+                                            else if (propName == $"{table.ToLower()}id")
+                                            {
+                                                identifer = property.Name;
+                                                autoIncrement = property.IsKeyPath;
+                                            }
+                                            else if (propName == $"id{table.ToLower()}")
+                                            {
+                                                identifer = property.Name;
+                                                autoIncrement = property.IsAutoIncrement;
+                                            }
+                                            else if (propName == $"id{table.ToLower()}s")                 //plural possibility
+                                            {
+                                                identifer = property.Name;
+                                                autoIncrement = property.IsAutoIncrement;
+                                            }
+                                            else if (propName == $"id{table.ToLower().Remove(table.Length - 1, 1)}")                 //singular possibility
+                                            {
+                                                identifer = property.Name;
+                                                autoIncrement = property.IsAutoIncrement;
+                                            }
+                                            else if (property.IsKeyPath)
+                                            {
+                                                identifer = property.Name;
+                                                autoIncrement = property.IsAutoIncrement;
+                                            }
+                                            else tableModels.Append($"{{\"name\": \"{property.Name}\", \"keyPath\": {property.IsKeyPath.ToString().ToLower()}, \"autoIncrement\": {property.IsAutoIncrement.ToString().ToLower()}, \"unique\": {property.IsUnique.ToString().ToLower()}}},");
                                         }
-                                        else if (propName == $"{table.ToLower()}id")
-                                        {
-                                            identifer = property.Name;
-                                            autoIncrement = property.IsKeyPath;
-                                        }
-                                        else if (propName == $"id{table.ToLower()}")
-                                        {
-                                            identifer = property.Name;
-                                            autoIncrement = property.IsAutoIncrement;
-                                        }
-                                        else if (propName == $"id{table.ToLower()}s")                 //plural possibility
-                                        {
-                                            identifer = property.Name;
-                                            autoIncrement = property.IsAutoIncrement;
-                                        }
-                                        else if (propName == $"id{table.ToLower().Remove(table.Length - 1, 1)}")                 //singular possibility
-                                        {
-                                            identifer = property.Name;
-                                            autoIncrement = property.IsAutoIncrement;
-                                        }
-                                        else if (property.IsKeyPath)
-                                        {
-                                            identifer = property.Name;
-                                            autoIncrement = property.IsAutoIncrement;
-                                        }
-                                        else tableModels.Append($"{{\"name\": \"{property.Name}\", \"keyPath\": {property.IsKeyPath.ToString().ToLower()}, \"autoIncrement\": {property.IsAutoIncrement.ToString().ToLower()}, \"unique\": {property.IsUnique.ToString().ToLower()}}},");
                                     }
                                 }
+                                //always add control if the register it's offline NULL = not offline, only when it's true it's applicable
+                                tableModels.Append($"{{\"name\": \"OffLine\", \"keyPath\": false, \"autoIncrement\": false, \"unique\": false}},");
+                                if (string.IsNullOrEmpty(identifer)) identifer = "ssn";
+                                string tmpString = tableModels.ToString();
+                                tableJsonArray += tmpString
+                                    .Remove(tmpString.Length - 1, 1)                                                    //remove the last ,
+                                    .Replace("#1", identifer).Replace("#2", autoIncrement.ToString().ToLower()) +       //set the identity of the table
+                                    "]},";                                                                              //close json array
                             }
-                            //always add control if the register it's offline NULL = not offline, only when it's true it's applicable
-                            tableModels.Append($"{{\"name\": \"OffLine\", \"keyPath\": false, \"autoIncrement\": false, \"unique\": false}},");
-                            if (string.IsNullOrEmpty(identifer)) identifer = "ssn";
-                            string tmpString = tableModels.ToString();
-                            tableJsonArray += tmpString
-                                .Remove(tmpString.Length - 1, 1)                                                    //remove the last ,
-                                .Replace("#1", identifer).Replace("#2", autoIncrement.ToString().ToLower()) +       //set the identity of the table
-                                "]},";                                                                              //close json array
+                            tableJsonArray = tableJsonArray.Remove(tableJsonArray.Length - 1, 1);     //remove last ,
+                            model = model.Replace("[]", "[" + tableJsonArray + "]");                  //replace with tables array
+
+                            c = assemblies.Length;
                         }
-                        tableJsonArray = tableJsonArray.Remove(tableJsonArray.Length - 1, 1);     //remove last ,
-                        model = model.Replace("[]", "[" + tableJsonArray + "]");                  //replace with tables array
+                        c++;
+                    } while (c < assemblies.Length);
 
-                        c = assemblies.Length;
-                    }
-                    c++;
-                } while (c < assemblies.Length);
-
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+                //Console.Write(model);
+                await jsRuntime.InvokeVoidAsync("MyDb.Init", model);
+                Settings.Initiallezed = true;
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-            //Console.Write(model);
-            _ = jsRuntime.InvokeVoidAsync("MyDb.Init", model);          //don't stop the process
-            return Task.CompletedTask;
         }
-
-        public static ValueTask<string> DbConnected(this IJSRuntime jsRuntime) => 
-            jsRuntime.InvokeAsync<string>("MyDb.Connected");        
     }
 }

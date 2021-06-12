@@ -27,7 +27,7 @@ Add console.warning in javascript for dev know the error when have a exception</
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>C:\DrUalcman\BlasorIndexedDb\BlasorIndexedDb\BlazorIndexedDb.xml</DocumentationFile>
-    <GenerateSerializationAssemblies>On</GenerateSerializationAssemblies>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
   </PropertyGroup>
 
   

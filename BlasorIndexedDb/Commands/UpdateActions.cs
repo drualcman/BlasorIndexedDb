@@ -1,4 +1,5 @@
-﻿using BlazorIndexedDb.Helpers;
+﻿using BlazorIndexedDb.Configuration;
+using BlazorIndexedDb.Helpers;
 using BlazorIndexedDb.Models;
 using Microsoft.JSInterop;
 using System;
@@ -19,44 +20,77 @@ namespace BlazorIndexedDb.Commands
         /// <summary>
         /// Update table to a db
         /// </summary>
+        /// <typeparam name="TModel">Table or store to use</typeparam>
         /// <param name="jsRuntime"></param>
         /// <param name="data">data to insert</param>
         /// <returns></returns>
-        public static async ValueTask<ResponseJsDb> DbUpdate<T>(this IJSRuntime jsRuntime, [NotNull] T data)
+        public static async ValueTask<ResponseJsDb> DbUpdate<TModel>(this IJSRuntime jsRuntime, [NotNull] TModel data)
         {
-            List<T> rows = new List<T>();
-            rows.Add(data);
-            List<ResponseJsDb> response = await DbUpdate(jsRuntime, rows);
+            List<ResponseJsDb> response;
+            if (Settings.Initiallezed)
+            {
+                List<TModel> rows = new List<TModel>();
+                rows.Add(data);
+                response = await DbUpdate(jsRuntime, rows);
+            }
+            else
+            {
+                Console.WriteLine($"IndexedDb not initiallized yet!");
+                response = new List<ResponseJsDb>()
+                {
+                    new ResponseJsDb()
+                    {
+                         Message = $"IndexedDb not initiallized yet!",
+                         Result = false
+                    }
+                };
+            }
             return response[0];
         }
 
         /// <summary>
         /// Update table to a db
         /// </summary>
+        /// <typeparam name="TModel">Table or store to use</typeparam>
         /// <param name="jsRuntime"></param>
         /// <param name="rows">data to insert</param>
         /// <returns></returns>
-        public static async ValueTask<List<ResponseJsDb>> DbUpdate<T>(this IJSRuntime jsRuntime, [NotNull] List<T> rows)
+        public static async ValueTask<List<ResponseJsDb>> DbUpdate<TModel>(this IJSRuntime jsRuntime, [NotNull] List<TModel> rows)
         {
             List<ResponseJsDb> result;
-            if (rows.Count > 0)
+            if (Settings.Initiallezed)
             {
-                try
+                if (rows.Count > 0)
                 {
-                    string data = await ObjectConverter.ToJsonAsync(rows);
-                    result = await jsRuntime.InvokeAsync<List<ResponseJsDb>>("MyDb.Update", Utils.GetName<T>(), data);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"DbUpdate Error: {ex}");
-                    result = new List<ResponseJsDb>{
+                    try
+                    {
+                        string data = await ObjectConverter.ToJsonAsync(rows);
+                        result = await jsRuntime.InvokeAsync<List<ResponseJsDb>>("MyDb.Update", Utils.GetName<TModel>(), data);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"DbUpdate Error: {ex}");
+                        result = new List<ResponseJsDb>{
                         new ResponseJsDb { Result = false, Message = ex.Message }
                     };
+                    }
                 }
-            }
-            else result = new List<ResponseJsDb>{
+                else result = new List<ResponseJsDb>{
                         new ResponseJsDb { Result = true, Message = "No need update!" }
                     };
+            }
+            else
+            {
+                Console.WriteLine($"IndexedDb not initiallized yet!");
+                result = new List<ResponseJsDb>()
+                {
+                    new ResponseJsDb()
+                    {
+                         Message = $"IndexedDb not initiallized yet!",
+                         Result = false
+                    }
+                };
+            }
             return result;
         }
 
@@ -64,45 +98,78 @@ namespace BlazorIndexedDb.Commands
         /// <summary>
         /// Update table to a db
         /// </summary>
+        /// <typeparam name="TModel">Table or store to use</typeparam>
         /// <param name="jsRuntime"></param>
         /// <param name="data">data to insert</param>
         /// <returns></returns>
-        public static async ValueTask<ResponseJsDb> DbUpdateOffLine<T>(this IJSRuntime jsRuntime, [NotNull] T data)
+        public static async ValueTask<ResponseJsDb> DbUpdateOffLine<TModel>(this IJSRuntime jsRuntime, [NotNull] TModel data)
         {
-            List<T> rows = new List<T>();
-            rows.Add(data);
-            List<ResponseJsDb> response = await DbUpdateOffLine(jsRuntime, rows);
+            List<ResponseJsDb> response;
+            if (Settings.Initiallezed)
+            {
+                List<TModel> rows = new List<TModel>();
+                rows.Add(data);
+                response = await DbUpdateOffLine(jsRuntime, rows);
+            }
+            else
+            {
+                Console.WriteLine($"IndexedDb not initiallized yet!");
+                response = new List<ResponseJsDb>()
+                {
+                    new ResponseJsDb()
+                    {
+                         Message = $"IndexedDb not initiallized yet!",
+                         Result = false
+                    }
+                };
+            }
             return response[0];
         }
 
         /// <summary>
         /// Update table to a db with offline property
         /// </summary>
+        /// <typeparam name="TModel">Table or store to use</typeparam>
         /// <param name="jsRuntime"></param>
         /// <param name="rows">data to insert</param>
         /// <returns></returns>
-        public static async ValueTask<List<ResponseJsDb>> DbUpdateOffLine<T>(this IJSRuntime jsRuntime, [NotNull] List<T> rows)
+        public static async ValueTask<List<ResponseJsDb>> DbUpdateOffLine<TModel>(this IJSRuntime jsRuntime, [NotNull] List<TModel> rows)
         {
             List<ResponseJsDb> result;
-            if (rows.Count > 0)
+            if (Settings.Initiallezed)
             {
-                List<dynamic> expanded = await AddOflineProperty.AddOfflineAsync(rows);
-                try
+                if (rows.Count > 0)
                 {
-                    string data = await ObjectConverter.ToJsonAsync(expanded);
-                    result = await jsRuntime.InvokeAsync<List<ResponseJsDb>>("MyDb.Update", Utils.GetName<T>(), data);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"DbUpdate Error: {ex}");
-                    result = new List<ResponseJsDb>{
+                    List<dynamic> expanded = await AddOflineProperty.AddOfflineAsync(rows);
+                    try
+                    {
+                        string data = await ObjectConverter.ToJsonAsync(expanded);
+                        result = await jsRuntime.InvokeAsync<List<ResponseJsDb>>("MyDb.Update", Utils.GetName<TModel>(), data);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"DbUpdate Error: {ex}");
+                        result = new List<ResponseJsDb>{
                         new ResponseJsDb { Result = false, Message = ex.Message }
                     };
+                    }
                 }
-            }
-            else result = new List<ResponseJsDb>{
+                else result = new List<ResponseJsDb>{
                         new ResponseJsDb { Result = true, Message = "No need update!" }
                     };
+            }
+            else
+            {
+                Console.WriteLine($"IndexedDb not initiallized yet!");
+                result = new List<ResponseJsDb>()
+                {
+                    new ResponseJsDb()
+                    {
+                         Message = $"IndexedDb not initiallized yet!",
+                         Result = false
+                    }
+                };
+            }
             return result;
         }
     }

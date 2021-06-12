@@ -1,4 +1,5 @@
-﻿using BlazorIndexedDb.Helpers;
+﻿using BlazorIndexedDb.Configuration;
+using BlazorIndexedDb.Helpers;
 using BlazorIndexedDb.Models;
 using Microsoft.JSInterop;
 using System;
@@ -16,113 +17,166 @@ namespace BlazorIndexedDb.Commands
     public static class DeleteActions
     {
         /// <summary>
-        /// Delete table to a db
+        /// Detete one row from a table
         /// </summary>
+        /// <typeparam name="TModel">Table or store to use</typeparam>
         /// <param name="jsRuntime"></param>
-        /// <param name="id">id from the row to delete</param>
+        /// <param name="id"></param>
         /// <returns></returns>
-        public static async ValueTask<ResponseJsDb> DbDelete<T>(this IJSRuntime jsRuntime, [NotNull] int id)
+        public static async ValueTask<ResponseJsDb> DbDelete<TModel>(this IJSRuntime jsRuntime, [NotNull] int id)
         {
             List<ResponseJsDb> result;
-            try
+            if (Settings.Initiallezed)
             {
-                result = await jsRuntime.InvokeAsync<List<ResponseJsDb>>("MyDb.Delete", Utils.GetName<T>(), id);
+                try
+                {
+                    result = await jsRuntime.InvokeAsync<List<ResponseJsDb>>("MyDb.Delete", Utils.GetName<TModel>(), id);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"DbDelete Error: {ex}");
+                    result = new List<ResponseJsDb>();
+                    result.Add(new ResponseJsDb { Result = false, Message = ex.Message });
+                }
             }
-            catch (Exception ex)
+            else
             {
-                Console.WriteLine($"DbDelete Error: {ex}");
+                Console.WriteLine($"IndexedDb not initiallized yet!");
                 result = new List<ResponseJsDb>();
-                result.Add(new ResponseJsDb { Result = false, Message = ex.Message });
+                result.Add(new ResponseJsDb { Result = false, Message = $"IndexedDb not initiallized yet!" });
             }
             return result[0];
         }
 
         /// <summary>
-        /// Delete table to a db
+        /// Detete one row from a table
         /// </summary>
+        /// <typeparam name="TModel">Table or store to use</typeparam>
         /// <param name="jsRuntime"></param>
         /// <param name="id">id from the row to delete</param>
         /// <returns></returns>
-        public static async ValueTask<ResponseJsDb> DbDelete<T>(this IJSRuntime jsRuntime, [NotNull] double id)
+        public static async ValueTask<ResponseJsDb> DbDelete<TModel>(this IJSRuntime jsRuntime, [NotNull] double id)
         {
             List<ResponseJsDb> result;
-            try
+
+            if (Settings.Initiallezed)
             {
-                result = await jsRuntime.InvokeAsync<List<ResponseJsDb>>("MyDb.Delete", Utils.GetName<T>(), id);
+                try
+                {
+                    result = await jsRuntime.InvokeAsync<List<ResponseJsDb>>("MyDb.Delete", Utils.GetName<TModel>(), id);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"DbDelete Error: {ex}");
+                    result = new List<ResponseJsDb>();
+                    result.Add(new ResponseJsDb { Result = false, Message = ex.Message });
+                }
             }
-            catch (Exception ex)
+            else
             {
-                Console.WriteLine($"DbDelete Error: {ex}");
+                Console.WriteLine($"IndexedDb not initiallized yet!");
                 result = new List<ResponseJsDb>();
-                result.Add(new ResponseJsDb { Result = false, Message = ex.Message });
+                result.Add(new ResponseJsDb { Result = false, Message = $"IndexedDb not initiallized yet!" });
             }
             return result[0]; 
         }
 
 
         /// <summary>
-        /// Delete table to a db
+        /// Detete one row from a table
         /// </summary>
+        /// <typeparam name="TModel">Table or store to use</typeparam>
         /// <param name="jsRuntime"></param>
         /// <param name="id">id from the row to delete</param>
         /// <returns></returns>
-        public static async ValueTask<ResponseJsDb> DbDelete<T>(this IJSRuntime jsRuntime, [NotNull] decimal id)
+        public static async ValueTask<ResponseJsDb> DbDelete<TModel>(this IJSRuntime jsRuntime, [NotNull] decimal id)
         {
             List<ResponseJsDb> result;
-            try
+
+            if (Settings.Initiallezed)
             {
-                result = await jsRuntime.InvokeAsync<List<ResponseJsDb>>("MyDb.Delete", Utils.GetName<T>(), id);
+                try
+                {
+                    result = await jsRuntime.InvokeAsync<List<ResponseJsDb>>("MyDb.Delete", Utils.GetName<TModel>(), id);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"DbDelete Error: {ex}");
+                    result = new List<ResponseJsDb>();
+                    result.Add(new ResponseJsDb { Result = false, Message = ex.Message });
+                }
             }
-            catch (Exception ex)
+            else
             {
-                Console.WriteLine($"DbDelete Error: {ex}");
+                Console.WriteLine($"IndexedDb not initiallized yet!");
                 result = new List<ResponseJsDb>();
-                result.Add(new ResponseJsDb { Result = false, Message = ex.Message });
+                result.Add(new ResponseJsDb { Result = false, Message = $"IndexedDb not initiallized yet!" });
             }
             return result[0];
         }
 
 
         /// <summary>
-        /// Delete table to a db
+        /// Detete one row from a table
         /// </summary>
+        /// <typeparam name="TModel">Table or store to use</typeparam>
         /// <param name="jsRuntime"></param>
         /// <param name="id">id from the row to delete</param>
         /// <returns></returns>
-        public static async ValueTask<ResponseJsDb> DbDelete<T>(this IJSRuntime jsRuntime, [NotNull] string id)
+        public static async ValueTask<ResponseJsDb> DbDelete<TModel>(this IJSRuntime jsRuntime, [NotNull] string id)
         {
             List<ResponseJsDb> result;
-            try
+
+            if (Settings.Initiallezed)
             {
-                result = await jsRuntime.InvokeAsync<List<ResponseJsDb>>("MyDb.Delete", Utils.GetName<T>(), id);
+                try
+                {
+                    result = await jsRuntime.InvokeAsync<List<ResponseJsDb>>("MyDb.Delete", Utils.GetName<TModel>(), id);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"DbDelete Error: {ex}");
+                    result = new List<ResponseJsDb>();
+                    result.Add(new ResponseJsDb { Result = false, Message = ex.Message });
+                }
             }
-            catch (Exception ex)
+            else
             {
-                Console.WriteLine($"DbDelete Error: {ex}");
+                Console.WriteLine($"IndexedDb not initiallized yet!");
                 result = new List<ResponseJsDb>();
-                result.Add(new ResponseJsDb { Result = false, Message = ex.Message });
+                result.Add(new ResponseJsDb { Result = false, Message = $"IndexedDb not initiallized yet!" });
             }
             return result[0];
         }
 
         /// <summary>
-        /// Delete table to a db
+        /// Detete one row from a table
         /// </summary>
+        /// <typeparam name="TModel">Table or store to use</typeparam>
         /// <param name="jsRuntime"></param>
         /// <param name="id">id from the row to delete</param>
         /// <returns></returns>
-        public static async ValueTask<ResponseJsDb> DbDelete<T>(this IJSRuntime jsRuntime, [NotNull] DateTime id)
+        public static async ValueTask<ResponseJsDb> DbDelete<TModel>(this IJSRuntime jsRuntime, [NotNull] DateTime id)
         {
             List<ResponseJsDb> result;
-            try
+            if (Settings.Initiallezed)
             {
-                result = await jsRuntime.InvokeAsync<List<ResponseJsDb>>("MyDb.Delete", Utils.GetName<T>(), id);
+                try
+                {
+                    result = await jsRuntime.InvokeAsync<List<ResponseJsDb>>("MyDb.Delete", Utils.GetName<TModel>(), id);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"DbDelete Error: {ex}");
+                    result = new List<ResponseJsDb>();
+                    result.Add(new ResponseJsDb { Result = false, Message = ex.Message });
+                }
             }
-            catch (Exception ex)
+            else
             {
-                Console.WriteLine($"DbDelete Error: {ex}");
+                Console.WriteLine($"IndexedDb not initiallized yet!");
                 result = new List<ResponseJsDb>();
-                result.Add(new ResponseJsDb { Result = false, Message = ex.Message });
+                result.Add(new ResponseJsDb { Result = false, Message = $"IndexedDb not initiallized yet!" });
             }
             return result[0];
         }

@@ -4,12 +4,15 @@ Manage indexedDb from c# with Blazor. Simple way to interact with IndexedDB and 
 # NuGet installation
 ```PM> Install-Package DrUalcman-BlazorIndexedDb```
 
+## New version changes on going
+Working in a new version with StoreContext and StoreSet to easy manage and work from C#. New version 1.5.13. Last stable version 1.3.11
 # Current features
 Connect and create database
 Define PrimaKey in the model
 Add record
 Remove record
 Edit record
+Select record or records
 
 
 # How to use
