@@ -35,7 +35,7 @@ namespace BlazorIndexedDb.Commands
             }
             else
             {
-                Console.WriteLine($"IndexedDb not initiallized yet!");
+                if (Settings.EnableDebug) Console.WriteLine($"UpdateActions: IndexedDb not initiallized yet!");
                 response = new List<ResponseJsDb>()
                 {
                     new ResponseJsDb()
@@ -69,7 +69,7 @@ namespace BlazorIndexedDb.Commands
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"DbUpdate Error: {ex}");
+                        if (Settings.EnableDebug) Console.WriteLine($"DbUpdate Error: {ex}");
                         result = new List<ResponseJsDb>{
                         new ResponseJsDb { Result = false, Message = ex.Message }
                     };
@@ -81,7 +81,7 @@ namespace BlazorIndexedDb.Commands
             }
             else
             {
-                Console.WriteLine($"IndexedDb not initiallized yet!");
+                if (Settings.EnableDebug) Console.WriteLine($"UpdateActions: IndexedDb not initiallized yet!");
                 result = new List<ResponseJsDb>()
                 {
                     new ResponseJsDb()
@@ -113,7 +113,7 @@ namespace BlazorIndexedDb.Commands
             }
             else
             {
-                Console.WriteLine($"IndexedDb not initiallized yet!");
+                if (Settings.EnableDebug) Console.WriteLine($"UpdateActions: IndexedDb not initiallized yet!");
                 response = new List<ResponseJsDb>()
                 {
                     new ResponseJsDb()
@@ -148,7 +148,7 @@ namespace BlazorIndexedDb.Commands
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"DbUpdate Error: {ex}");
+                        if (Settings.EnableDebug) Console.WriteLine($"DbUpdate Error: {ex}");
                         result = new List<ResponseJsDb>{
                         new ResponseJsDb { Result = false, Message = ex.Message }
                     };
@@ -160,7 +160,7 @@ namespace BlazorIndexedDb.Commands
             }
             else
             {
-                Console.WriteLine($"IndexedDb not initiallized yet!");
+                if (Settings.EnableDebug) Console.WriteLine($"UpdateActions: IndexedDb not initiallized yet!");
                 result = new List<ResponseJsDb>()
                 {
                     new ResponseJsDb()

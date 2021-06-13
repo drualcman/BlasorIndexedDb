@@ -463,6 +463,13 @@
             </summary>
             <param name="js"></param>
         </member>
+        <member name="M:BlazorIndexedDb.Store.StoreContext.#ctor(Microsoft.JSInterop.IJSRuntime,BlazorIndexedDb.Configuration.Settings)">
+            <summary>
+            Constructor to get the connection
+            </summary>
+            <param name="js"></param>
+            <param name="settings"></param>
+        </member>
         <member name="M:BlazorIndexedDb.Store.StoreContext.Init(BlazorIndexedDb.Configuration.Settings)">
             <summary>
             Initialize the connection with a indexedDb

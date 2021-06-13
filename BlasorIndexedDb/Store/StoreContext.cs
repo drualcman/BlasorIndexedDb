@@ -1,11 +1,12 @@
 ﻿using BlazorIndexedDb.Commands;
 using BlazorIndexedDb.Configuration;
+using BlazorIndexedDb.Helpers;
 using BlazorIndexedDb.Models;
 using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace BlazorIndexedDb.Store
@@ -25,6 +26,21 @@ namespace BlazorIndexedDb.Store
         public StoreContext(IJSRuntime js)
         {
             DBConn = js;
+            Settings.EnableDebug = true;
+            GetTables();
+        }
+
+        /// <summary>
+        /// Constructor to get the connection
+        /// </summary>
+        /// <param name="js"></param>
+        /// <param name="settings"></param>
+        public StoreContext(IJSRuntime js, Settings settings)
+        {
+            DBConn = js;
+            Settings.EnableDebug = true;
+            GetTables();
+            Init(settings);
         }
 
         /// <summary>
@@ -33,10 +49,31 @@ namespace BlazorIndexedDb.Store
         /// <param name="settings"></param>
         public void Init(Settings settings)
         {
-            Task task = Initalizing.DbInit(DBConn);
-            task.Start();
+            if (!Settings.Initiallezed)
+            {
+                _ = Initalizing.DbInit(DBConn, settings);
+            }
         }
 
-       
+       void GetTables()
+        {
+            if (!Settings.Initiallezed)
+            {
+                PropertyInfo[] properties = this.GetType()
+                       .GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                       .Where(x => x.PropertyType.Name == "StoreSet`1").ToArray();                
+
+                List<string> tables = new List<string>();
+                foreach (PropertyInfo item in properties)
+                {
+                    tables.Add(Utils.GetGenericTypeName(item.PropertyType));
+                    //instanze the propertie with StoreSet type
+                    item.SetValue(this, Activator.CreateInstance(item.PropertyType, DBConn));
+                    
+                }
+                Settings.Tables = tables.ToArray();
+            }
+
+        }
     }
 }

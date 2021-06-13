@@ -34,14 +34,14 @@ namespace BlazorIndexedDb.Commands
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"DbDelete Error: {ex}");
+                    if (Settings.EnableDebug) Console.WriteLine($"DbDelete Error: {ex}");
                     result = new List<ResponseJsDb>();
                     result.Add(new ResponseJsDb { Result = false, Message = ex.Message });
                 }
             }
             else
             {
-                Console.WriteLine($"IndexedDb not initiallized yet!");
+                if (Settings.EnableDebug) Console.WriteLine($"DeleteActions: IndexedDb not initiallized yet!");
                 result = new List<ResponseJsDb>();
                 result.Add(new ResponseJsDb { Result = false, Message = $"IndexedDb not initiallized yet!" });
             }
@@ -67,14 +67,14 @@ namespace BlazorIndexedDb.Commands
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"DbDelete Error: {ex}");
+                    if (Settings.EnableDebug) Console.WriteLine($"DbDelete Error: {ex}");
                     result = new List<ResponseJsDb>();
                     result.Add(new ResponseJsDb { Result = false, Message = ex.Message });
                 }
             }
             else
             {
-                Console.WriteLine($"IndexedDb not initiallized yet!");
+                if (Settings.EnableDebug) Console.WriteLine($"DeleteActions: IndexedDb not initiallized yet!");
                 result = new List<ResponseJsDb>();
                 result.Add(new ResponseJsDb { Result = false, Message = $"IndexedDb not initiallized yet!" });
             }
@@ -101,14 +101,14 @@ namespace BlazorIndexedDb.Commands
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"DbDelete Error: {ex}");
+                    if (Settings.EnableDebug) Console.WriteLine($"DbDelete Error: {ex}");
                     result = new List<ResponseJsDb>();
                     result.Add(new ResponseJsDb { Result = false, Message = ex.Message });
                 }
             }
             else
             {
-                Console.WriteLine($"IndexedDb not initiallized yet!");
+                if (Settings.EnableDebug) Console.WriteLine($"DeleteActions: IndexedDb not initiallized yet!");
                 result = new List<ResponseJsDb>();
                 result.Add(new ResponseJsDb { Result = false, Message = $"IndexedDb not initiallized yet!" });
             }
@@ -135,14 +135,14 @@ namespace BlazorIndexedDb.Commands
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"DbDelete Error: {ex}");
+                    if (Settings.EnableDebug) Console.WriteLine($"DbDelete Error: {ex}");
                     result = new List<ResponseJsDb>();
                     result.Add(new ResponseJsDb { Result = false, Message = ex.Message });
                 }
             }
             else
             {
-                Console.WriteLine($"IndexedDb not initiallized yet!");
+                if (Settings.EnableDebug) Console.WriteLine($"DeleteActions: IndexedDb not initiallized yet!");
                 result = new List<ResponseJsDb>();
                 result.Add(new ResponseJsDb { Result = false, Message = $"IndexedDb not initiallized yet!" });
             }
@@ -167,14 +167,14 @@ namespace BlazorIndexedDb.Commands
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"DbDelete Error: {ex}");
+                    if (Settings.EnableDebug) Console.WriteLine($"DbDelete Error: {ex}");
                     result = new List<ResponseJsDb>();
                     result.Add(new ResponseJsDb { Result = false, Message = ex.Message });
                 }
             }
             else
             {
-                Console.WriteLine($"IndexedDb not initiallized yet!");
+                if (Settings.EnableDebug) Console.WriteLine($"DeleteActions: IndexedDb not initiallized yet!");
                 result = new List<ResponseJsDb>();
                 result.Add(new ResponseJsDb { Result = false, Message = $"IndexedDb not initiallized yet!" });
             }

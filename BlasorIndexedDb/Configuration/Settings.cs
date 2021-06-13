@@ -38,6 +38,13 @@ namespace BlazorIndexedDb.Configuration
             get { return string.IsNullOrEmpty(entitiesNamespace_BK) ? AssemblyName: entitiesNamespace_BK; }
             set { entitiesNamespace_BK = value; }
         }
+
+
+        #region static
+        /// <summary>
+        /// Enable show console log info
+        /// </summary>
+        public static bool EnableDebug { get; set; }
         /// <summary>
         /// Names about the models to use
         /// </summary>
@@ -52,6 +59,7 @@ namespace BlazorIndexedDb.Configuration
             Tables = new string[0];
             Initiallezed = false;
         }
-        
+        #endregion
+
     }
 }

@@ -27,8 +27,8 @@ namespace BlazorIndexedDb.Commands
             }
             else
             {
-                message = $"IndexedDb not initiallized yet!";
-                Console.WriteLine(message);
+                message = $"Commands: IndexedDb not initiallized yet!";
+                if (Settings.EnableDebug) Console.WriteLine(message);
             }
             return message;
         }

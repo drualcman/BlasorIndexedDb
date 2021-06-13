@@ -1,4 +1,6 @@
 ﻿using BlazorIndexedDb.Commands;
+using BlazorIndexedDb.Configuration;
+using BlazorIndexedDb.Helpers;
 using BlazorIndexedDb.Models;
 using Microsoft.JSInterop;
 using System;
@@ -25,6 +27,7 @@ namespace BlazorIndexedDb.Store
         public StoreSet(IJSRuntime js)
         {
             DBConn = js;
+            if (Settings.EnableDebug) Console.WriteLine($"StoreSet constructor for : {Utils.GetGenericTypeName(this.GetType())}");
         }
 
         /// <summary>
