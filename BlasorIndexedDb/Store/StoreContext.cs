@@ -66,12 +66,12 @@ namespace BlazorIndexedDb.Store
                        .Where(x => x.PropertyType.Name == "StoreSet`1").ToArray();                
 
                 List<string> tables = new List<string>();
-                foreach (PropertyInfo item in properties)
+                int c = properties.Length;
+                for (int i = 0; i < c; i++)
                 {
-                    tables.Add(Utils.GetGenericTypeName(item.PropertyType));
-                    //instanze the propertie with StoreSet type
-                    item.SetValue(this, Activator.CreateInstance(item.PropertyType, DBConn));
-                    
+                    tables.Add(Utils.GetGenericTypeName(properties[i].PropertyType));
+                    //instance the property with StoreSet type
+                    properties[i].SetValue(this, Activator.CreateInstance(properties[i].PropertyType, DBConn));                    
                 }
                 Settings.Tables = tables.ToArray();
             }

@@ -81,13 +81,14 @@ namespace BlazorIndexedDb.Configuration
                                 Assembly assembly = assemblies[c];
 
                                 string tableJsonArray = string.Empty;
-                                foreach (string table in tables)
+                                int tc = tables.Length;
+                                for (int tci = 0; tci < tc; tci++)
                                 {
                                     StringBuilder tableModels = new StringBuilder();
-                                    string TableModel = $"{entitiesNamespace}.{table}";
+                                    string TableModel = $"{entitiesNamespace}.{tables[tci]}";
                                     // {name: 'table name', options:{keyPath: 'primary id to use', autoIncrement: true/false},
                                     Type t = assembly.GetType(TableModel, true, true);
-                                    tableModels.Append($"{{\"name\": \"{table}\",");
+                                    tableModels.Append($"{{\"name\": \"{tables[tci]}\",");
 
                                     //read all properties
                                     PropertyInfo[] properties = t.GetProperties(BindingFlags.Public |           //get public names
@@ -108,7 +109,7 @@ namespace BlazorIndexedDb.Configuration
                                         {
                                             //  columns: [{name: 'property name', keyPath: true/false, autoIncrement: true/false, unique: true/false}]}
                                             string propName = property.Name.ToLower();
-                                            if (table.ToLower() != propName)            //if the property is other table don't do nothing
+                                            if (tables[tci].ToLower() != propName)            //if the property is other table don't do nothing
                                             {
                                                 //main field from the model, normalize like Id or ModelNameId or IdModelName
                                                 if (propName == "id")
@@ -116,22 +117,22 @@ namespace BlazorIndexedDb.Configuration
                                                     identifer = property.Name;
                                                     autoIncrement = property.IsAutoIncrement;
                                                 }
-                                                else if (propName == $"{table.ToLower()}id")
+                                                else if (propName == $"{tables[tci].ToLower()}id")
                                                 {
                                                     identifer = property.Name;
                                                     autoIncrement = property.IsKeyPath;
                                                 }
-                                                else if (propName == $"id{table.ToLower()}")
+                                                else if (propName == $"id{tables[tci].ToLower()}")
                                                 {
                                                     identifer = property.Name;
                                                     autoIncrement = property.IsAutoIncrement;
                                                 }
-                                                else if (propName == $"id{table.ToLower()}s")                 //plural possibility
+                                                else if (propName == $"id{tables[tci].ToLower()}s")                 //plural possibility
                                                 {
                                                     identifer = property.Name;
                                                     autoIncrement = property.IsAutoIncrement;
                                                 }
-                                                else if (propName == $"id{table.ToLower().Remove(table.Length - 1, 1)}")                 //singular possibility
+                                                else if (propName == $"id{tables[tci].ToLower().Remove(tables[tci].Length - 1, 1)}")                 //singular possibility
                                                 {
                                                     identifer = property.Name;
                                                     autoIncrement = property.IsAutoIncrement;
