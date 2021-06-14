@@ -30,9 +30,9 @@ namespace BlazorIndexedDb.Helpers
             foreach (Attribute attr in attrs)
             {
                 if (attr is System.Text.Json.Serialization.JsonIgnoreAttribute) this.ToIgnore = true;
-                else if (attr is Attributes.IndexDb)
+                else if (attr is Attributes.FieldAttribute)
                 {
-                    Attributes.IndexDb a = attr as Attributes.IndexDb;
+                    Attributes.FieldAttribute a = attr as Attributes.FieldAttribute;
                     this.IsKeyPath = a.IsKeyPath;
                     this.IsAutoIncrement = a.IsAutoIncremental;
                     this.ToIgnore = a.IsIgnore;
