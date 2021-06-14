@@ -41,28 +41,31 @@ namespace BlazorIndexedDb.Commands
         /// <returns></returns>
         public static async ValueTask<List<ResponseJsDb>> DbUpdate<TModel>(this IJSRuntime jsRuntime, [NotNull] List<TModel> rows)
         {
-            List<ResponseJsDb> result;
+            List<ResponseJsDb> result = new List<ResponseJsDb>();
             if (Settings.Initiallezed)
             {
-                if (rows.Count > 0)
+                int c = rows.Count;
+                if (c > 0)
                 {
                     try
                     {
-                        string data = await ObjectConverter.ToJsonAsync(rows);
-                        if (Settings.EnableDebug) Console.WriteLine($"DbUpdate data = {data}");
-                        result = await jsRuntime.InvokeAsync<List<ResponseJsDb>>("MyDb.Update", Utils.GetName<TModel>(), data);
+                        result.AddRange(await Commands.DbCommand(jsRuntime, DbCommands.Update, Utils.GetName<TModel>(), await ObjectConverter.ToJsonAsync(rows)));
                     }
                     catch (Exception ex)
                     {
-                        if (Settings.EnableDebug) Console.WriteLine($"DbUpdate Error: {ex}");
+                        if (Settings.EnableDebug) Console.WriteLine($"DbUpdate Model: {Utils.GetName<TModel>()} Error: {ex}");
                         result = new List<ResponseJsDb>{
                         new ResponseJsDb { Result = false, Message = ex.Message }
                     };
                     }
                 }
-                else result = new List<ResponseJsDb>{
-                        new ResponseJsDb { Result = true, Message = "No need update!" }
+                else
+                {
+                    if (Settings.EnableDebug) Console.WriteLine($"DbUpdate No need update into {Utils.GetName<TModel>()}");
+                    result = new List<ResponseJsDb>{
+                        new ResponseJsDb { Result = true, Message =$"No need update into {Utils.GetName<TModel>()}!" }
                     };
+                }
             }
             else
             {

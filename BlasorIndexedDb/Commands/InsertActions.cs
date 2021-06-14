@@ -41,21 +41,19 @@ namespace BlazorIndexedDb.Commands
         /// <returns></returns>
         public static async ValueTask<List<ResponseJsDb>> DbInsert<TModel>(this IJSRuntime jsRuntime, [NotNull] List<TModel> rows)
         {
-            List<ResponseJsDb> result;
+            List<ResponseJsDb> result = new List<ResponseJsDb>();
             if (Settings.Initiallezed)
             {
-                string modelName = Utils.GetName<TModel>();
-                if (rows.Count > 0)
+                int c = rows.Count;
+                if (c > 0)
                 {
                     try
-                    {
-                        string data = await ObjectConverter.ToJsonAsync(rows);
-                        if (Settings.EnableDebug) Console.WriteLine($"DbInsert data = {data}");
-                        result = await jsRuntime.InvokeAsync<List<ResponseJsDb>>("MyDb.Insert", modelName, data);
+                    {                        
+                        result.AddRange(await Commands.DbCommand(jsRuntime, DbCommands.Insert, Utils.GetName<TModel>(), await ObjectConverter.ToJsonAsync(rows)));
                     }
                     catch (Exception ex)
                     {
-                        if (Settings.EnableDebug) Console.WriteLine($"DbInsert Model: {modelName} Error: {ex}");
+                        if (Settings.EnableDebug) Console.WriteLine($"DbInsert Model: {Utils.GetName<TModel>()} Error: {ex}");
                         result = new List<ResponseJsDb>{
                             new ResponseJsDb { Result = false, Message = ex.Message }
                         };
@@ -63,9 +61,9 @@ namespace BlazorIndexedDb.Commands
                 }
                 else
                 {
-                    if (Settings.EnableDebug) Console.WriteLine($"DbInsert No need insert into {modelName}");
+                    if (Settings.EnableDebug) Console.WriteLine($"DbInsert No need insert into {Utils.GetName<TModel>()}");
                     result = new List<ResponseJsDb>{
-                        new ResponseJsDb { Result = true, Message = $"No need insert into {modelName}!" }
+                        new ResponseJsDb { Result = true, Message = $"No need insert into {Utils.GetName<TModel>()}!" }
                     };
                 }
             }

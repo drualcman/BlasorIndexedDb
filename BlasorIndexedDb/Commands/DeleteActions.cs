@@ -25,16 +25,16 @@ namespace BlazorIndexedDb.Commands
         /// <returns></returns>
         public static async ValueTask<ResponseJsDb> DbDelete<TModel>(this IJSRuntime jsRuntime, [NotNull] int id)
         {
-            List<ResponseJsDb> result;
+            List<ResponseJsDb> result = new List<ResponseJsDb>();
             if (Settings.Initiallezed)
             {
                 try
-                {
-                    result = await jsRuntime.InvokeAsync<List<ResponseJsDb>>("MyDb.Delete", Utils.GetName<TModel>(), id);
+                {                    
+                    result.AddRange(await Commands.DbCommand(jsRuntime, DbCommands.Delete, Utils.GetName<TModel>(), id.ToString()));
                 }
                 catch (Exception ex)
                 {
-                    if (Settings.EnableDebug) Console.WriteLine($"DbDelete Error: {ex}");
+                    if (Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Utils.GetName<TModel>()} Error: {ex}");
                     result = new List<ResponseJsDb>();
                     result.Add(new ResponseJsDb { Result = false, Message = ex.Message });
                 }
@@ -57,17 +57,17 @@ namespace BlazorIndexedDb.Commands
         /// <returns></returns>
         public static async ValueTask<ResponseJsDb> DbDelete<TModel>(this IJSRuntime jsRuntime, [NotNull] double id)
         {
-            List<ResponseJsDb> result;
+            List<ResponseJsDb> result = new List<ResponseJsDb>();
 
             if (Settings.Initiallezed)
             {
                 try
                 {
-                    result = await jsRuntime.InvokeAsync<List<ResponseJsDb>>("MyDb.Delete", Utils.GetName<TModel>(), id);
+                    result.AddRange(await Commands.DbCommand(jsRuntime, DbCommands.Delete, Utils.GetName<TModel>(), id.ToString()));
                 }
                 catch (Exception ex)
                 {
-                    if (Settings.EnableDebug) Console.WriteLine($"DbDelete Error: {ex}");
+                    if (Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Utils.GetName<TModel>()} Error: {ex}");
                     result = new List<ResponseJsDb>();
                     result.Add(new ResponseJsDb { Result = false, Message = ex.Message });
                 }
@@ -91,17 +91,17 @@ namespace BlazorIndexedDb.Commands
         /// <returns></returns>
         public static async ValueTask<ResponseJsDb> DbDelete<TModel>(this IJSRuntime jsRuntime, [NotNull] decimal id)
         {
-            List<ResponseJsDb> result;
+            List<ResponseJsDb> result = new List<ResponseJsDb>();
 
             if (Settings.Initiallezed)
             {
                 try
                 {
-                    result = await jsRuntime.InvokeAsync<List<ResponseJsDb>>("MyDb.Delete", Utils.GetName<TModel>(), id);
+                    result.AddRange(await Commands.DbCommand(jsRuntime, DbCommands.Delete, Utils.GetName<TModel>(), id.ToString()));
                 }
                 catch (Exception ex)
                 {
-                    if (Settings.EnableDebug) Console.WriteLine($"DbDelete Error: {ex}");
+                    if (Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Utils.GetName<TModel>()} Error: {ex}");
                     result = new List<ResponseJsDb>();
                     result.Add(new ResponseJsDb { Result = false, Message = ex.Message });
                 }
@@ -125,17 +125,17 @@ namespace BlazorIndexedDb.Commands
         /// <returns></returns>
         public static async ValueTask<ResponseJsDb> DbDelete<TModel>(this IJSRuntime jsRuntime, [NotNull] string id)
         {
-            List<ResponseJsDb> result;
+            List<ResponseJsDb> result = new List<ResponseJsDb>();
 
             if (Settings.Initiallezed)
             {
                 try
                 {
-                    result = await jsRuntime.InvokeAsync<List<ResponseJsDb>>("MyDb.Delete", Utils.GetName<TModel>(), id);
+                    result.AddRange(await Commands.DbCommand(jsRuntime, DbCommands.Delete, Utils.GetName<TModel>(), id.ToString()));
                 }
                 catch (Exception ex)
                 {
-                    if (Settings.EnableDebug) Console.WriteLine($"DbDelete Error: {ex}");
+                    if (Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Utils.GetName<TModel>()} Error: {ex}");
                     result = new List<ResponseJsDb>();
                     result.Add(new ResponseJsDb { Result = false, Message = ex.Message });
                 }
@@ -158,16 +158,16 @@ namespace BlazorIndexedDb.Commands
         /// <returns></returns>
         public static async ValueTask<ResponseJsDb> DbDelete<TModel>(this IJSRuntime jsRuntime, [NotNull] DateTime id)
         {
-            List<ResponseJsDb> result;
+            List<ResponseJsDb> result = new List<ResponseJsDb>();
             if (Settings.Initiallezed)
             {
                 try
                 {
-                    result = await jsRuntime.InvokeAsync<List<ResponseJsDb>>("MyDb.Delete", Utils.GetName<TModel>(), id);
+                    result.AddRange(await Commands.DbCommand(jsRuntime, DbCommands.Delete, Utils.GetName<TModel>(), id.ToString()));
                 }
                 catch (Exception ex)
                 {
-                    if (Settings.EnableDebug) Console.WriteLine($"DbDelete Error: {ex}");
+                    if (Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Utils.GetName<TModel>()} Error: {ex}");
                     result = new List<ResponseJsDb>();
                     result.Add(new ResponseJsDb { Result = false, Message = ex.Message });
                 }
