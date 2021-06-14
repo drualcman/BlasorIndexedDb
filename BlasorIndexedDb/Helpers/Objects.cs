@@ -16,6 +16,52 @@ namespace BlazorIndexedDb.Helpers
     class ObjectConverter
     {
         #region Methods
+
+        /// <summary>
+        /// Convert into a Json string the model send
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <returns></returns>
+        public static string ToJson(System.Collections.IList sender)
+        {
+            if (Settings.EnableDebug) Console.WriteLine("ToJson parse generic list");
+            StringBuilder jsonString = new StringBuilder();
+            jsonString.Append("[");
+            foreach (var item in sender)
+            {
+                if (Settings.EnableDebug) Console.WriteLine("ToJson parse generic list item");
+                jsonString.Append(ToJson(item));
+                jsonString.Append(",");
+            }
+            jsonString.Remove(jsonString.Length - 1, 1);
+            jsonString.Append("]");
+            if (Settings.EnableDebug) Console.WriteLine("ToJson parse System.Collections.IList result = {0}", jsonString.ToString());
+            return jsonString.ToString();
+        }
+        /// <summary>
+        /// Convert into a Json string the model send
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <returns></returns>
+        public static string ToJson(List<object> sender)
+        {
+            if (Settings.EnableDebug) Console.WriteLine("ToJson parse generic list");
+            Console.WriteLine("ToJson parse {0}", sender.ToList());
+            Console.WriteLine("ToJson parse {0}", sender?.Count);
+            StringBuilder jsonString = new StringBuilder();
+            jsonString.Append("[");
+            foreach (var item in sender)
+            {
+                if (Settings.EnableDebug) Console.WriteLine("ToJson parse generic list item");
+                jsonString.Append(ToJson(item));
+                jsonString.Append(",");
+            }
+            jsonString.Remove(jsonString.Length - 1, 1);
+            jsonString.Append("]");
+            if (Settings.EnableDebug) Console.WriteLine("ToJson parse List<object> result = {0}", jsonString.ToString());
+            return jsonString.ToString();
+        }
+
         /// <summary>
         /// Convert into a Json string the model send
         /// </summary>
@@ -24,15 +70,20 @@ namespace BlazorIndexedDb.Helpers
         /// <returns></returns>
         public static string ToJson<TModel>(List<TModel> sender)
         {
+            if (Settings.EnableDebug) Console.WriteLine("ToJson parse generic list");
+            Console.WriteLine("ToJson parse {0}", sender.ToList());
+            Console.WriteLine("ToJson parse {0}", sender?.Count);
             StringBuilder jsonString = new StringBuilder();
             jsonString.Append("[");
             foreach (TModel item in sender)
             {
+                if (Settings.EnableDebug) Console.WriteLine("ToJson parse generic list item");
                 jsonString.Append(ToJson(item));
                 jsonString.Append(",");
             }
             jsonString.Remove(jsonString.Length - 1, 1);
             jsonString.Append("]");
+            if (Settings.EnableDebug) Console.WriteLine("ToJson parse List<TModel> result = {0}", jsonString.ToString());
             return jsonString.ToString();
         }
 
@@ -42,17 +93,20 @@ namespace BlazorIndexedDb.Helpers
         /// <typeparam name="TModel"></typeparam>
         /// <param name="sender"></param>
         /// <returns></returns>
-        public static string ToJson<TModel>(IEnumerable<TModel> sender) 
+        public static string ToJson<TModel>(IEnumerable<TModel> sender)
         {
+            if (Settings.EnableDebug) Console.WriteLine("ToJson parse IEnumerable");
             StringBuilder jsonString = new StringBuilder();
             jsonString.Append("[");
             foreach (TModel item in sender)
             {
+                if (Settings.EnableDebug) Console.WriteLine("ToJson parse IEnumerable item");
                 jsonString.Append(ToJson(item));
                 jsonString.Append(",");
             }
             jsonString.Remove(jsonString.Length - 1, 1);
             jsonString.Append("]");
+            if (Settings.EnableDebug) Console.WriteLine("ToJson parse IEnumerable result = {0}", jsonString.ToString());
             return jsonString.ToString();
         }
 
@@ -61,7 +115,7 @@ namespace BlazorIndexedDb.Helpers
         /// </summary>
         /// <param name="sender"></param>
         /// <returns></returns>
-        public static string ToJson(object sender)
+        public static string ToJson<TModel>(TModel sender)
         {
             StringBuilder jsonString = new StringBuilder();
 
@@ -69,29 +123,41 @@ namespace BlazorIndexedDb.Helpers
 
             if (IsGenericList(sender))
             {
-                List<object> toSend = sender as List<object>;
-                jsonString.Append(ToJson(toSend));                
+                if (Settings.EnableDebug) Console.WriteLine("ToJson {0} IsGenericList = true", t.Name);
+
+                System.Collections.IList toSend = sender as System.Collections.IList;
+                if (toSend is not null)
+                    jsonString.Append(ToJson(toSend));
+                else
+                {
+                    if (Settings.EnableDebug) Console.WriteLine("ToJson {0} is null", t.Name);
+                    jsonString.Append($"null");
+                }
             }
             else
             {
+
                 //read all properties
                 PropertyInfo[] properties = t.GetProperties(BindingFlags.Public |           //get public names
                                                             BindingFlags.Instance);         //get instance names
 
                 jsonString.Append("{");
                 for (int i = 0; i < properties.Length; i++)
-                {
+                {                    
                     PropertyOptions property = new PropertyOptions(properties[i]);
-                    if (!property.ToIgnore)
+                    bool notInTables = !Settings.Tables.Contains(properties[i].PropertyType.Name) && !Settings.Tables.Contains(Utils.GetGenericTypeName(properties[i].PropertyType));
+                    if (!property.ToIgnore && notInTables)
                     {
-                        string propName = property.Name.ToLower();
+                        if (Settings.EnableDebug) Console.WriteLine("ToJson parse Property {0} not ignored", properties[i].Name);
                         jsonString.Append($"\"{property.Name}\":");
-
-                        string pName = properties[i].PropertyType.Name;
-                        if (Settings.Tables.Contains(pName))
+                        if (IsGenericList(properties[i]))
+                        {
+                            if (Settings.EnableDebug) Console.WriteLine("ToJson Property {0} IsGenericList = true", properties[i].Name);
                             jsonString.Append(ToJson(properties[i].GetValue(sender)));
+                        }
                         else
                         {
+                            string pName = properties[i].PropertyType.Name;
                             if (properties[i].GetValue(sender) is null)
                             {
                                 jsonString.Append($"null");
@@ -102,7 +168,9 @@ namespace BlazorIndexedDb.Helpers
                             }
                             else if (pName == typeof(DateTime).Name)
                             {
+                                jsonString.Append("\"");
                                 jsonString.Append(Convert.ToDateTime(properties[i].GetValue(sender)).ToString("yyyy-MM-dd HH':'mm':'ss"));
+                                jsonString.Append("\"");
                             }
                             else if (pName == typeof(bool).Name)
                             {
@@ -139,11 +207,14 @@ namespace BlazorIndexedDb.Helpers
                             }
                             else
                             {
-                                jsonString.Append($"\"{properties[i].GetValue(sender).ToString().Replace("\"", "\\\"")}\"");
+                                jsonString.Append(ToJson(properties[i].GetValue(sender)));
                             }
+
                         }
                         jsonString.Append(",");
                     }
+                    else
+                        if (Settings.EnableDebug) Console.WriteLine("ToJson parse Property {0} ignored", properties[i].Name);
                 }
                 jsonString.Remove(jsonString.Length - 1, 1);
                 jsonString.Append("}");
@@ -183,13 +254,13 @@ namespace BlazorIndexedDb.Helpers
         #region helpers
         public static bool IsGenericList(object o)
         {
-            var oType = o.GetType();
-            return (oType.IsGenericType && (oType.GetGenericTypeDefinition() == typeof(List<>)));
+            Type oType = o.GetType();
+            return (o.ToString().Contains("System.Collections.Generic.List") || oType.IsGenericType && (oType.GetGenericTypeDefinition() == typeof(List<>)));
         }
         public static bool IsGenericList<T>(object o)
         {
-            var oType = o.GetType();
-            return (oType.IsGenericType && (oType.GetGenericTypeDefinition() == typeof(List<T>)));
+            Type oType = o.GetType();
+            return (o.ToString().Contains("System.Collections.Generic.List") || oType.IsGenericType && (oType.GetGenericTypeDefinition() == typeof(List<T>)));
         }
         #endregion
 

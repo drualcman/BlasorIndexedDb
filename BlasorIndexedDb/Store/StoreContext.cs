@@ -25,6 +25,7 @@ namespace BlazorIndexedDb.Store
         /// <param name="js"></param>
         public StoreContext(IJSRuntime js)
         {
+            if (Settings.EnableDebug) Console.WriteLine($"StoreContext minimum constructor");
             DBConn = js;
             Settings.EnableDebug = true;
             GetTables();
@@ -37,6 +38,7 @@ namespace BlazorIndexedDb.Store
         /// <param name="settings"></param>
         public StoreContext(IJSRuntime js, Settings settings)
         {
+            if (Settings.EnableDebug) Console.WriteLine($"StoreContext constructor with settings");
             DBConn = js;
             Settings.EnableDebug = true;
             GetTables();

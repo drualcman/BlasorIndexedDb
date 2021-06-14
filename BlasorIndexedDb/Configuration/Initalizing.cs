@@ -53,6 +53,8 @@ namespace BlazorIndexedDb.Configuration
             int version, [NotNull] string assemblyName, string entitiesNamespace,
             [NotNull] string[] tables)
         {
+
+            if (Settings.EnableDebug) Console.WriteLine($"DbInit need be initiallized? {(Settings.Initiallezed ? "NO":"YES")}");
             if (!Settings.Initiallezed) 
             {
                 if (tables.Length >= 0)
@@ -101,7 +103,8 @@ namespace BlazorIndexedDb.Configuration
                                     for (int i = 0; i < properties.Length; i++)
                                     {
                                         PropertyOptions property = new PropertyOptions(properties[i]);
-                                        if (!property.ToIgnore)
+                                        bool notInTables = !tables.Contains(properties[i].PropertyType.Name) && !tables.Contains(Utils.GetGenericTypeName(properties[i].PropertyType));
+                                        if (!property.ToIgnore && notInTables)
                                         {
                                             //  columns: [{name: 'property name', keyPath: true/false, autoIncrement: true/false, unique: true/false}]}
                                             string propName = property.Name.ToLower();
