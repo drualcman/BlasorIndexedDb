@@ -26,25 +26,9 @@ namespace BlazorIndexedDb.Commands
         /// <returns></returns>
         public static async ValueTask<ResponseJsDb> DbUpdate<TModel>(this IJSRuntime jsRuntime, [NotNull] TModel data)
         {
-            List<ResponseJsDb> response;
-            if (Settings.Initiallezed)
-            {
-                List<TModel> rows = new List<TModel>();
-                rows.Add(data);
-                response = await DbUpdate(jsRuntime, rows);
-            }
-            else
-            {
-                if (Settings.EnableDebug) Console.WriteLine($"UpdateActions: IndexedDb not initiallized yet!");
-                response = new List<ResponseJsDb>()
-                {
-                    new ResponseJsDb()
-                    {
-                         Message = $"IndexedDb not initiallized yet!",
-                         Result = false
-                    }
-                };
-            }
+            List<TModel> rows = new List<TModel>();
+            rows.Add(data);
+            List<ResponseJsDb> response = await DbUpdate(jsRuntime, rows);
             return response[0];
         }
 
@@ -65,6 +49,7 @@ namespace BlazorIndexedDb.Commands
                     try
                     {
                         string data = await ObjectConverter.ToJsonAsync(rows);
+                        if (Settings.EnableDebug) Console.WriteLine($"DbUpdate data = {data}");
                         result = await jsRuntime.InvokeAsync<List<ResponseJsDb>>("MyDb.Update", Utils.GetName<TModel>(), data);
                     }
                     catch (Exception ex)
@@ -104,25 +89,9 @@ namespace BlazorIndexedDb.Commands
         /// <returns></returns>
         public static async ValueTask<ResponseJsDb> DbUpdateOffLine<TModel>(this IJSRuntime jsRuntime, [NotNull] TModel data)
         {
-            List<ResponseJsDb> response;
-            if (Settings.Initiallezed)
-            {
-                List<TModel> rows = new List<TModel>();
-                rows.Add(data);
-                response = await DbUpdateOffLine(jsRuntime, rows);
-            }
-            else
-            {
-                if (Settings.EnableDebug) Console.WriteLine($"UpdateActions: IndexedDb not initiallized yet!");
-                response = new List<ResponseJsDb>()
-                {
-                    new ResponseJsDb()
-                    {
-                         Message = $"IndexedDb not initiallized yet!",
-                         Result = false
-                    }
-                };
-            }
+            List<TModel> rows = new List<TModel>();
+            rows.Add(data);
+            List<ResponseJsDb> response = await DbUpdateOffLine(jsRuntime, rows);
             return response[0];
         }
 
@@ -135,42 +104,9 @@ namespace BlazorIndexedDb.Commands
         /// <returns></returns>
         public static async ValueTask<List<ResponseJsDb>> DbUpdateOffLine<TModel>(this IJSRuntime jsRuntime, [NotNull] List<TModel> rows)
         {
-            List<ResponseJsDb> result;
-            if (Settings.Initiallezed)
-            {
-                if (rows.Count > 0)
-                {
-                    List<dynamic> expanded = await AddOflineProperty.AddOfflineAsync(rows);
-                    try
-                    {
-                        string data = await ObjectConverter.ToJsonAsync(expanded);
-                        result = await jsRuntime.InvokeAsync<List<ResponseJsDb>>("MyDb.Update", Utils.GetName<TModel>(), data);
-                    }
-                    catch (Exception ex)
-                    {
-                        if (Settings.EnableDebug) Console.WriteLine($"DbUpdate Error: {ex}");
-                        result = new List<ResponseJsDb>{
-                        new ResponseJsDb { Result = false, Message = ex.Message }
-                    };
-                    }
-                }
-                else result = new List<ResponseJsDb>{
-                        new ResponseJsDb { Result = true, Message = "No need update!" }
-                    };
-            }
-            else
-            {
-                if (Settings.EnableDebug) Console.WriteLine($"UpdateActions: IndexedDb not initiallized yet!");
-                result = new List<ResponseJsDb>()
-                {
-                    new ResponseJsDb()
-                    {
-                         Message = $"IndexedDb not initiallized yet!",
-                         Result = false
-                    }
-                };
-            }
-            return result;
+            List<dynamic> expanded = await AddOflineProperty.AddOfflineAsync(rows);
+            if (Settings.EnableDebug) Console.WriteLine($"DbUpdateOffLine in modelL  = {Utils.GetName<TModel>()}");            
+            return await DbUpdate(jsRuntime, expanded);
         }
     }
 }

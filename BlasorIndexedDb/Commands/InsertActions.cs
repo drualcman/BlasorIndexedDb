@@ -26,25 +26,9 @@ namespace BlazorIndexedDb.Commands
         /// <returns></returns>
         public static async ValueTask<ResponseJsDb> DbInsert<TModel>(this IJSRuntime jsRuntime, [NotNull] TModel data)
         {
-            List<ResponseJsDb> response;
-            if (Settings.Initiallezed)
-            {
-                List<TModel> rows = new List<TModel>();
-                rows.Add(data);
-                response = await DbInsert(jsRuntime, rows);
-            }
-            else
-            {
-                if (Settings.EnableDebug) Console.WriteLine($"InsertActions: IndexedDb not initiallized yet!");
-                response = new List<ResponseJsDb>()
-                {
-                    new ResponseJsDb()
-                    {
-                         Message = $"IndexedDb not initiallized yet!",
-                         Result = false
-                    }
-                };
-            }
+            List<TModel> rows = new List<TModel>();
+            rows.Add(data);
+            List<ResponseJsDb> response = await DbInsert(jsRuntime, rows);
             return response[0];
         }
 
@@ -60,24 +44,30 @@ namespace BlazorIndexedDb.Commands
             List<ResponseJsDb> result;
             if (Settings.Initiallezed)
             {
+                string modelName = Utils.GetName<TModel>();
                 if (rows.Count > 0)
                 {
                     try
                     {
                         string data = await ObjectConverter.ToJsonAsync(rows);
-                        result = await jsRuntime.InvokeAsync<List<ResponseJsDb>>("MyDb.Insert", Utils.GetName<TModel>(), data);
+                        if (Settings.EnableDebug) Console.WriteLine($"DbInsert data = {data}");
+                        result = await jsRuntime.InvokeAsync<List<ResponseJsDb>>("MyDb.Insert", modelName, data);
                     }
                     catch (Exception ex)
                     {
-                        if (Settings.EnableDebug) Console.WriteLine($"DbInsert Error: {ex}");
+                        if (Settings.EnableDebug) Console.WriteLine($"DbInsert Model: {modelName} Error: {ex}");
                         result = new List<ResponseJsDb>{
-                        new ResponseJsDb { Result = false, Message = ex.Message }
-                    };
+                            new ResponseJsDb { Result = false, Message = ex.Message }
+                        };
                     }
                 }
-                else result = new List<ResponseJsDb>{
-                        new ResponseJsDb { Result = true, Message = "No need insert!" }
+                else
+                {
+                    if (Settings.EnableDebug) Console.WriteLine($"DbInsert No need insert into {modelName}");
+                    result = new List<ResponseJsDb>{
+                        new ResponseJsDb { Result = true, Message = $"No need insert into {modelName}!" }
                     };
+                }
             }
             else
             {
@@ -103,25 +93,9 @@ namespace BlazorIndexedDb.Commands
         /// <returns></returns>
         public static async ValueTask<ResponseJsDb> DbInserOffline<TModel>(this IJSRuntime jsRuntime, [NotNull] TModel data)
         {
-            List<ResponseJsDb> response;
-            if (Settings.Initiallezed)
-            {
-                List<TModel> rows = new List<TModel>();
-                rows.Add(data);
-                response = await DbInserOffline(jsRuntime, rows);
-            }
-            else
-            {
-                if (Settings.EnableDebug) Console.WriteLine($"InsertActions: IndexedDb not initiallized yet!");
-                response = new List<ResponseJsDb>()
-                {
-                    new ResponseJsDb()
-                    {
-                         Message = $"IndexedDb not initiallized yet!",
-                         Result = false
-                    }
-                };
-            }
+            List<TModel> rows = new List<TModel>();
+            rows.Add(data);
+            List<ResponseJsDb> response = await DbInserOffline(jsRuntime, rows);
             return response[0];
         }
 
@@ -134,42 +108,9 @@ namespace BlazorIndexedDb.Commands
         /// <returns></returns>
         public static async ValueTask<List<ResponseJsDb>> DbInserOffline<TModel>(this IJSRuntime jsRuntime, [NotNull] List<TModel> rows)
         {
-            List<ResponseJsDb> result;
-            if (Settings.Initiallezed)
-            {
-                if (rows.Count > 0)
-                {
-                    List<dynamic> expanded = await AddOflineProperty.AddOfflineAsync(rows);
-                    try
-                    {
-                        string data = await ObjectConverter.ToJsonAsync(expanded);
-                        result = await jsRuntime.InvokeAsync<List<ResponseJsDb>>("MyDb.Insert", Utils.GetName<TModel>(), data);
-                    }
-                    catch (Exception ex)
-                    {
-                        if (Settings.EnableDebug) Console.WriteLine($"DbInsert Error: {ex}");
-                        result = new List<ResponseJsDb>{
-                        new ResponseJsDb { Result = false, Message = ex.Message }
-                    };
-                    }
-                }
-                else result = new List<ResponseJsDb>{
-                        new ResponseJsDb { Result = true, Message = "No need insert!" }
-                    };
-            }
-            else
-            {
-                if (Settings.EnableDebug) Console.WriteLine($"InsertActions: IndexedDb not initiallized yet!");
-                result = new List<ResponseJsDb>()
-                {
-                    new ResponseJsDb()
-                    {
-                         Message = $"IndexedDb not initiallized yet!",
-                         Result = false
-                    }
-                };
-            }            
-            return result;
+            List<dynamic> expanded = await AddOflineProperty.AddOfflineAsync(rows);
+            if (Settings.EnableDebug) Console.WriteLine($"DbInserOffline in model: {Utils.GetName<TModel>()}");
+            return await DbInsert(jsRuntime, expanded);
         }
 
     }
