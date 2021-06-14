@@ -26,11 +26,12 @@ namespace BlazorIndexedDb.Helpers
         {
             if (Settings.EnableDebug) Console.WriteLine($"ToJson parse generic list");
             StringBuilder jsonString = new StringBuilder();
-            jsonString.Append("[");
-            foreach (var item in sender)
+            jsonString.Append("[ ");
+            int c = sender.Count;
+            for (int i = 0; i < c; i++)
             {
-                if (Settings.EnableDebug) Console.WriteLine($"ToJson parse generic list {item.GetType().Name}");
-                jsonString.Append(ToJson(item));
+                if (Settings.EnableDebug) Console.WriteLine($"ToJson parse generic list {sender[i].GetType().Name}");
+                jsonString.Append(ToJson(sender[i]));
                 jsonString.Append(",");
             }
             jsonString.Remove(jsonString.Length - 1, 1);
@@ -47,11 +48,12 @@ namespace BlazorIndexedDb.Helpers
         {
             if (Settings.EnableDebug) Console.WriteLine($"ToJson parse generic list {typeof(object).Name}");
             StringBuilder jsonString = new StringBuilder();
-            jsonString.Append("[");
-            foreach (var item in sender)
+            jsonString.Append("[ ");
+            int c = sender.Count;
+            for (int i = 0; i < c; i++)
             {
-                if (Settings.EnableDebug) Console.WriteLine($"ToJson parse generic list {item.GetType().Name}");
-                jsonString.Append(ToJson(item));
+                if (Settings.EnableDebug) Console.WriteLine($"ToJson parse generic list {sender[i].GetType().Name}");
+                jsonString.Append(ToJson(sender[i]));
                 jsonString.Append(",");
             }
             jsonString.Remove(jsonString.Length - 1, 1);
@@ -70,10 +72,12 @@ namespace BlazorIndexedDb.Helpers
         {
             if (Settings.EnableDebug) Console.WriteLine($"ToJson parse generic list {typeof(TModel).Name}");
             StringBuilder jsonString = new StringBuilder();
-            jsonString.Append("[");
-            foreach (TModel item in sender)
+            jsonString.Append("[ ");
+            int c = sender.Count;
+            for (int i = 0; i < c; i++)
             {
-                jsonString.Append(ToJson(item));
+                if (Settings.EnableDebug) Console.WriteLine($"ToJson parse generic list {sender[i].GetType().Name}");
+                jsonString.Append(ToJson(sender[i]));
                 jsonString.Append(",");
             }
             jsonString.Remove(jsonString.Length - 1, 1);
@@ -92,9 +96,10 @@ namespace BlazorIndexedDb.Helpers
         {
             if (Settings.EnableDebug) Console.WriteLine($"ToJson parse IEnumerable {typeof(TModel).Name}");
             StringBuilder jsonString = new StringBuilder();
-            jsonString.Append("[");
+            jsonString.Append("[ ");
             foreach (TModel item in sender)
             {
+                if (Settings.EnableDebug) Console.WriteLine($"ToJson parse IEnumerable {item.GetType().Name}");
                 jsonString.Append(ToJson(item));
                 jsonString.Append(",");
             }
@@ -141,71 +146,31 @@ namespace BlazorIndexedDb.Helpers
                 for (int i = 0; i < properties.Length; i++)
                 {                    
                     PropertyOptions property = new PropertyOptions(properties[i]);
-                    bool notInTables = !Settings.Tables.Contains(properties[i].PropertyType.Name) && !Settings.Tables.Contains(Utils.GetGenericTypeName(properties[i].PropertyType));
-                    if (!property.ToIgnore && notInTables)
+                    if (!property.ToIgnore)
                     {
-                        if (Settings.EnableDebug) Console.WriteLine("ToJson parse Property {0} not ignored", properties[i].Name);
-                        jsonString.Append($"\"{property.Name}\":");
-                        if (IsGenericList(properties[i]))
+                        bool notInTables = !Settings.Tables.Contains(properties[i].PropertyType.Name) && !Settings.Tables.Contains(Utils.GetGenericTypeName(properties[i].PropertyType));
+                        if (notInTables)
                         {
-                            if (Settings.EnableDebug) Console.WriteLine("ToJson Property {0} IsGenericList = true", properties[i].Name);
-                            jsonString.Append(ToJson(properties[i].GetValue(sender)));
-                        }
-                        else
-                        {
-                            string pName = properties[i].PropertyType.Name;
-                            if (properties[i].GetValue(sender) is null)
+                            if (Settings.EnableDebug) Console.WriteLine("ToJson parse Property {0} not ignored", properties[i].Name);
+                            jsonString.Append($"\"{property.Name}\":");
+                            if (IsGenericList(properties[i]))
                             {
-                                jsonString.Append($"null");
-                            }
-                            else if (properties[i].GetType() == typeof(object))
-                            {
+                                if (Settings.EnableDebug) Console.WriteLine("ToJson Property {0} IsGenericList = true", properties[i].Name);
                                 jsonString.Append(ToJson(properties[i].GetValue(sender)));
-                            }
-                            else if (pName == typeof(DateTime).Name)
-                            {
-                                jsonString.Append("\"");
-                                jsonString.Append(Convert.ToDateTime(properties[i].GetValue(sender)).ToString("yyyy-MM-dd HH':'mm':'ss"));
-                                jsonString.Append("\"");
-                            }
-                            else if (pName == typeof(bool).Name)
-                            {
-                                jsonString.Append(Convert.ToBoolean(properties[i].GetValue(sender)) ? "true" : "false");
-                            }
-                            else if (pName == typeof(string).Name)
-                            {
-                                jsonString.Append($"\"{properties[i].GetValue(sender).ToString().Replace("\"", "\\\"")}\"");
-                            }
-                            else if (pName == typeof(String).Name)
-                            {
-                                jsonString.Append($"\"{properties[i].GetValue(sender).ToString().Replace("\"", "\\\"")}\"");
-                            }
-                            else if (pName == typeof(Int16).Name ||
-                                pName == typeof(Int32).Name ||
-                                pName == typeof(Int64).Name ||
-                                pName == typeof(Double).Name ||
-                                pName == typeof(Decimal).Name ||
-                                pName == typeof(Single).Name ||
-                                pName == typeof(Byte).Name ||
-                                pName == typeof(int).Name ||
-                                pName == typeof(float).Name ||
-                                pName == typeof(long).Name ||
-                                pName == typeof(short).Name)
-                            {
-                                try
-                                {
-                                    jsonString.Append($"{properties[i].GetValue(sender)}");
-                                }
-                                catch
-                                {
-                                    jsonString.Append("null");
-                                }
                             }
                             else
                             {
-                                jsonString.Append(ToJson(properties[i].GetValue(sender)));
+                                jsonString.Append(ValueToString(sender, properties[i], properties[i].PropertyType.Name));
                             }
-
+                        }
+                        else
+                        {
+                            //because is other table check if have a relationship
+                            if (!string.IsNullOrEmpty(property.FieldName))
+                            {
+                                jsonString.Append($"\"{property.FieldName}\":");
+                                jsonString.Append(ValueToString(sender, property.StoreIndexName, properties[i]));
+                            }
                         }
                         jsonString.Append(",");
                     }
@@ -295,71 +260,31 @@ namespace BlazorIndexedDb.Helpers
                 for (int i = 0; i < properties.Length; i++)
                 {
                     PropertyOptions property = new PropertyOptions(properties[i]);
-                    bool notInTables = !Settings.Tables.Contains(properties[i].PropertyType.Name) && !Settings.Tables.Contains(Utils.GetGenericTypeName(properties[i].PropertyType));
-                    if (!property.ToIgnore && notInTables)
+                    if (!property.ToIgnore)
                     {
                         if (Settings.EnableDebug) Console.WriteLine("ToJson parse Property {0} not ignored", properties[i].Name);
-                        jsonString.Append($"\"{property.Name}\":");
-                        if (IsGenericList(properties[i]))
+                        bool notInTables = !Settings.Tables.Contains(properties[i].PropertyType.Name) && !Settings.Tables.Contains(Utils.GetGenericTypeName(properties[i].PropertyType));
+                        if (notInTables)
                         {
-                            if (Settings.EnableDebug) Console.WriteLine("ToJson Property {0} IsGenericList = true", properties[i].Name);
-                            jsonString.Append(ToJson(properties[i].GetValue(sender)));
+                            jsonString.Append($"\"{property.Name}\":");
+                            if (IsGenericList(properties[i]))
+                            {
+                                if (Settings.EnableDebug) Console.WriteLine("ToJson Property {0} IsGenericList = true", properties[i].Name);
+                                jsonString.Append(ToJson(properties[i].GetValue(sender)));
+                            }
+                            else
+                            {                                
+                                jsonString.Append(ValueToString(sender, properties[i], properties[i].PropertyType.Name));
+                            }
                         }
                         else
                         {
-                            string pName = properties[i].PropertyType.Name;
-                            if (properties[i].GetValue(sender) is null)
+                            //because is other table check if have a relationship
+                            if (!string.IsNullOrEmpty(property.FieldName))
                             {
-                                jsonString.Append($"null");
+                                jsonString.Append($"\"{property.FieldName}\":");
+                                jsonString.Append(ValueToString(sender, property.StoreIndexName, properties[i]));
                             }
-                            else if (properties[i].GetType() == typeof(object))
-                            {
-                                jsonString.Append(ToJson(properties[i].GetValue(sender)));
-                            }
-                            else if (pName == typeof(DateTime).Name)
-                            {
-                                jsonString.Append("\"");
-                                jsonString.Append(Convert.ToDateTime(properties[i].GetValue(sender)).ToString("yyyy-MM-dd HH':'mm':'ss"));
-                                jsonString.Append("\"");
-                            }
-                            else if (pName == typeof(bool).Name)
-                            {
-                                jsonString.Append(Convert.ToBoolean(properties[i].GetValue(sender)) ? "true" : "false");
-                            }
-                            else if (pName == typeof(string).Name)
-                            {
-                                jsonString.Append($"\"{properties[i].GetValue(sender).ToString().Replace("\"", "\\\"")}\"");
-                            }
-                            else if (pName == typeof(String).Name)
-                            {
-                                jsonString.Append($"\"{properties[i].GetValue(sender).ToString().Replace("\"", "\\\"")}\"");
-                            }
-                            else if (pName == typeof(Int16).Name ||
-                                pName == typeof(Int32).Name ||
-                                pName == typeof(Int64).Name ||
-                                pName == typeof(Double).Name ||
-                                pName == typeof(Decimal).Name ||
-                                pName == typeof(Single).Name ||
-                                pName == typeof(Byte).Name ||
-                                pName == typeof(int).Name ||
-                                pName == typeof(float).Name ||
-                                pName == typeof(long).Name ||
-                                pName == typeof(short).Name)
-                            {
-                                try
-                                {
-                                    jsonString.Append($"{properties[i].GetValue(sender)}");
-                                }
-                                catch
-                                {
-                                    jsonString.Append("null");
-                                }
-                            }
-                            else
-                            {
-                                jsonString.Append(ToJson(properties[i].GetValue(sender)));
-                            }
-
                         }
                         jsonString.Append(",");
                     }
@@ -373,5 +298,88 @@ namespace BlazorIndexedDb.Helpers
             return jsonString.ToString();
         }
 
+        static string ValueToString(object sender, PropertyInfo property, string pName)
+        {
+            string result;
+            if (property.GetValue(sender) is null)
+            {
+                result = $"null";
+            }
+            else if (property.GetType() == typeof(object))
+            {
+                result = ToJson(property.GetValue(sender));
+            }
+            else if (pName == typeof(DateTime).Name)
+            {
+                result = "\"";
+                result += Convert.ToDateTime(property.GetValue(sender)).ToString("yyyy-MM-dd HH':'mm':'ss");
+                result += "\"";
+            }
+            else if (pName == typeof(bool).Name)
+            {
+                result = Convert.ToBoolean(property.GetValue(sender)) ? "true" : "false";
+            }
+            else if (pName == typeof(string).Name)
+            {
+                result = $"\"{property.GetValue(sender).ToString().Replace("\"", "\\\"")}\"";
+            }
+            else if (pName == typeof(String).Name)
+            {
+                result = $"\"{property.GetValue(sender).ToString().Replace("\"", "\\\"")}\"";
+            }
+            else if (pName == typeof(Int16).Name ||
+                pName == typeof(Int32).Name ||
+                pName == typeof(Int64).Name ||
+                pName == typeof(Double).Name ||
+                pName == typeof(Decimal).Name ||
+                pName == typeof(Single).Name ||
+                pName == typeof(Byte).Name ||
+                pName == typeof(int).Name ||
+                pName == typeof(float).Name ||
+                pName == typeof(long).Name ||
+                pName == typeof(short).Name)
+            {
+                try
+                {
+                    result = $"{property.GetValue(sender)}";
+                }
+                catch
+                {
+                    result = "null";
+                }
+            }
+            else
+            {
+                result = ToJson(property.GetValue(sender));
+            }
+            return result;
+        }
+        static string ValueToString(object sender, string pValue, PropertyInfo property)
+        {
+            var field = property.GetValue(sender);
+
+            if (!IsGenericList(field))
+            {
+                PropertyInfo[] properties = field.GetType().GetProperties();
+                PropertyInfo prop = properties.Where(p => p.Name == pValue).FirstOrDefault();
+                return ValueToString(field, prop, prop.PropertyType.Name);
+            }
+            else
+            {
+                StringBuilder jsonString = new StringBuilder();
+                jsonString.Append("[ ");
+                foreach (var item in field as System.Collections.IList)
+                {
+                    PropertyInfo[] properties = item.GetType().GetProperties();
+                    PropertyInfo prop = properties.Where(p => p.Name == pValue).FirstOrDefault();
+                    jsonString.Append(ValueToString(item, prop, prop.PropertyType.Name));
+                    jsonString.Append(",");
+                }
+                jsonString.Remove(jsonString.Length - 1, 1);
+                jsonString.Append("]");
+                return jsonString.ToString();
+            }
+
+        }
     }
 }

@@ -17,6 +17,8 @@ namespace BlazorIndexedDb.Helpers
         public bool IsKeyPath { get; set; }
         public bool IsAutoIncrement { get; set; }
         public bool IsUnique { get; set; }
+        public string StoreIndexName { get; set; }
+        public string FieldName { get; set; }
 
         /// <summary>
         /// Get all the indexdb attributes from the porperty
@@ -29,6 +31,7 @@ namespace BlazorIndexedDb.Helpers
             // Displaying output.  
             foreach (Attribute attr in attrs)
             {
+                //check main field attributes
                 if (attr is System.Text.Json.Serialization.JsonIgnoreAttribute) this.ToIgnore = true;
                 else if (attr is Attributes.FieldAttribute)
                 {
@@ -62,7 +65,18 @@ namespace BlazorIndexedDb.Helpers
                     this.ToIgnore = false;
                     this.IsUnique = false;
                 }
-                
+                //check relationship attribute
+                if (attr is Attributes.RelationAttribute)
+                {
+                    Attributes.RelationAttribute a = attr as Attributes.RelationAttribute;
+                    this.StoreIndexName = a.StoreIndexName;
+                    this.FieldName = a.FieldName;
+                }
+                else
+                {
+                    this.StoreIndexName = string.Empty;
+                    this.FieldName = string.Empty;
+                }
             }
         }
     }

@@ -104,12 +104,14 @@ namespace BlazorIndexedDb.Configuration
                                     for (int i = 0; i < properties.Length; i++)
                                     {
                                         PropertyOptions property = new PropertyOptions(properties[i]);
-                                        bool notInTables = !tables.Contains(properties[i].PropertyType.Name) && !tables.Contains(Utils.GetGenericTypeName(properties[i].PropertyType));
-                                        if (!property.ToIgnore && notInTables)
+                                        if (!property.ToIgnore)
                                         {
-                                            //  columns: [{name: 'property name', keyPath: true/false, autoIncrement: true/false, unique: true/false}]}
+                                            //if the property is other table don't do nothing
+                                            bool notInTables = !tables.Contains(properties[i].PropertyType.Name) && !tables.Contains(Utils.GetGenericTypeName(properties[i].PropertyType));
+                                            //  columns: [{name: 'property name', keyPath: true/false, autoIncrement: true/false, unique: true/false}]}                                            
                                             string propName = property.Name.ToLower();
-                                            if (tables[tci].ToLower() != propName)            //if the property is other table don't do nothing
+                                            Console.WriteLine("DbInit notInTables {0} propName {1}", notInTables, propName);
+                                            if (notInTables)
                                             {
                                                 //main field from the model, normalize like Id or ModelNameId or IdModelName
                                                 if (propName == "id")
@@ -143,6 +145,15 @@ namespace BlazorIndexedDb.Configuration
                                                     autoIncrement = property.IsAutoIncrement;
                                                 }
                                                 else tableModels.Append($"{{\"name\": \"{property.Name}\", \"keyPath\": {property.IsKeyPath.ToString().ToLower()}, \"autoIncrement\": {property.IsAutoIncrement.ToString().ToLower()}, \"unique\": {property.IsUnique.ToString().ToLower()}}},");
+                                            }
+                                            else
+                                            {
+                                                Console.WriteLine("DbInit fieldname {0} storeindexname {1}", property.FieldName, property.StoreIndexName);
+                                                //because is other table check if have a relationship
+                                                if (!string.IsNullOrEmpty(property.FieldName))
+                                                {
+                                                    tableModels.Append($"{{\"name\": \"{property.FieldName}\", \"keyPath\": false, \"autoIncrement\": false, \"unique\": {property.IsUnique.ToString().ToLower()}}},");
+                                                }
                                             }
                                         }
                                     }
