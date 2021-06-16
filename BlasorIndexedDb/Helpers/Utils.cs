@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,6 +13,13 @@ namespace BlazorIndexedDb.Helpers
     /// </summary>
     class Utils
     {
+        public static bool InTables(PropertyInfo property)
+        {
+            bool result = Settings.Tables.Contains(property.PropertyType.Name);
+            if (!result) result = Settings.Tables.Contains(GetGenericTypeName(property.PropertyType));
+            return result;
+        }
+
         /// <summary>
         /// Get class name
         /// </summary>
@@ -20,6 +28,16 @@ namespace BlazorIndexedDb.Helpers
         public static string GetName<TModel>()
         {
             Type myType = typeof(TModel);
+            return myType.Name;
+        }
+
+        /// <summary>
+        /// Get class name
+        /// </summary>
+        /// <returns></returns>
+        public static string GetName(object sender)
+        {
+            Type myType = sender.GetType();
             return myType.Name;
         }
 

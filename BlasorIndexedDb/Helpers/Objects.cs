@@ -139,8 +139,7 @@ namespace BlazorIndexedDb.Helpers
             {
 
                 //read all properties
-                PropertyInfo[] properties = t.GetProperties(BindingFlags.Public |           //get public names
-                                                            BindingFlags.Instance);         //get instance names
+                PropertyInfo[] properties = GetProperties(t);
 
                 jsonString.Append("{ ");
                 for (int i = 0; i < properties.Length; i++)
@@ -148,8 +147,7 @@ namespace BlazorIndexedDb.Helpers
                     PropertyOptions property = new PropertyOptions(properties[i]);
                     if (!property.ToIgnore)
                     {
-                        bool notInTables = !Settings.Tables.Contains(properties[i].PropertyType.Name) && !Settings.Tables.Contains(Utils.GetGenericTypeName(properties[i].PropertyType));
-                        if (notInTables)
+                        if (!Utils.InTables(properties[i]))
                         {
                             if (Settings.EnableDebug) Console.WriteLine("ToJson parse Property {0} not ignored", properties[i].Name);
                             jsonString.Append($"\"{property.Name}\":");
@@ -213,6 +211,12 @@ namespace BlazorIndexedDb.Helpers
         #endregion
 
         #region helpers
+        public static PropertyInfo[] GetProperties(Type t)
+        {
+            //read all properties
+            return t.GetProperties(BindingFlags.Public |           //get public names
+                                   BindingFlags.Instance);         //get instance names
+        }
         public static bool IsGenericList(object o)
         {
             Type oType = o.GetType();
@@ -253,8 +257,7 @@ namespace BlazorIndexedDb.Helpers
             {
 
                 //read all properties
-                PropertyInfo[] properties = t.GetProperties(BindingFlags.Public |           //get public names
-                                                            BindingFlags.Instance);         //get instance names
+                PropertyInfo[] properties = GetProperties(t);
 
                 jsonString.Append("{ ");
                 for (int i = 0; i < properties.Length; i++)
@@ -262,9 +265,8 @@ namespace BlazorIndexedDb.Helpers
                     PropertyOptions property = new PropertyOptions(properties[i]);
                     if (!property.ToIgnore)
                     {
-                        if (Settings.EnableDebug) Console.WriteLine("ToJson parse Property {0} not ignored", properties[i].Name);
-                        bool notInTables = !Settings.Tables.Contains(properties[i].PropertyType.Name) && !Settings.Tables.Contains(Utils.GetGenericTypeName(properties[i].PropertyType));
-                        if (notInTables)
+                        if (Settings.EnableDebug) Console.WriteLine("ToJson parse Property {0} not ignored", properties[i].Name);                        
+                        if (!Utils.InTables(properties[i]))
                         {
                             jsonString.Append($"\"{property.Name}\":");
                             if (IsGenericList(properties[i]))
@@ -360,7 +362,7 @@ namespace BlazorIndexedDb.Helpers
 
             if (!IsGenericList(field))
             {
-                PropertyInfo[] properties = field.GetType().GetProperties();
+                PropertyInfo[] properties = GetProperties(field.GetType());
                 PropertyInfo prop = properties.Where(p => p.Name == pValue).FirstOrDefault();
                 return ValueToString(field, prop, prop.PropertyType.Name);
             }
@@ -370,7 +372,7 @@ namespace BlazorIndexedDb.Helpers
                 jsonString.Append("[ ");
                 foreach (var item in field as System.Collections.IList)
                 {
-                    PropertyInfo[] properties = item.GetType().GetProperties();
+                    PropertyInfo[] properties = GetProperties(item.GetType());
                     PropertyInfo prop = properties.Where(p => p.Name == pValue).FirstOrDefault();
                     jsonString.Append(ValueToString(item, prop, prop.PropertyType.Name));
                     jsonString.Append(",");
