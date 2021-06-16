@@ -27,7 +27,6 @@ namespace BlazorIndexedDb.Store
         {
             if (Settings.EnableDebug) Console.WriteLine($"StoreContext minimum constructor");
             DBConn = js;
-            Settings.EnableDebug = true;
             GetTables();
         }
 
@@ -40,7 +39,6 @@ namespace BlazorIndexedDb.Store
         {
             if (Settings.EnableDebug) Console.WriteLine($"StoreContext constructor with settings");
             DBConn = js;
-            Settings.EnableDebug = true;
             GetTables();
             Init(settings);
         }
