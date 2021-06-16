@@ -1,38 +1,94 @@
 <?xml version="1.0"?>
 <doc>
     <assembly>
-        <name>BlazorIndexedDb</name>
+        <name>DrUalcman-BlazorIndexedDb</name>
     </assembly>
     <members>
-        <member name="T:BlazorIndexedDb.Attributes.IndexDb">
+        <member name="T:BlazorIndexedDb.Attributes.FieldAttribute">
             <summary>
             Custom Attribute to setup the model
             </summary>
         </member>
-        <member name="P:BlazorIndexedDb.Attributes.IndexDb.IsKeyPath">
+        <member name="P:BlazorIndexedDb.Attributes.FieldAttribute.IsKeyPath">
             <summary>
             If the proerty is a keypath or requered
             </summary>
         </member>
-        <member name="P:BlazorIndexedDb.Attributes.IndexDb.IsAutoIncremental">
+        <member name="P:BlazorIndexedDb.Attributes.FieldAttribute.IsAutoIncremental">
             <summary>
             If the property is auto incremental
             </summary>
         </member>
-        <member name="P:BlazorIndexedDb.Attributes.IndexDb.IsUnique">
+        <member name="P:BlazorIndexedDb.Attributes.FieldAttribute.IsUnique">
             <summary>
             If the property are unique
             </summary>
         </member>
-        <member name="P:BlazorIndexedDb.Attributes.IndexDb.IsIgnore">
+        <member name="P:BlazorIndexedDb.Attributes.FieldAttribute.IsIgnore">
             <summary>
             If the property must be ignored when parse into a indexedDb
+            </summary>
+        </member>
+        <member name="M:BlazorIndexedDb.Attributes.FieldAttribute.#ctor">
+            <summary>
+            Contructor to setup default values
+            </summary>
+        </member>
+        <member name="T:BlazorIndexedDb.Attributes.RelationAttribute">
+            <summary>
+            Relationship between tables
+            </summary>
+        </member>
+        <member name="P:BlazorIndexedDb.Attributes.RelationAttribute.StoreIndexName">
+            <summary>
+            Property name from the Model will create a relationship. Default value Id
+            </summary>
+        </member>
+        <member name="P:BlazorIndexedDb.Attributes.RelationAttribute.FieldName">
+            <summary>
+            Not nullable. Field name default value RelationId must be use in indexDb Store table to save the StoreIndexName value.
+            This property no need to be created into the model to have a relationship.
+            </summary>
+        </member>
+        <member name="M:BlazorIndexedDb.Attributes.RelationAttribute.#ctor">
+            <summary>
+            Setup default values
+            </summary>
+        </member>
+        <member name="T:BlazorIndexedDb.Commands.DbCommands">
+            <summary>
+            Database Commands to use
+            </summary>
+        </member>
+        <member name="F:BlazorIndexedDb.Commands.DbCommands.Insert">
+            <summary>
+            Insert array data
+            </summary>
+        </member>
+        <member name="F:BlazorIndexedDb.Commands.DbCommands.Update">
+            <summary>
+            Update array data
+            </summary>
+        </member>
+        <member name="F:BlazorIndexedDb.Commands.DbCommands.Delete">
+            <summary>
+            Delete single row from id send
             </summary>
         </member>
         <member name="T:BlazorIndexedDb.Commands.Commands">
             <summary>
             Other commands to execute
             </summary>
+        </member>
+        <member name="M:BlazorIndexedDb.Commands.Commands.DbCommand(Microsoft.JSInterop.IJSRuntime,BlazorIndexedDb.Commands.DbCommands,System.String,System.String)">
+            <summary>
+            Execute a command directly sending a json string
+            </summary>
+            <param name="jsRuntime"></param>
+            <param name="command"></param>
+            <param name="modelName"></param>
+            <param name="data"></param>
+            <returns></returns>
         </member>
         <member name="M:BlazorIndexedDb.Commands.Commands.DbConnected(Microsoft.JSInterop.IJSRuntime)">
             <summary>
@@ -316,6 +372,11 @@
             Namespace where is located the entities if it's different from the assembly name
             </summary>
         </member>
+        <member name="P:BlazorIndexedDb.Configuration.Settings.EnableDebug">
+            <summary>
+            Enable show console log info
+            </summary>
+        </member>
         <member name="P:BlazorIndexedDb.Configuration.Settings.Tables">
             <summary>
             Names about the models to use
@@ -360,6 +421,20 @@
             Tools to work with objects
             </summary>
         </member>
+        <member name="M:BlazorIndexedDb.Helpers.ObjectConverter.ToJson(System.Collections.IList)">
+            <summary>
+            Convert into a Json string the model send
+            </summary>
+            <param name="sender"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Helpers.ObjectConverter.ToJson(System.Collections.Generic.List{System.Object})">
+            <summary>
+            Convert into a Json string the model send
+            </summary>
+            <param name="sender"></param>
+            <returns></returns>
+        </member>
         <member name="M:BlazorIndexedDb.Helpers.ObjectConverter.ToJson``1(System.Collections.Generic.List{``0})">
             <summary>
             Convert into a Json string the model send
@@ -376,7 +451,7 @@
             <param name="sender"></param>
             <returns></returns>
         </member>
-        <member name="M:BlazorIndexedDb.Helpers.ObjectConverter.ToJson(System.Object)">
+        <member name="M:BlazorIndexedDb.Helpers.ObjectConverter.ToJson``1(``0)">
             <summary>
             Convert into a Json string the object send
             </summary>
@@ -429,11 +504,24 @@
             <typeparam name="TModel"></typeparam>
             <returns></returns>
         </member>
+        <member name="M:BlazorIndexedDb.Helpers.Utils.GetName(System.Object)">
+            <summary>
+            Get class name
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:BlazorIndexedDb.Helpers.Utils.GetNameToLower(System.Object)">
             <summary>
             Get object type name in lower case
             </summary>
             <param name="sender"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Helpers.Utils.GetGenericTypeName(System.Type)">
+            <summary>
+            Get only the name from the type passed if it's from a generic type
+            </summary>
+            <param name="t"></param>
             <returns></returns>
         </member>
         <member name="T:BlazorIndexedDb.Models.ResponseJsDb">
@@ -542,21 +630,67 @@
             <param name="id">primary key id to search</param>
             <returns></returns>
         </member>
-        <member name="M:BlazorIndexedDb.Store.StoreSet`1.AddAsync(`0)">
+        <member name="M:BlazorIndexedDb.Store.StoreSet`1.AddAsync(`0,System.Boolean)">
             <summary>
             Add record in a table store
             </summary>
             <param name="toAdd"></param>
+            <param name="isOffline"></param>
             <returns></returns>
         </member>
-        <member name="M:BlazorIndexedDb.Store.StoreSet`1.UpdateAsync(`0)">
+        <member name="M:BlazorIndexedDb.Store.StoreSet`1.AddAsync(System.Collections.Generic.List{`0},System.Boolean)">
+            <summary>
+            Add record in a table store
+            </summary>
+            <param name="toAdd"></param>
+            <param name="isOffline"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Store.StoreSet`1.UpdateAsync(`0,System.Boolean)">
             <summary>
             Update record in a table store
             </summary>
-            <param name="toAdd"></param>
+            <param name="toUpdate"></param>
+            <param name="isOffline"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Store.StoreSet`1.UpdateAsync(System.Collections.Generic.List{`0},System.Boolean)">
+            <summary>
+            Update record in a table store
+            </summary>
+            <param name="toUpdate"></param>
+            <param name="isOffline"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Store.StoreSet`1.DeleteAsync(System.Int32)">
+            <summary>
+            Detele record from a table sotre
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Store.StoreSet`1.DeleteAsync(System.Double)">
+            <summary>
+            Detele record from a table sotre
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Store.StoreSet`1.DeleteAsync(System.Decimal)">
+            <summary>
+            Detele record from a table sotre
+            </summary>
+            <param name="id"></param>
             <returns></returns>
         </member>
         <member name="M:BlazorIndexedDb.Store.StoreSet`1.DeleteAsync(System.String)">
+            <summary>
+            Detele record from a table sotre
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Store.StoreSet`1.DeleteAsync(System.DateTime)">
             <summary>
             Detele record from a table sotre
             </summary>

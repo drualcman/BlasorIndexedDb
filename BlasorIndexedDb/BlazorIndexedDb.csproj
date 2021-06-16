@@ -23,6 +23,8 @@ Add console.warning in javascript for dev know the error when have a exception</
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <AssemblyVersion>1.5.13.1</AssemblyVersion>
     <FileVersion>1.5.13.1</FileVersion>
+    <AssemblyName>DrUalcman-BlazorIndexedDb</AssemblyName>
+    <RootNamespace>BlazorIndexedDb</RootNamespace>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
