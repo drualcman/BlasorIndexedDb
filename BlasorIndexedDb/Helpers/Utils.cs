@@ -1,4 +1,5 @@
 ﻿using BlazorIndexedDb.Configuration;
+using BlazorIndexedDb.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,23 @@ namespace BlazorIndexedDb.Helpers
     /// </summary>
     class Utils
     {
+        public static CommandResult CommandResponse(ResponseJsDb response) => 
+            new(response.Result, response.Message, new List<ResponseJsDb> { response });
+
+        public static CommandResult CommandResponse(List<ResponseJsDb> response)
+        {
+            bool allGood;
+            int c = response.Count;
+            int i = 0;
+            do
+            {
+                allGood = response[i].Result;
+                i++;
+            } while (allGood && i < c);
+
+            return new(allGood, allGood ? "All transactions finished with true" : "Some transaction can't be finished", response);
+        }
+
         public static bool InTables(PropertyInfo property)
         {
             bool result = Settings.Tables.Contains(property.PropertyType.Name);

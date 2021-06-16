@@ -53,7 +53,7 @@ namespace BlazorIndexedDb.Store
             {
                 _ = Initalizing.DbInit(DBConn, settings);
             }
-        }
+        }        
 
        void GetTables()
         {

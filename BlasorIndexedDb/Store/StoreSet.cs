@@ -99,14 +99,14 @@ namespace BlazorIndexedDb.Store
         /// <param name="toAdd"></param>
         /// <param name="isOffline"></param>
         /// <returns></returns>
-        public async Task<ResponseJsDb> AddAsync(TModel toAdd, bool isOffline = false)
+        public async Task<CommandResult> AddAsync(TModel toAdd, bool isOffline = false)
         {
             ResponseJsDb result;
             if (isOffline)
                 result = await DBConn.DbInserOffline(toAdd);
             else
                 result = await DBConn.DbInsert(toAdd);
-            return result;
+            return Utils.CommandResponse(result);
         }
 
         /// <summary>
@@ -115,14 +115,14 @@ namespace BlazorIndexedDb.Store
         /// <param name="toAdd"></param>
         /// <param name="isOffline"></param>
         /// <returns></returns>
-        public async Task<List<ResponseJsDb>> AddAsync(List<TModel> toAdd, bool isOffline = false)
+        public async Task<CommandResult> AddAsync(List<TModel> toAdd, bool isOffline = false)
         {
             List<ResponseJsDb> result;
             if (isOffline)
                 result = await DBConn.DbInserOffline(toAdd);
             else
                 result = await DBConn.DbInsert(toAdd);
-            return result;
+            return Utils.CommandResponse(result); 
         }
 
         /// <summary>
@@ -131,14 +131,14 @@ namespace BlazorIndexedDb.Store
         /// <param name="toUpdate"></param>
         /// <param name="isOffline"></param>
         /// <returns></returns>
-        public async Task<ResponseJsDb> UpdateAsync(TModel toUpdate, bool isOffline = false)
+        public async Task<CommandResult> UpdateAsync(TModel toUpdate, bool isOffline = false)
         {
             ResponseJsDb result;
             if (isOffline)
                 result = await DBConn.DbUpdateOffLine(toUpdate);
             else
                 result = await DBConn.DbUpdate(toUpdate);
-            return result;
+            return Utils.CommandResponse(result);
         }
 
         /// <summary>
@@ -147,14 +147,14 @@ namespace BlazorIndexedDb.Store
         /// <param name="toUpdate"></param>
         /// <param name="isOffline"></param>
         /// <returns></returns>
-        public async Task<List<ResponseJsDb>> UpdateAsync(List<TModel> toUpdate, bool isOffline = false)
+        public async Task<CommandResult> UpdateAsync(List<TModel> toUpdate, bool isOffline = false)
         {
             List<ResponseJsDb> result;
             if (isOffline)
                 result = await DBConn.DbUpdateOffLine(toUpdate);
             else
                 result = await DBConn.DbUpdate(toUpdate);
-            return result;
+            return Utils.CommandResponse(result);
         }
 
         /// <summary>
@@ -162,40 +162,40 @@ namespace BlazorIndexedDb.Store
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<ResponseJsDb> DeleteAsync(int id)
-            => await DBConn.DbDelete<TModel>(id);
+        public async Task<CommandResult> DeleteAsync(int id)
+            => Utils.CommandResponse(await DBConn.DbDelete<TModel>(id));
 
         /// <summary>
         /// Detele record from a table sotre
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<ResponseJsDb> DeleteAsync(double id)
-            => await DBConn.DbDelete<TModel>(id);
+        public async Task<CommandResult> DeleteAsync(double id)
+            => Utils.CommandResponse(await DBConn.DbDelete<TModel>(id));
 
         /// <summary>
         /// Detele record from a table sotre
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<ResponseJsDb> DeleteAsync(decimal id)
-            => await DBConn.DbDelete<TModel>(id);
+        public async Task<CommandResult> DeleteAsync(decimal id)
+            => Utils.CommandResponse(await DBConn.DbDelete<TModel>(id));
 
         /// <summary>
         /// Detele record from a table sotre
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<ResponseJsDb> DeleteAsync(string id)
-            => await DBConn.DbDelete<TModel>(id);
+        public async Task<CommandResult> DeleteAsync(string id)
+            => Utils.CommandResponse(await DBConn.DbDelete<TModel>(id));
 
         /// <summary>
         /// Detele record from a table sotre
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<ResponseJsDb> DeleteAsync(DateTime id)
-            => await DBConn.DbDelete<TModel>(id);
+        public async Task<CommandResult> DeleteAsync(DateTime id)
+            => Utils.CommandResponse(await DBConn.DbDelete<TModel>(id));
 
     }
 }
