@@ -99,7 +99,7 @@ namespace BlazorIndexedDb.Store
         /// <param name="toAdd"></param>
         /// <param name="isOffline"></param>
         /// <returns></returns>
-        public async Task<CommandResult> AddAsync(TModel toAdd, bool isOffline = false)
+        public async Task<CommandResponse> AddAsync(TModel toAdd, bool isOffline = false)
         {
             ResponseJsDb result;
             if (isOffline)
@@ -115,7 +115,7 @@ namespace BlazorIndexedDb.Store
         /// <param name="toAdd"></param>
         /// <param name="isOffline"></param>
         /// <returns></returns>
-        public async Task<CommandResult> AddAsync(List<TModel> toAdd, bool isOffline = false)
+        public async Task<CommandResponse> AddAsync(List<TModel> toAdd, bool isOffline = false)
         {
             List<ResponseJsDb> result;
             if (isOffline)
@@ -131,7 +131,7 @@ namespace BlazorIndexedDb.Store
         /// <param name="toUpdate"></param>
         /// <param name="isOffline"></param>
         /// <returns></returns>
-        public async Task<CommandResult> UpdateAsync(TModel toUpdate, bool isOffline = false)
+        public async Task<CommandResponse> UpdateAsync(TModel toUpdate, bool isOffline = false)
         {
             ResponseJsDb result;
             if (isOffline)
@@ -147,7 +147,7 @@ namespace BlazorIndexedDb.Store
         /// <param name="toUpdate"></param>
         /// <param name="isOffline"></param>
         /// <returns></returns>
-        public async Task<CommandResult> UpdateAsync(List<TModel> toUpdate, bool isOffline = false)
+        public async Task<CommandResponse> UpdateAsync(List<TModel> toUpdate, bool isOffline = false)
         {
             List<ResponseJsDb> result;
             if (isOffline)
@@ -162,7 +162,7 @@ namespace BlazorIndexedDb.Store
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<CommandResult> DeleteAsync(int id)
+        public async Task<CommandResponse> DeleteAsync(int id)
             => Utils.CommandResponse(await DBConn.DbDelete<TModel>(id));
 
         /// <summary>
@@ -170,7 +170,7 @@ namespace BlazorIndexedDb.Store
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<CommandResult> DeleteAsync(double id)
+        public async Task<CommandResponse> DeleteAsync(double id)
             => Utils.CommandResponse(await DBConn.DbDelete<TModel>(id));
 
         /// <summary>
@@ -178,7 +178,7 @@ namespace BlazorIndexedDb.Store
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<CommandResult> DeleteAsync(decimal id)
+        public async Task<CommandResponse> DeleteAsync(decimal id)
             => Utils.CommandResponse(await DBConn.DbDelete<TModel>(id));
 
         /// <summary>
@@ -186,7 +186,7 @@ namespace BlazorIndexedDb.Store
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<CommandResult> DeleteAsync(string id)
+        public async Task<CommandResponse> DeleteAsync(string id)
             => Utils.CommandResponse(await DBConn.DbDelete<TModel>(id));
 
         /// <summary>
@@ -194,7 +194,7 @@ namespace BlazorIndexedDb.Store
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<CommandResult> DeleteAsync(DateTime id)
+        public async Task<CommandResponse> DeleteAsync(DateTime id)
             => Utils.CommandResponse(await DBConn.DbDelete<TModel>(id));
 
     }
