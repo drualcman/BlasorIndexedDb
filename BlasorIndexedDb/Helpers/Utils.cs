@@ -14,10 +14,10 @@ namespace BlazorIndexedDb.Helpers
     /// </summary>
     class Utils
     {
-        public static CommandResult CommandResponse(ResponseJsDb response) => 
+        public static CommandResponse CommandResponse(ResponseJsDb response) => 
             new(response.Result, response.Message, new List<ResponseJsDb> { response });
 
-        public static CommandResult CommandResponse(List<ResponseJsDb> response)
+        public static CommandResponse CommandResponse(List<ResponseJsDb> response)
         {
             bool allGood;
             int c = response.Count;

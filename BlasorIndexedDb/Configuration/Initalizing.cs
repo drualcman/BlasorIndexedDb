@@ -189,7 +189,7 @@ namespace BlazorIndexedDb.Configuration
                     }
                 }
                 else
-                    Console.WriteLine("DbInit error: Number of tables is {0}", tables.Length);
+                    if (Settings.EnableDebug) Console.WriteLine("DbInit error: Number of tables is {0}", tables.Length);
             }
         }
     }

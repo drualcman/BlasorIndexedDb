@@ -30,7 +30,7 @@ namespace BlazorIndexedDb.Commands
             {
                 try
                 {                    
-                    result.AddRange(await Commands.DbCommand(jsRuntime, DbCommands.Delete, Utils.GetName<TModel>(), id.ToString()));
+                    result.AddRange(await jsRuntime.InvokeAsync<List<ResponseJsDb>>($"MyDb.Delete", Utils.GetName<TModel>(), id));
                 }
                 catch (Exception ex)
                 {
@@ -63,7 +63,7 @@ namespace BlazorIndexedDb.Commands
             {
                 try
                 {
-                    result.AddRange(await Commands.DbCommand(jsRuntime, DbCommands.Delete, Utils.GetName<TModel>(), id.ToString()));
+                    result.AddRange(await jsRuntime.InvokeAsync<List<ResponseJsDb>>($"MyDb.Delete", Utils.GetName<TModel>(), id));
                 }
                 catch (Exception ex)
                 {
@@ -97,7 +97,7 @@ namespace BlazorIndexedDb.Commands
             {
                 try
                 {
-                    result.AddRange(await Commands.DbCommand(jsRuntime, DbCommands.Delete, Utils.GetName<TModel>(), id.ToString()));
+                    result.AddRange(await jsRuntime.InvokeAsync<List<ResponseJsDb>>($"MyDb.Delete", Utils.GetName<TModel>(), id));
                 }
                 catch (Exception ex)
                 {
@@ -131,7 +131,7 @@ namespace BlazorIndexedDb.Commands
             {
                 try
                 {
-                    result.AddRange(await Commands.DbCommand(jsRuntime, DbCommands.Delete, Utils.GetName<TModel>(), id.ToString()));
+                    result.AddRange(await jsRuntime.InvokeAsync<List<ResponseJsDb>>($"MyDb.Delete", Utils.GetName<TModel>(), id));
                 }
                 catch (Exception ex)
                 {
@@ -162,8 +162,8 @@ namespace BlazorIndexedDb.Commands
             if (Settings.Initiallezed)
             {
                 try
-                {
-                    result.AddRange(await Commands.DbCommand(jsRuntime, DbCommands.Delete, Utils.GetName<TModel>(), id.ToString()));
+                {                    
+                    result.AddRange(await jsRuntime.InvokeAsync<List<ResponseJsDb>>($"MyDb.Delete", Utils.GetName<TModel>(), id));
                 }
                 catch (Exception ex)
                 {

@@ -524,6 +524,16 @@
             <param name="t"></param>
             <returns></returns>
         </member>
+        <member name="T:BlazorIndexedDb.Models.CommandResponse">
+            <summary>
+            Return a result from the transaction
+            </summary>
+        </member>
+        <member name="M:BlazorIndexedDb.Models.CommandResponse.#ctor(System.Boolean,System.String,System.Collections.Generic.List{BlazorIndexedDb.Models.ResponseJsDb})">
+            <summary>
+            Return a result from the transaction
+            </summary>
+        </member>
         <member name="T:BlazorIndexedDb.Models.ResponseJsDb">
             <summary>
             Response object for the commands

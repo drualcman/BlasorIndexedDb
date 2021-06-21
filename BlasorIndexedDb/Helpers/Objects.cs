@@ -220,8 +220,6 @@ namespace BlazorIndexedDb.Helpers
         public static bool IsGenericList(object o)
         {
             Type oType = o.GetType();
-            Console.WriteLine(o.ToString());
-            Console.WriteLine(oType.Name);
             return (o.ToString().Contains("System.Collections.Generic.List") || oType.IsGenericType && (oType.GetGenericTypeDefinition() == typeof(List<>)));
         }
         public static bool IsGenericList<T>(object o)
