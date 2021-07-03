@@ -45,6 +45,11 @@
          */
         Delete: (table, id) => db.Delete(table, id),
         /**
+         * Create a table. Alway return a JSON response
+         * @param {string} table table name
+         */
+        Create: (table) => db.Create(table),
+        /**
          * Drop a table. Alway return a JSON response
          * @param {string} table table name
          */

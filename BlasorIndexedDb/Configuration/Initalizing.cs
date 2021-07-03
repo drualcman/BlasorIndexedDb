@@ -107,7 +107,7 @@ namespace BlazorIndexedDb.Configuration
                                         if (!property.ToIgnore)
                                         {
                                             //if the property is other table don't do nothing
-                                            bool notInTables = !tables.Contains(properties[i].PropertyType.Name) && !tables.Contains(Utils.GetGenericTypeName(properties[i].PropertyType));
+                                            bool notInTables = !Utils.InTables(properties[i]);
                                             //  columns: [{name: 'property name', keyPath: true/false, autoIncrement: true/false, unique: true/false}]}                                            
                                             string propName = property.Name.ToLower();
                                             Console.WriteLine("DbInit notInTables {0} propName {1}", notInTables, propName);
@@ -189,7 +189,7 @@ namespace BlazorIndexedDb.Configuration
                     }
                 }
                 else
-                    Console.WriteLine("DbInit error: Number of tables is {0}", tables.Length);
+                    if (Settings.EnableDebug) Console.WriteLine("DbInit error: Number of tables is {0}", tables.Length);
             }
         }
     }

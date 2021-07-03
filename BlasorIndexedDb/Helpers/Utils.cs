@@ -1,7 +1,9 @@
 ﻿using BlazorIndexedDb.Configuration;
+using BlazorIndexedDb.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,6 +14,30 @@ namespace BlazorIndexedDb.Helpers
     /// </summary>
     class Utils
     {
+        public static CommandResponse CommandResponse(ResponseJsDb response) => 
+            new(response.Result, response.Message, new List<ResponseJsDb> { response });
+
+        public static CommandResponse CommandResponse(List<ResponseJsDb> response)
+        {
+            bool allGood;
+            int c = response.Count;
+            int i = 0;
+            do
+            {
+                allGood = response[i].Result;
+                i++;
+            } while (allGood && i < c);
+
+            return new(allGood, allGood ? "All transactions finished with true" : "Some transaction can't be finished", response);
+        }
+
+        public static bool InTables(PropertyInfo property)
+        {
+            bool result = Settings.Tables.Contains(property.PropertyType.Name);
+            if (!result) result = Settings.Tables.Contains(GetGenericTypeName(property.PropertyType));
+            return result;
+        }
+
         /// <summary>
         /// Get class name
         /// </summary>
@@ -20,6 +46,16 @@ namespace BlazorIndexedDb.Helpers
         public static string GetName<TModel>()
         {
             Type myType = typeof(TModel);
+            return myType.Name;
+        }
+
+        /// <summary>
+        /// Get class name
+        /// </summary>
+        /// <returns></returns>
+        public static string GetName(object sender)
+        {
+            Type myType = sender.GetType();
             return myType.Name;
         }
 

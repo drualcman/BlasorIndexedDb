@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -48,8 +49,49 @@ namespace BlazorIndexedDb.Commands
                 if (c > 0)
                 {
                     try
-                    {                        
+                    {   
                         result.AddRange(await Commands.DbCommand(jsRuntime, DbCommands.Insert, Utils.GetName<TModel>(), await ObjectConverter.ToJsonAsync(rows)));
+
+                        bool allGood = false;
+                        c = result.Count;
+                        int i = 0;
+                        do
+                        {
+                            allGood = result[i].Result;
+                            i++;
+                        } while (!allGood && i < c);
+
+                        if (allGood)
+                        {
+                            //need check the object received and do the action into the other tables if have
+                            c = rows.Count;
+                            for (i = 0; i < c; i++)
+                            {
+                                Type t = rows[i].GetType();
+
+                                //read all properties
+                                PropertyInfo[] properties = ObjectConverter.GetProperties(t);
+                                int p = properties.Length;
+                                for (int a = 0; a < p; a++)
+                                {
+                                    if (Utils.InTables(properties[a]))
+                                    {
+                                        if (ObjectConverter.IsGenericList(properties[a].GetValue(rows[i])))
+                                        {
+                                            Console.WriteLine("esto es una lista que tendremos que recorrer");
+                                        }
+                                        else
+                                        {
+                                            if (Settings.EnableDebug) Console.WriteLine($"Add to the store {properties[a].PropertyType.Name} the value from the property {properties[a].Name}");
+                                            //is single object add the data to the corresponding store
+                                            result.AddRange(await Commands.DbCommand(jsRuntime, DbCommands.Insert, properties[a].PropertyType.Name, await ObjectConverter.ToJsonAsync(properties[a].GetValue(rows[i]))));
+                                        }
+                                    }
+                                }
+                                
+                            }
+                        }
+
                     }
                     catch (Exception ex)
                     {

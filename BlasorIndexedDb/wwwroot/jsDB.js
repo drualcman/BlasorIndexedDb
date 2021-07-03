@@ -76,7 +76,7 @@ class jsDB {
      */
     OpenDB() {
         try {
-            const dbconnect = window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB || window.OIndexedDB || window.msIndexedDB, IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction || window.OIDBTransaction || window.msIDBTransaction;
+            const dbconnect = window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB || window.OIndexedDB || window.msIndexedDB, IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction || window.OIDBTransaction || window.msIDBTransaction;            
             return dbconnect;
         } catch (error) {
             throw [this.SetResponse(false, error.message)];
@@ -454,17 +454,21 @@ class jsDB {
                 try {
                     const transaction = db.transaction(table, 'readwrite');
                     const store = transaction.objectStore(table);
+                    console.log(table);
+                    console.log(id, typeof(id));
                     store.delete(id);
                     transaction.onerror = ev => {
                         console.warn(ev.target.error.message);
                         db.close();
                         resolve([context.SetResponse(false, ev.target.error.message)]);
                     };
-                    transaction.oncomplete = () => {
+                    transaction.oncomplete = (r) => {
+                        console.warn(r);                        
                         db.close();
                         resolve([context.SetResponse(true, 'Delete done!')]);
                     };
                 } catch (e) {
+                    console.warn(e);
                     db.close();
                     error([context.SetResponse(false, e.message)]);
                 }
