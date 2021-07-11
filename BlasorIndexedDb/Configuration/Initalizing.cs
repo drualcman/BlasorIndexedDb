@@ -11,7 +11,7 @@ using BlazorIndexedDb.Helpers;
 namespace BlazorIndexedDb.Configuration
 {
     /// <summary>
-    /// Setup de connection with the indexedDb in the browser
+    /// Setup connection with the indexedDb in the browser
     /// </summary>
     sealed class Initalizing
     {

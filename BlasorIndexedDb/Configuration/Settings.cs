@@ -50,7 +50,7 @@ namespace BlazorIndexedDb.Configuration
         /// </summary>
         public static string[] Tables { get; set; }
         /// <summary>
-        /// Know if the instance of a indexDb it's already initiallized
+        /// Know if the instance of a indexDb it's already initialized
         /// </summary>
         public static bool Initiallezed;
 

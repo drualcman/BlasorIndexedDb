@@ -158,7 +158,7 @@ namespace BlazorIndexedDb.Store
         }
 
         /// <summary>
-        /// Detele record from a table sotre
+        /// Delete record from a table store
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -166,7 +166,7 @@ namespace BlazorIndexedDb.Store
             => Utils.CommandResponse(await DBConn.DbDelete<TModel>(id));
 
         /// <summary>
-        /// Detele record from a table sotre
+        /// Delete record from a table store
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -174,7 +174,7 @@ namespace BlazorIndexedDb.Store
             => Utils.CommandResponse(await DBConn.DbDelete<TModel>(id));
 
         /// <summary>
-        /// Detele record from a table sotre
+        /// Delete record from a table store
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -182,7 +182,7 @@ namespace BlazorIndexedDb.Store
             => Utils.CommandResponse(await DBConn.DbDelete<TModel>(id));
 
         /// <summary>
-        /// Detele record from a table sotre
+        /// Delete record from a table store
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -190,7 +190,7 @@ namespace BlazorIndexedDb.Store
             => Utils.CommandResponse(await DBConn.DbDelete<TModel>(id));
 
         /// <summary>
-        /// Detele record from a table sotre
+        /// Delete record from a table store
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
