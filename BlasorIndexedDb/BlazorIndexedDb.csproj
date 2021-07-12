@@ -3,26 +3,26 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.5.13</Version>
+    <Version>1.4.13</Version>
     <Authors>Sergi Ortiz Gomez</Authors>
     <Company>DrUalcman</Company>
     <Description>Manage IndexedDb from Blazor WebAssembly applications</Description>
     <Copyright>Free</Copyright>
     <PackageLicenseFile>License.txt</PackageLicenseFile>
-    <PackageTags>webassembly, blazor, indexDb, interop, javascript</PackageTags>
-    <PackageReleaseNotes>Fix wrong spellings
-Add new add and insert ofline for single register
-Add config static class
-Fix add register with a column from a table reference
-Add console.warning in javascript for dev know the error when have a exception</PackageReleaseNotes>
+    <PackageTags>webassembly, blazor, indexedDb, interop, javascript, database</PackageTags>
+    <PackageReleaseNotes>Add Settings to prepare more easy the DB
+Add StoreContext represents a DB for can be inexted with a singleton from the build when start the application
+Add StoreSet represent tables and have the basics CURD and select actions.
+Change object name IndexDb to FieldAttribute
+</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/drualcman/BlasorIndexedDb</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
     <PackageId>DrUalcman-BlazorIndexedDb</PackageId>
     <Product>BlazorIndexedDb</Product>
     <PackageProjectUrl>https://blazorindexdb.community-mall.com/</PackageProjectUrl>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <AssemblyVersion>1.5.13.1</AssemblyVersion>
-    <FileVersion>1.5.13.1</FileVersion>
+    <AssemblyVersion>1.4.13.1</AssemblyVersion>
+    <FileVersion>1.4.13.1</FileVersion>
     <AssemblyName>DrUalcman-BlazorIndexedDb</AssemblyName>
     <RootNamespace>BlazorIndexedDb</RootNamespace>
   </PropertyGroup>
