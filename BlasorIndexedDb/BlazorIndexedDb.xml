@@ -377,6 +377,13 @@
             Default constructor get the AppDomain.CurrentDomain.FriendlyName like a DB name
             </summary>
         </member>
+        <member name="M:BlazorIndexedDb.Configuration.Settings.#ctor(System.String,System.Int32)">
+            <summary>
+            Constructor with parameters
+            </summary>
+            <param name="DbName"></param>
+            <param name="version"></param>
+        </member>
         <member name="P:BlazorIndexedDb.Configuration.Settings.EnableDebug">
             <summary>
             Enable show console log info

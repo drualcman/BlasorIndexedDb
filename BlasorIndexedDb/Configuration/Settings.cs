@@ -42,10 +42,17 @@ namespace BlazorIndexedDb.Configuration
         /// <summary>
         /// Default constructor get the AppDomain.CurrentDomain.FriendlyName like a DB name
         /// </summary>
-        public Settings()
+        public Settings() : this(string.Empty) { }
+
+        /// <summary>
+        /// Constructor with parameters
+        /// </summary>
+        /// <param name="DbName"></param>
+        /// <param name="version"></param>
+        public Settings(string DbName, int version = 1)
         {
-            this.DBName = string.Empty;
-            this.Version = 1;
+            this.DBName = DbName;
+            this.Version = version;
         }
 
 
