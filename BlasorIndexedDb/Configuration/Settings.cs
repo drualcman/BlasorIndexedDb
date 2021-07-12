@@ -39,6 +39,15 @@ namespace BlazorIndexedDb.Configuration
             set { entitiesNamespace_BK = value; }
         }
 
+        /// <summary>
+        /// Default constructor get the AppDomain.CurrentDomain.FriendlyName like a DB name
+        /// </summary>
+        public Settings()
+        {
+            this.DBName = string.Empty;
+            this.Version = 1;
+        }
+
 
         #region static
         /// <summary>
@@ -55,7 +64,7 @@ namespace BlazorIndexedDb.Configuration
         public static bool Initiallezed;
 
         static Settings()
-        {
+        {            
             Tables = new string[0];
             Initiallezed = false;
         }

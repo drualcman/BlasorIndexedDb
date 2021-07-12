@@ -317,7 +317,7 @@
         </member>
         <member name="T:BlazorIndexedDb.Configuration.Initalizing">
             <summary>
-            Setup de connection with the indexedDb in the browser
+            Setup connection with the indexedDb in the browser
             </summary>
         </member>
         <member name="M:BlazorIndexedDb.Configuration.Initalizing.DbInit(Microsoft.JSInterop.IJSRuntime)">
@@ -372,6 +372,11 @@
             Namespace where is located the entities if it's different from the assembly name
             </summary>
         </member>
+        <member name="M:BlazorIndexedDb.Configuration.Settings.#ctor">
+            <summary>
+            Default constructor get the AppDomain.CurrentDomain.FriendlyName like a DB name
+            </summary>
+        </member>
         <member name="P:BlazorIndexedDb.Configuration.Settings.EnableDebug">
             <summary>
             Enable show console log info
@@ -384,7 +389,7 @@
         </member>
         <member name="F:BlazorIndexedDb.Configuration.Settings.Initiallezed">
             <summary>
-            Know if the instance of a indexDb it's already initiallized
+            Know if the instance of a indexDb it's already initialized
             </summary>
         </member>
         <member name="T:BlazorIndexedDb.Helpers.AddOflineProperty">
@@ -549,6 +554,46 @@
             Transaction message
             </summary>
         </member>
+        <member name="T:BlazorIndexedDb.Store.IStoreService`1">
+            <summary>
+            Interface to implement in all services
+            </summary>
+            <typeparam name="TModel"></typeparam>
+        </member>
+        <member name="M:BlazorIndexedDb.Store.IStoreService`1.FilesStore">
+            <summary>
+            Get all rows from the table
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Store.IStoreService`1.FilesStore(System.String)">
+            <summary>
+            Get Only one row from the table
+            </summary>
+            <param name="id">column name to compare in the where</param>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Store.IStoreService`1.AddAsync(`0)">
+            <summary>
+            Add data to the table
+            </summary>
+            <param name="toAdd"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Store.IStoreService`1.UpdateAsync(`0)">
+            <summary>
+            Update data into a table
+            </summary>
+            <param name="toAdd"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Store.IStoreService`1.DeleteAsync(System.String)">
+            <summary>
+            Delete row from a table
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="T:BlazorIndexedDb.Store.StoreContext">
             <summary>
                 A StoreContext instance represents a instance of a indexedDb into the browser
@@ -573,6 +618,57 @@
             Initialize the connection with a indexedDb
             </summary>
             <param name="settings"></param>
+        </member>
+        <member name="T:BlazorIndexedDb.Store.StoreService`1">
+            <summary>
+            Interface to implement in all services
+            </summary>
+            <typeparam name="TModel"></typeparam>
+        </member>
+        <member name="F:BlazorIndexedDb.Store.StoreService`1.DBConn">
+            <summary>
+            Manage JAVASCRIPT
+            </summary>
+        </member>
+        <member name="M:BlazorIndexedDb.Store.StoreService`1.#ctor(Microsoft.JSInterop.IJSRuntime)">
+            <summary>
+            Inject IJSRuntime when instance this class
+            </summary>
+            <param name="js"></param>
+        </member>
+        <member name="M:BlazorIndexedDb.Store.StoreService`1.FilesStore">
+            <summary>
+            Get all rows from the table
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Store.StoreService`1.FilesStore(System.String)">
+            <summary>
+            Get Only one row from the table
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Store.StoreService`1.AddAsync(`0)">
+            <summary>
+            Add data to the table
+            </summary>
+            <param name="toAdd"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Store.StoreService`1.UpdateAsync(`0)">
+            <summary>
+            Update data into a table
+            </summary>
+            <param name="toAdd"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Store.StoreService`1.DeleteAsync(System.String)">
+            <summary>
+            Delete row from a table
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
         </member>
         <member name="T:BlazorIndexedDb.Store.StoreSet`1">
             <summary>
@@ -674,35 +770,35 @@
         </member>
         <member name="M:BlazorIndexedDb.Store.StoreSet`1.DeleteAsync(System.Int32)">
             <summary>
-            Detele record from a table sotre
+            Delete record from a table store
             </summary>
             <param name="id"></param>
             <returns></returns>
         </member>
         <member name="M:BlazorIndexedDb.Store.StoreSet`1.DeleteAsync(System.Double)">
             <summary>
-            Detele record from a table sotre
+            Delete record from a table store
             </summary>
             <param name="id"></param>
             <returns></returns>
         </member>
         <member name="M:BlazorIndexedDb.Store.StoreSet`1.DeleteAsync(System.Decimal)">
             <summary>
-            Detele record from a table sotre
+            Delete record from a table store
             </summary>
             <param name="id"></param>
             <returns></returns>
         </member>
         <member name="M:BlazorIndexedDb.Store.StoreSet`1.DeleteAsync(System.String)">
             <summary>
-            Detele record from a table sotre
+            Delete record from a table store
             </summary>
             <param name="id"></param>
             <returns></returns>
         </member>
         <member name="M:BlazorIndexedDb.Store.StoreSet`1.DeleteAsync(System.DateTime)">
             <summary>
-            Detele record from a table sotre
+            Delete record from a table store
             </summary>
             <param name="id"></param>
             <returns></returns>

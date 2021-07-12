@@ -107,11 +107,11 @@ namespace BlazorIndexedDb.Configuration
                                         if (!property.ToIgnore)
                                         {
                                             //if the property is other table don't do nothing
-                                            bool notInTables = !Utils.InTables(properties[i]);
+                                            bool InTables = !Utils.InTables(properties[i]);
                                             //  columns: [{name: 'property name', keyPath: true/false, autoIncrement: true/false, unique: true/false}]}                                            
                                             string propName = property.Name.ToLower();
-                                            Console.WriteLine("DbInit notInTables {0} propName {1}", notInTables, propName);
-                                            if (notInTables)
+                                            Console.WriteLine("DbInit notInTables {0} propName {1}", InTables, propName);
+                                            if (InTables)
                                             {
                                                 //main field from the model, normalize like Id or ModelNameId or IdModelName
                                                 if (propName == "id")
@@ -135,6 +135,57 @@ namespace BlazorIndexedDb.Configuration
                                                     autoIncrement = property.IsAutoIncrement;
                                                 }
                                                 else if (propName == $"id{tables[tci].ToLower().Remove(tables[tci].Length - 1, 1)}")                 //singular possibility
+                                                {
+                                                    identifer = property.Name;
+                                                    autoIncrement = property.IsAutoIncrement;
+                                                } //next
+                                                else if (propName == "Id")
+                                                {
+                                                    identifer = property.Name;
+                                                    autoIncrement = property.IsAutoIncrement;
+                                                }
+                                                else if (propName == $"{tables[tci].ToLower()}Id")
+                                                {
+                                                    identifer = property.Name;
+                                                    autoIncrement = property.IsKeyPath;
+                                                }
+                                                else if (propName == $"Id{tables[tci].ToLower()}")
+                                                {
+                                                    identifer = property.Name;
+                                                    autoIncrement = property.IsAutoIncrement;
+                                                }
+                                                else if (propName == $"Id{tables[tci].ToLower()}s")                 //plural possibility
+                                                {
+                                                    identifer = property.Name;
+                                                    autoIncrement = property.IsAutoIncrement;
+                                                }
+                                                else if (propName == $"Id{tables[tci].ToLower().Remove(tables[tci].Length - 1, 1)}")                 //singular possibility
+                                                {
+                                                    identifer = property.Name;
+                                                    autoIncrement = property.IsAutoIncrement;
+
+                                                } //last
+                                                else if (propName == "ID")
+                                                {
+                                                    identifer = property.Name;
+                                                    autoIncrement = property.IsAutoIncrement;
+                                                }
+                                                else if (propName == $"{tables[tci].ToLower()}ID")
+                                                {
+                                                    identifer = property.Name;
+                                                    autoIncrement = property.IsKeyPath;
+                                                }
+                                                else if (propName == $"ID{tables[tci].ToLower()}")
+                                                {
+                                                    identifer = property.Name;
+                                                    autoIncrement = property.IsAutoIncrement;
+                                                }
+                                                else if (propName == $"ID{tables[tci].ToLower()}s")                 //plural possibility
+                                                {
+                                                    identifer = property.Name;
+                                                    autoIncrement = property.IsAutoIncrement;
+                                                }
+                                                else if (propName == $"ID{tables[tci].ToLower().Remove(tables[tci].Length - 1, 1)}")                 //singular possibility
                                                 {
                                                     identifer = property.Name;
                                                     autoIncrement = property.IsAutoIncrement;
