@@ -92,6 +92,11 @@ public class Program
         }
     }
 ```
+In the Index.html or the file are you using to start the app add
+```
+    <script src="_content/DrUalcman-BlazorIndexedDb/jsDB.js"></script>
+    <script src="_content/DrUalcman-BlazorIndexedDb/MyDbJs.js"></script>
+```
 
 In the component need to use a IndexDb inject DBContext
 
