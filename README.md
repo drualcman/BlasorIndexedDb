@@ -1,3 +1,7 @@
+[![Nuget](https://img.shields.io/nuget/v/DrUalcman-BlazorIndexedDb?style=for-the-badge)](https://www.nuget.org/packages/DrUalcman-BlazorIndexedDb)
+[![Nuget](https://img.shields.io/nuget/dt/DrUalcman-BlazorIndexedDb?style=for-the-badge)](https://www.nuget.org/packages/DrUalcman-BlazorIndexedDb)
+
+
 # BlazorIndexedDb
 Manage indexedDb from c# with Blazor. Simple way to interact with IndexedDB similar how you can do with EntityFramework
 
