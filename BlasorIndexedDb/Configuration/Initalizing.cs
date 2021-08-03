@@ -95,7 +95,7 @@ namespace BlazorIndexedDb.Configuration
                                                                                 BindingFlags.Instance);         //get instance names
 
                                     //main field from the model, normalize like Id or ModelNameId or IdModelName
-                                    string identifer = "ssn";
+                                    string identifer = string.Empty;
                                     bool autoIncrement = false;     //if it's a integer must be true
                                     tableModels.Append("\"options\": {\"keyPath\": \"#1\", \"autoIncrement\": #2},");
                                     //add columns name from the properties names
@@ -110,7 +110,7 @@ namespace BlazorIndexedDb.Configuration
                                             bool InTables = !Utils.InTables(properties[i]);
                                             //  columns: [{name: 'property name', keyPath: true/false, autoIncrement: true/false, unique: true/false}]}                                            
                                             string propName = property.Name.ToLower();
-                                            Console.WriteLine("DbInit notInTables {0} propName {1}", InTables, propName);
+                                            if (Settings.EnableDebug) Console.WriteLine("DbInit notInTables {0} propName {1}", InTables, propName);
                                             if (InTables)
                                             {
                                                 //main field from the model, normalize like Id or ModelNameId or IdModelName
@@ -199,7 +199,7 @@ namespace BlazorIndexedDb.Configuration
                                             }
                                             else
                                             {
-                                                Console.WriteLine("DbInit fieldname {0} storeindexname {1}", property.FieldName, property.StoreIndexName);
+                                                if (Settings.EnableDebug) Console.WriteLine("DbInit fieldname {0} storeindexname {1}", property.FieldName, property.StoreIndexName);
                                                 //because is other table check if have a relationship
                                                 if (!string.IsNullOrEmpty(property.FieldName))
                                                 {
@@ -210,7 +210,13 @@ namespace BlazorIndexedDb.Configuration
                                     }
                                     //always add control if the register it's offline NULL = not offline, only when it's true it's applicable
                                     tableModels.Append($"{{\"name\": \"OffLine\", \"keyPath\": false, \"autoIncrement\": false, \"unique\": false}},");
-                                    if (string.IsNullOrEmpty(identifer)) identifer = "ssn";
+                                    if (string.IsNullOrEmpty(identifer))
+                                    {
+                                        //because don't have primary key add one
+                                        identifer = "ssnId";
+                                        autoIncrement = true;
+                                        tableModels.Append($"{{\"name\": \"ssnId\", \"keyPath\": true, \"autoIncrement\": true, \"unique\": true}},");
+                                    }
                                     string tmpString = tableModels.ToString();
                                     tableJsonArray += tmpString
                                         .Remove(tmpString.Length - 1, 1)                                                    //remove the last ,

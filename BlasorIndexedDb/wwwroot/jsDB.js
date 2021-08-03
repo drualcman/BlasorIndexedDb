@@ -341,11 +341,11 @@ class jsDB {
                     //get who is the keypath
                     const model = context.MODELS.find(el => el.name === table);
                     let keyPath = model.options.keyPath;
-                    if (!keyPath) {
-                        keyPath = 'ssnId';
-                    }
                     data.forEach(el => {
                         let o = context.MergeObjects(defaultModel, el);
+                        if (o[keyPath] === null) {
+                            delete o[keyPath];
+                        }
                         store.add(o);
                     });
                     transaction.onerror = ev => {
@@ -407,7 +407,6 @@ class jsDB {
                         if (ssnId) {
                             //retrieve the actual data for the index about the element
                             let request = store.get(ssnId);
-
                             request.onsuccess = function () {
                                 let data = context.UpdateModel(request.result, o);
                                 const objRequest = store.put(data);

@@ -3,17 +3,14 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.4.13</Version>
+    <Version>1.4.14</Version>
     <Authors>Sergi Ortiz Gomez</Authors>
     <Company>DrUalcman</Company>
-    <Description>Manage IndexedDb from Blazor WebAssembly applications</Description>
+    <Description>Manage IndexedDb from Blazor WebAssembly applications. Create a StoreDbContext similar how is working in EF</Description>
     <Copyright>Free</Copyright>
     <PackageLicenseFile>License.txt</PackageLicenseFile>
     <PackageTags>webassembly, blazor, indexedDb, interop, javascript, database</PackageTags>
-    <PackageReleaseNotes>Add Settings to prepare more easy the DB
-Add StoreContext represents a DB for can be inexted with a singleton from the build when start the application
-Add StoreSet represent tables and have the basics CURD and select actions.
-Change object name IndexDb to FieldAttribute
+    <PackageReleaseNotes>1.4.14 [2021-08-03] Fixed if Model don't have keypath and it's addes automatic then can add new rows when the keypath must be null in teh JSON object send to the indexedDb Store
 </PackageReleaseNotes>
     <RepositoryUrl>https://github.com/drualcman/BlasorIndexedDb</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
@@ -21,8 +18,8 @@ Change object name IndexDb to FieldAttribute
     <Product>BlazorIndexedDb</Product>
     <PackageProjectUrl>https://blazorindexdb.community-mall.com/</PackageProjectUrl>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <AssemblyVersion>1.4.13.1</AssemblyVersion>
-    <FileVersion>1.4.13.1</FileVersion>
+    <AssemblyVersion>1.4.14.1</AssemblyVersion>
+    <FileVersion>1.4.14.1</FileVersion>
     <AssemblyName>DrUalcman-BlazorIndexedDb</AssemblyName>
     <RootNamespace>BlazorIndexedDb</RootNamespace>
   </PropertyGroup>
@@ -38,7 +35,7 @@ Change object name IndexDb to FieldAttribute
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="5.0.5" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="5.0.8" />
   </ItemGroup>
 
   <ItemGroup>
