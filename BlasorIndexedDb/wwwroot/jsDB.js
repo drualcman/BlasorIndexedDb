@@ -216,6 +216,7 @@ class jsDB {
      * @param {string} table table name to request the data
      */
     Select(table) {
+        console.log(table);
         const context = this;
         return new Promise(function (resolve, error) {
             const dbconnect = context.OpenDB().open(context.DB_NAME, context.DB_VERSION);
