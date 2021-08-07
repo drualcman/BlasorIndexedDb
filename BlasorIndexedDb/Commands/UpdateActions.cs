@@ -69,12 +69,12 @@ namespace BlazorIndexedDb.Commands
             }
             else
             {
-                if (Settings.EnableDebug) Console.WriteLine($"UpdateActions: IndexedDb not initiallized yet!");
+                if (Settings.EnableDebug) Console.WriteLine($"UpdateActions: IndexedDb not initialized yet!");
                 result = new List<ResponseJsDb>()
                 {
                     new ResponseJsDb()
                     {
-                         Message = $"IndexedDb not initiallized yet!",
+                         Message = $"IndexedDb not initialized yet!",
                          Result = false
                     }
                 };

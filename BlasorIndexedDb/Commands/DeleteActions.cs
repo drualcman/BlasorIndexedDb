@@ -17,7 +17,7 @@ namespace BlazorIndexedDb.Commands
     public static class DeleteActions
     {
         /// <summary>
-        /// Detete one row from a table
+        /// Delete one row from a table
         /// </summary>
         /// <typeparam name="TModel">Table or store to use</typeparam>
         /// <param name="jsRuntime"></param>
@@ -41,15 +41,15 @@ namespace BlazorIndexedDb.Commands
             }
             else
             {
-                if (Settings.EnableDebug) Console.WriteLine($"DeleteActions: IndexedDb not initiallized yet!");
+                if (Settings.EnableDebug) Console.WriteLine($"DeleteActions: IndexedDb not initialized yet!");
                 result = new List<ResponseJsDb>();
-                result.Add(new ResponseJsDb { Result = false, Message = $"IndexedDb not initiallized yet!" });
+                result.Add(new ResponseJsDb { Result = false, Message = $"IndexedDb not initialized yet!" });
             }
             return result[0];
         }
 
         /// <summary>
-        /// Detete one row from a table
+        /// Delete one row from a table
         /// </summary>
         /// <typeparam name="TModel">Table or store to use</typeparam>
         /// <param name="jsRuntime"></param>
@@ -74,16 +74,16 @@ namespace BlazorIndexedDb.Commands
             }
             else
             {
-                if (Settings.EnableDebug) Console.WriteLine($"DeleteActions: IndexedDb not initiallized yet!");
+                if (Settings.EnableDebug) Console.WriteLine($"DeleteActions: IndexedDb not initialized yet!");
                 result = new List<ResponseJsDb>();
-                result.Add(new ResponseJsDb { Result = false, Message = $"IndexedDb not initiallized yet!" });
+                result.Add(new ResponseJsDb { Result = false, Message = $"IndexedDb not initialized yet!" });
             }
             return result[0]; 
         }
 
 
         /// <summary>
-        /// Detete one row from a table
+        /// Delete one row from a table
         /// </summary>
         /// <typeparam name="TModel">Table or store to use</typeparam>
         /// <param name="jsRuntime"></param>
@@ -108,16 +108,16 @@ namespace BlazorIndexedDb.Commands
             }
             else
             {
-                if (Settings.EnableDebug) Console.WriteLine($"DeleteActions: IndexedDb not initiallized yet!");
+                if (Settings.EnableDebug) Console.WriteLine($"DeleteActions: IndexedDb not initialized yet!");
                 result = new List<ResponseJsDb>();
-                result.Add(new ResponseJsDb { Result = false, Message = $"IndexedDb not initiallized yet!" });
+                result.Add(new ResponseJsDb { Result = false, Message = $"IndexedDb not initialized yet!" });
             }
             return result[0];
         }
 
 
         /// <summary>
-        /// Detete one row from a table
+        /// Delete one row from a table
         /// </summary>
         /// <typeparam name="TModel">Table or store to use</typeparam>
         /// <param name="jsRuntime"></param>
@@ -142,15 +142,15 @@ namespace BlazorIndexedDb.Commands
             }
             else
             {
-                if (Settings.EnableDebug) Console.WriteLine($"DeleteActions: IndexedDb not initiallized yet!");
+                if (Settings.EnableDebug) Console.WriteLine($"DeleteActions: IndexedDb not initialized yet!");
                 result = new List<ResponseJsDb>();
-                result.Add(new ResponseJsDb { Result = false, Message = $"IndexedDb not initiallized yet!" });
+                result.Add(new ResponseJsDb { Result = false, Message = $"IndexedDb not initialized yet!" });
             }
             return result[0];
         }
 
         /// <summary>
-        /// Detete one row from a table
+        /// Delete one row from a table
         /// </summary>
         /// <typeparam name="TModel">Table or store to use</typeparam>
         /// <param name="jsRuntime"></param>
@@ -174,9 +174,9 @@ namespace BlazorIndexedDb.Commands
             }
             else
             {
-                if (Settings.EnableDebug) Console.WriteLine($"DeleteActions: IndexedDb not initiallized yet!");
+                if (Settings.EnableDebug) Console.WriteLine($"DeleteActions: IndexedDb not initialized yet!");
                 result = new List<ResponseJsDb>();
-                result.Add(new ResponseJsDb { Result = false, Message = $"IndexedDb not initiallized yet!" });
+                result.Add(new ResponseJsDb { Result = false, Message = $"IndexedDb not initialized yet!" });
             }
             return result[0];
         }

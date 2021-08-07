@@ -38,7 +38,7 @@ namespace BlazorIndexedDb.Commands
             }
             else
             {
-                if (Settings.EnableDebug) Console.WriteLine($"SelectActions: IndexedDb not initiallized yet!");
+                if (Settings.EnableDebug) Console.WriteLine($"SelectActions: IndexedDb not initialized yet!");
                 data = new List<TModel>();
             }
             return data;
@@ -68,7 +68,7 @@ namespace BlazorIndexedDb.Commands
             }
             else
             {
-                if (Settings.EnableDebug) Console.WriteLine($"SelectActions: IndexedDb not initiallized yet!");
+                if (Settings.EnableDebug) Console.WriteLine($"SelectActions: IndexedDb not initialized yet!");
                 data = new List<TModel>();
             }
             return data;
@@ -100,7 +100,7 @@ namespace BlazorIndexedDb.Commands
             }
             else
             {
-                if (Settings.EnableDebug) Console.WriteLine($"SelectActions: IndexedDb not initiallized yet!");
+                if (Settings.EnableDebug) Console.WriteLine($"SelectActions: IndexedDb not initialized yet!");
                 return null;
             }           
         }
@@ -128,7 +128,7 @@ namespace BlazorIndexedDb.Commands
             }
             else
             {
-                if (Settings.EnableDebug) Console.WriteLine($"SelectActions: IndexedDb not initiallized yet!");
+                if (Settings.EnableDebug) Console.WriteLine($"SelectActions: IndexedDb not initialized yet!");
                 return null;
             }
         }
@@ -157,7 +157,7 @@ namespace BlazorIndexedDb.Commands
             }
             else
             {
-                if (Settings.EnableDebug) Console.WriteLine($"SelectActions: IndexedDb not initiallized yet!");
+                if (Settings.EnableDebug) Console.WriteLine($"SelectActions: IndexedDb not initialized yet!");
                 return null;
             }
         }
@@ -185,7 +185,7 @@ namespace BlazorIndexedDb.Commands
             }
             else
             {
-                if (Settings.EnableDebug) Console.WriteLine($"SelectActions: IndexedDb not initiallized yet!");
+                if (Settings.EnableDebug) Console.WriteLine($"SelectActions: IndexedDb not initialized yet!");
                 return null;
             }
         }
@@ -213,7 +213,7 @@ namespace BlazorIndexedDb.Commands
             }
             else
             {
-                if (Settings.EnableDebug) Console.WriteLine($"SelectActions: IndexedDb not initiallized yet!");
+                if (Settings.EnableDebug) Console.WriteLine($"SelectActions: IndexedDb not initialized yet!");
                 return null;
             }
         }
@@ -241,7 +241,7 @@ namespace BlazorIndexedDb.Commands
             }
             else
             {
-                if (Settings.EnableDebug) Console.WriteLine($"SelectActions: IndexedDb not initiallized yet!");
+                if (Settings.EnableDebug) Console.WriteLine($"SelectActions: IndexedDb not initialized yet!");
                 return null;
             }
         }
@@ -270,7 +270,7 @@ namespace BlazorIndexedDb.Commands
             }
             else
             {
-                if (Settings.EnableDebug) Console.WriteLine($"SelectActions: IndexedDb not initiallized yet!");
+                if (Settings.EnableDebug) Console.WriteLine($"SelectActions: IndexedDb not initialized yet!");
                 return null;
             }
         }

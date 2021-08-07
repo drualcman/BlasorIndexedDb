@@ -82,7 +82,7 @@ namespace BlazorIndexedDb.Helpers
             }
             jsonString.Remove(jsonString.Length - 1, 1);
             jsonString.Append("]");
-            if (Settings.EnableDebug) Console.WriteLine("ToJson parse List<TModel> result = {0}", jsonString.ToString());
+            if (Settings.EnableDebug) Console.WriteLine("ToJson parse List<TModel> result = {0}", jsonString.ToString());            
             return jsonString.ToString();
         }
 
@@ -137,7 +137,6 @@ namespace BlazorIndexedDb.Helpers
             }
             else
             {
-
                 //read all properties
                 PropertyInfo[] properties = GetProperties(t);
 
@@ -321,11 +320,11 @@ namespace BlazorIndexedDb.Helpers
             }
             else if (pName == typeof(string).Name)
             {
-                result = $"\"{property.GetValue(sender).ToString().Replace("\"", "\\\"")}\"";
+                result = $"\"{property.GetValue(sender).ToString().Replace("\"", "\\\"").Replace(Environment.NewLine, "\\n")}\"";
             }
             else if (pName == typeof(String).Name)
             {
-                result = $"\"{property.GetValue(sender).ToString().Replace("\"", "\\\"")}\"";
+                result = $"\"{property.GetValue(sender).ToString().Replace("\"", "\\\"").Replace(Environment.NewLine, "\\n")}\"";
             }
             else if (pName == typeof(Int16).Name ||
                 pName == typeof(Int32).Name ||

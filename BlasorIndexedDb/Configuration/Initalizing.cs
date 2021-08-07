@@ -45,7 +45,7 @@ namespace BlazorIndexedDb.Configuration
         /// <param name="jsRuntime"></param>
         /// <param name="name">database name</param>
         /// <param name="version">database version</param>
-        /// <param name="assemblyName">assembly contenies the namespaces from the model class to use</param>
+        /// <param name="assemblyName">assembly contains the namespaces from the model class to use</param>
         /// <param name="entitiesNamespace">namespace from the models class to use</param>
         /// <param name="tables">string array with the names of the model classes to serialize</param>
         /// <returns></returns>
@@ -54,7 +54,7 @@ namespace BlazorIndexedDb.Configuration
             [NotNull] string[] tables)
         {
 
-            if (Settings.EnableDebug) Console.WriteLine($"DbInit need be initiallized? {(Settings.Initiallezed ? "NO":"YES")}");
+            if (Settings.EnableDebug) Console.WriteLine($"DbInit need be initialized? {(Settings.Initiallezed ? "NO":"YES")}");
             if (!Settings.Initiallezed) 
             {
                 if (tables.Length >= 0)

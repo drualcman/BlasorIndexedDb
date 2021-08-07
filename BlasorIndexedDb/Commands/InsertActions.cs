@@ -49,7 +49,7 @@ namespace BlazorIndexedDb.Commands
                 if (c > 0)
                 {
                     try
-                    {   
+                    {
                         result.AddRange(await Commands.DbCommand(jsRuntime, DbCommands.Insert, Utils.GetName<TModel>(), await ObjectConverter.ToJsonAsync(rows)));
 
                         bool allGood = false;
@@ -111,12 +111,12 @@ namespace BlazorIndexedDb.Commands
             }
             else
             {
-                if (Settings.EnableDebug) Console.WriteLine($"InsertActions: IndexedDb not initiallized yet!");
+                if (Settings.EnableDebug) Console.WriteLine($"InsertActions: IndexedDb not initialized yet!");
                 result = new List<ResponseJsDb>()
                 {
                     new ResponseJsDb()
                     {
-                         Message = $"IndexedDb not initiallized yet!",
+                         Message = $"IndexedDb not initialized yet!",
                          Result = false
                     }
                 };
@@ -140,7 +140,7 @@ namespace BlazorIndexedDb.Commands
         }
 
         /// <summary>
-        /// Insert int a table to a db with offline property
+        /// Insert int a table to a db with off-line property
         /// </summary>
         /// <typeparam name="TModel">Table or store to use</typeparam>
         /// <param name="jsRuntime"></param>
