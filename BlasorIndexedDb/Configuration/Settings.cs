@@ -13,7 +13,7 @@ namespace BlazorIndexedDb.Configuration
     {
         private string DbName_BK;
         /// <summary>
-        /// Dabatase name
+        /// Database name
         /// </summary>
         public string DBName
         {
@@ -28,11 +28,13 @@ namespace BlazorIndexedDb.Configuration
         /// Assembly name to search the entities
         /// </summary>
         public string AssemblyName { get; set; }
+
         private string entitiesNamespace_BK;
 
         /// <summary>
         /// Namespace where is located the entities if it's different from the assembly name
         /// </summary>
+        [Obsolete("No need anymore")]
         public string EntitiesNamespace
         {
             get { return string.IsNullOrEmpty(entitiesNamespace_BK) ? AssemblyName: entitiesNamespace_BK; }
@@ -65,15 +67,33 @@ namespace BlazorIndexedDb.Configuration
         /// Names about the models to use
         /// </summary>
         public static string[] Tables { get; set; }
+
+
+        private static bool InitializedBk;
+
         /// <summary>
         /// Know if the instance of a indexDb it's already initialized
         /// </summary>
-        public static bool Initiallezed;
+        public static bool Initialized
+        {
+            get { return InitializedBk; }
+            set { InitializedBk = value; }
+        }
+
+        /// <summary>
+        /// Know if the instance of a indexDb it's already initialized
+        /// </summary>
+        [Obsolete("Use Initialized because a wrong spelling")]
+        public static bool Initiallezed
+        {
+            get { return InitializedBk; }
+            set { InitializedBk = value; }
+        }
 
         static Settings()
         {            
             Tables = new string[0];
-            Initiallezed = false;
+            Initialized = false;
         }
         #endregion
 

@@ -43,7 +43,7 @@ namespace BlazorIndexedDb.Commands
         public static async ValueTask<List<ResponseJsDb>> DbInsert<TModel>(this IJSRuntime jsRuntime, [NotNull] List<TModel> rows)
         {
             List<ResponseJsDb> result = new List<ResponseJsDb>();
-            if (Settings.Initiallezed)
+            if (Settings.Initialized)
             {
                 int c = rows.Count;
                 if (c > 0)

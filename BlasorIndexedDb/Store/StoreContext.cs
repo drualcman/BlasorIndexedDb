@@ -27,7 +27,8 @@ namespace BlazorIndexedDb.Store
         {
             if (Settings.EnableDebug) Console.WriteLine($"StoreContext minimum constructor");
             DBConn = js;
-            GetTables();
+            //GetTables();
+            Init(new Settings());
         }
 
         /// <summary>
@@ -39,7 +40,7 @@ namespace BlazorIndexedDb.Store
         {
             if (Settings.EnableDebug) Console.WriteLine($"StoreContext constructor with settings");
             DBConn = js;
-            GetTables();
+            //GetTables();
             Init(settings);
         }
 
@@ -49,31 +50,26 @@ namespace BlazorIndexedDb.Store
         /// <param name="settings"></param>
         public void Init(Settings settings)
         {
-            if (!Settings.Initiallezed)
+            if (Settings.EnableDebug) Console.WriteLine($"StoreContext Init => Need is Initialized {Settings.Initialized}");
+            if (!Settings.Initialized)
             {
+                InitStores();
                 _ = Initalizing.DbInit(DBConn, settings);
             }
-        }        
+        }
 
-       void GetTables()
+        void InitStores()
         {
-            if (!Settings.Initiallezed)
+            PropertyInfo[] properties = this.GetType()
+                   .GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                   .Where(x => x.PropertyType.Name == "StoreSet`1").ToArray();
+
+            int c = properties.Length;
+            for (int i = 0; i < c; i++)
             {
-                PropertyInfo[] properties = this.GetType()
-                       .GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                       .Where(x => x.PropertyType.Name == "StoreSet`1").ToArray();                
-
-                List<string> tables = new List<string>();
-                int c = properties.Length;
-                for (int i = 0; i < c; i++)
-                {
-                    tables.Add(Utils.GetGenericTypeName(properties[i].PropertyType));
-                    //instance the property with StoreSet type
-                    properties[i].SetValue(this, Activator.CreateInstance(properties[i].PropertyType, DBConn));                    
-                }
-                Settings.Tables = tables.ToArray();
+                //instance the property with StoreSet type
+                properties[i].SetValue(this, Activator.CreateInstance(properties[i].PropertyType, DBConn));
             }
-
         }
     }
 }

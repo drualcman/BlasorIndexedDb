@@ -26,7 +26,7 @@ namespace BlazorIndexedDb.Commands
         public static async ValueTask<ResponseJsDb> DbDelete<TModel>(this IJSRuntime jsRuntime, [NotNull] int id)
         {
             List<ResponseJsDb> result = new List<ResponseJsDb>();
-            if (Settings.Initiallezed)
+            if (Settings.Initialized)
             {
                 try
                 {                    
@@ -59,7 +59,7 @@ namespace BlazorIndexedDb.Commands
         {
             List<ResponseJsDb> result = new List<ResponseJsDb>();
 
-            if (Settings.Initiallezed)
+            if (Settings.Initialized)
             {
                 try
                 {
@@ -93,7 +93,7 @@ namespace BlazorIndexedDb.Commands
         {
             List<ResponseJsDb> result = new List<ResponseJsDb>();
 
-            if (Settings.Initiallezed)
+            if (Settings.Initialized)
             {
                 try
                 {
@@ -127,7 +127,7 @@ namespace BlazorIndexedDb.Commands
         {
             List<ResponseJsDb> result = new List<ResponseJsDb>();
 
-            if (Settings.Initiallezed)
+            if (Settings.Initialized)
             {
                 try
                 {
@@ -159,7 +159,7 @@ namespace BlazorIndexedDb.Commands
         public static async ValueTask<ResponseJsDb> DbDelete<TModel>(this IJSRuntime jsRuntime, [NotNull] DateTime id)
         {
             List<ResponseJsDb> result = new List<ResponseJsDb>();
-            if (Settings.Initiallezed)
+            if (Settings.Initialized)
             {
                 try
                 {                    

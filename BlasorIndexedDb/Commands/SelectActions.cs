@@ -25,7 +25,7 @@ namespace BlazorIndexedDb.Commands
         public static async ValueTask<List<TModel>> DbSelect<TModel>(this IJSRuntime jsRuntime)
         {
             List<TModel> data;
-            if (Settings.Initiallezed)
+            if (Settings.Initialized)
             {
                 try
                 {
@@ -55,7 +55,7 @@ namespace BlazorIndexedDb.Commands
         public static async ValueTask<List<TModel>> DbSelect<TModel>(this IJSRuntime jsRuntime, [NotNull] string column, [NotNull] object value)
         {
             List<TModel> data;
-            if (Settings.Initiallezed)
+            if (Settings.Initialized)
             {
                 try
                 {
@@ -86,7 +86,7 @@ namespace BlazorIndexedDb.Commands
         /// <returns></returns>
         public static async ValueTask<TModel> SingleRecord<TModel>(this IJSRuntime jsRuntime, [NotNull] object id) where TModel : class
         {
-            if (Settings.Initiallezed)
+            if (Settings.Initialized)
             {
                 try
                 {
@@ -114,7 +114,7 @@ namespace BlazorIndexedDb.Commands
         /// <returns></returns>
         public static async ValueTask<TModel> SingleRecord<TModel>(this IJSRuntime jsRuntime, [NotNull] int id) where TModel : class
         {
-            if (Settings.Initiallezed)
+            if (Settings.Initialized)
             {
                 try
                 {
@@ -143,7 +143,7 @@ namespace BlazorIndexedDb.Commands
         /// <returns></returns>
         public static async ValueTask<TModel> SingleRecord<TModel>(this IJSRuntime jsRuntime, [NotNull] double id) where TModel : class
         {
-            if (Settings.Initiallezed)
+            if (Settings.Initialized)
             {
                 try
                 {
@@ -171,7 +171,7 @@ namespace BlazorIndexedDb.Commands
         /// <returns></returns>
         public static async ValueTask<TModel> SingleRecord<TModel>(this IJSRuntime jsRuntime, [NotNull] decimal id) where TModel : class
         {
-            if (Settings.Initiallezed)
+            if (Settings.Initialized)
             {
                 try
                 {
@@ -199,7 +199,7 @@ namespace BlazorIndexedDb.Commands
         /// <returns></returns>
         public static async ValueTask<TModel> SingleRecord<TModel>(this IJSRuntime jsRuntime, [NotNull] long id) where TModel : class
         {
-            if (Settings.Initiallezed)
+            if (Settings.Initialized)
             {
                 try
                 {
@@ -227,7 +227,7 @@ namespace BlazorIndexedDb.Commands
         /// <returns></returns>
         public static async ValueTask<TModel> SingleRecord<TModel>(this IJSRuntime jsRuntime, [NotNull] string id) where TModel : class
         {
-            if (Settings.Initiallezed)
+            if (Settings.Initialized)
             {
                 try
                 {
@@ -256,7 +256,7 @@ namespace BlazorIndexedDb.Commands
         /// <returns></returns>
         public static async ValueTask<TModel> SingleRecord<TModel>(this IJSRuntime jsRuntime, [NotNull] DateTime id) where TModel : class
         {
-            if (Settings.Initiallezed)
+            if (Settings.Initialized)
             {
                 try
                 {

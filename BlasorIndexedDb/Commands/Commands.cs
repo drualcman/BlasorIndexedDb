@@ -56,7 +56,7 @@ namespace BlazorIndexedDb.Commands
         public static async ValueTask<string> DbConnected(this IJSRuntime jsRuntime)
         {
             string message;
-            if (Settings.Initiallezed)
+            if (Settings.Initialized)
             {
                 message = await jsRuntime.InvokeAsync<string>("MyDb.Connected");
             }

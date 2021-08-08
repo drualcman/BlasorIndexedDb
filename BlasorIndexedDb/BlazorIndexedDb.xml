@@ -347,6 +347,15 @@
             <param name="tables">string array with the names of the model classes to serialize</param>
             <returns></returns>
         </member>
+        <member name="M:BlazorIndexedDb.Configuration.Initalizing.DbInit(Microsoft.JSInterop.IJSRuntime,System.String,System.Int32)">
+            <summary>
+            Setup a indexedDb in a browser
+            </summary>
+            <param name="jsRuntime"></param>
+            <param name="name">database name</param>
+            <param name="version">database version</param>
+            <returns></returns>
+        </member>
         <member name="T:BlazorIndexedDb.Configuration.Settings">
             <summary>
             Configuration class to setup a IndexedDb in a browser
@@ -354,7 +363,7 @@
         </member>
         <member name="P:BlazorIndexedDb.Configuration.Settings.DBName">
             <summary>
-            Dabatase name
+            Database name
             </summary>
         </member>
         <member name="P:BlazorIndexedDb.Configuration.Settings.Version">
@@ -394,7 +403,12 @@
             Names about the models to use
             </summary>
         </member>
-        <member name="F:BlazorIndexedDb.Configuration.Settings.Initiallezed">
+        <member name="P:BlazorIndexedDb.Configuration.Settings.Initialized">
+            <summary>
+            Know if the instance of a indexDb it's already initialized
+            </summary>
+        </member>
+        <member name="P:BlazorIndexedDb.Configuration.Settings.Initiallezed">
             <summary>
             Know if the instance of a indexDb it's already initialized
             </summary>
