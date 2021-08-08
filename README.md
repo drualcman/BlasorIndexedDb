@@ -47,35 +47,17 @@ BlazorIndexedDb.Models
 BlazorIndexedDb.Store
 ```
 
-Then can create a DBContext class to manage the database like in EF using a constructor with IJSRuntime and properties with the server about how to manage your tables.
+Then can create a DBContext class inherits from StoreContext to manage the database like in EF using a constructor with IJSRuntime and properties with the server about how to manage your tables.
 
 ```
-public class DBContext
+public class DBContext : StoreContext
     {
         #region properties
         public StoreSet<PlayList> PlaysList { get; set; }
         #endregion
 
         #region constructor
-        public DBContext(IJSRuntime js)
-        {
-            Settings.EnableDebug = true;
-            Settings settings = new Settings("PlaysListDb");
-            settings.AssemblyName = "PlaysList.Shared";
-            Init(settings);
-        }
-        #endregion
-
-        #region helpers
-        public void ProcessErrors(List<ResponseJsDb> result)
-        {
-            string errors = string.Empty;
-            foreach (ResponseJsDb error in result)
-            {
-                errors += error.Message + "<br/>";
-            }
-            Console.WriteLine(errors);
-        }
+        public DBContext(IJSRuntime js) base(js, new Settings { DBName = "MyDBName", Version = 1 }) { }
         #endregion
     }
 ```
@@ -89,8 +71,8 @@ public class Program
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
             builder.RootComponents.Add<App>("#app");
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
-            //INJECT ALWAYS AS SINGLETON
-            builder.Services.AddSingleton<DBContext>();
+            //INJECT THE DBContext
+            builder.Services.AddScope<DBContext>();
 
             await builder.Build().RunAsync();
         }
@@ -107,6 +89,53 @@ In the component need to use a IndexDb inject DBContext
 ```
         [Inject]
         public DBContext _DBContext { get; set; }
+
+        void Select()
+        {
+            var PlaysList = await DB.PlaysList.SelectAsync();
+        }
+
+        void Add()
+        {
+            var NewItems = new List<PlayList>();
+            CommandResponse response = await DB.PlaysList.AddAsync(NewItems);
+            Console.WriteLine(response.Message);
+            Console.WriteLine(response.Result);
+            //Get result per each element
+            foreach (var item in response.Response)
+            {
+                Console.WriteLine(item.Message);
+                Console.WriteLine(item.Result);
+            }
+        }
+
+        void Update()
+        {
+            var NewItem = new PlayList();
+            CommandResponse response = await DB.PlaysList.UpdateAsync(NewItem);
+            Console.WriteLine(response.Message);
+            Console.WriteLine(response.Result);
+            //Get result per each element
+            foreach (var item in response.Response)
+            {
+                Console.WriteLine(item.Message);
+                Console.WriteLine(item.Result);
+            }
+        }
+
+        void Delete()
+        {
+            int id = 1;
+            CommandResponse response = await DB.PlaysList.DeleteAsync(id);
+            Console.WriteLine(response.Message);
+            Console.WriteLine(response.Result);
+            //Get result per each element
+            foreach (var item in response.Response)
+            {
+                Console.WriteLine(item.Message);
+                Console.WriteLine(item.Result);
+            }
+        }
 ```
 
 You can modify the model classes any time, but if the model you will pass don't match with the model created when create the IndexDb this will return a exception.
