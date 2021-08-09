@@ -334,8 +334,10 @@ namespace BlazorIndexedDb.Helpers
                 pName == typeof(Single).Name ||
                 pName == typeof(Byte).Name ||
                 pName == typeof(int).Name ||
+                pName == typeof(double).Name ||
                 pName == typeof(float).Name ||
                 pName == typeof(long).Name ||
+                pName == typeof(decimal).Name ||
                 pName == typeof(short).Name)
             {
                 try

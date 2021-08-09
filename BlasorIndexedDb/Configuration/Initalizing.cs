@@ -94,15 +94,17 @@ namespace BlazorIndexedDb.Configuration
                     foreach (PropertyInfo item in storeSets)
                     {
                         types.Add(item.PropertyType);
+                        string tableName = Utils.GetGenericTypeName(item.PropertyType);
+                        tables.Add(tableName);
                     }
-
+                    Settings.Tables = tables.ToArray();
                     string tableJsonArray = string.Empty;
+                    bool haveTables = false;
                     foreach (Type t in types)
                     {
                         StringBuilder tableModels = new StringBuilder();
                         // {name: 'table name', options:{keyPath: 'primary id to use', autoIncrement: true/false},
                         string tableName = Utils.GetGenericTypeName(t);
-                        tables.Add(tableName);
                         tableModels.Append($"{{\"name\": \"{tableName}\",");
                         //read all properties
                         PropertyInfo[] properties = t.GetGenericArguments()[0]          //get first generic type (only one can be)
@@ -115,19 +117,20 @@ namespace BlazorIndexedDb.Configuration
                         tableModels.Append("\"options\": {\"keyPath\": \"#1\", \"autoIncrement\": #2},");
                         //add columns name from the properties names
                         tableModels.Append($"\"columns\": [");                  //open json array
-
-                        for (int i = 0; i < properties.Length; i++)
+                        int c = properties.Length;
+                        for (int i = 0; i < c; i++)
                         {
                             PropertyOptions property = new PropertyOptions(properties[i]);
                             if (!property.ToIgnore)
                             {
                                 //if the property is other table don't do nothing
-                                bool InTables = !Utils.InTables(properties[i]);
+                                bool NotInTables = !Utils.InTables(properties[i]);
                                 //  columns: [{name: 'property name', keyPath: true/false, autoIncrement: true/false, unique: true/false}]}                                            
                                 string propName = property.Name.ToLower();
-                                if (Settings.EnableDebug) Console.WriteLine("DbInit notInTables {0} propName {1}", InTables, propName);
-                                if (InTables)
+                                if (Settings.EnableDebug) Console.WriteLine("DbInit notInTables {0} propName {1}", NotInTables, propName);
+                                if (NotInTables)
                                 {
+                                    haveTables = true;
                                     //main field from the model, normalize like Id or ModelNameId or IdModelName
                                     if (propName == "id")
                                     {
@@ -242,10 +245,18 @@ namespace BlazorIndexedDb.Configuration
 
                     tableJsonArray = tableJsonArray.Remove(tableJsonArray.Length - 1, 1);     //remove last ,
                     model = model.Replace("[]", "[" + tableJsonArray + "]");                  //replace with tables array
-                    Settings.Tables = tables.ToArray();
-                    Settings.Initialized = true;
-                    if (Settings.EnableDebug) Console.WriteLine("DbInit DB Model = {0}", model);
-                    await jsRuntime.InvokeVoidAsync("MyDb.Init", model);
+                   
+                    if (haveTables)
+                    {
+                        if (Settings.EnableDebug) Console.WriteLine("DbInit DB Model = {0}", model);
+                        await jsRuntime.InvokeVoidAsync("MyDb.Init", model);
+                        Settings.Initialized = true;
+                    }
+                    else
+                    {
+                        Settings.Initialized = false;
+                        if (Settings.EnableDebug) Console.WriteLine("No tables in a DB Model = {0}", model);
+                    }
                 }
                 catch (Exception ex)
                 {
