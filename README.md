@@ -146,6 +146,7 @@ You can modify the model classes any time, but if the model you will pass don't 
 3. DbInsert<TModel>
 4. DbUpdate<TModel>
 5. DbDelete<TModel>
+6. DbCleanTable<TModel>
 
 # Working with records from IJSRuntime Db extensions
 In all the select action you will receive the List<TModel> except if you are looking for one Key Id send, then you will receive the Model object.
