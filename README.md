@@ -57,7 +57,7 @@ public class DBContext : StoreContext
         #endregion
 
         #region constructor
-        public DBContext(IJSRuntime js) base(js, new Settings { DBName = "MyDBName", Version = 1 }) { }
+        public DBContext(IJSRuntime js) : base(js, new Settings { DBName = "MyDBName", Version = 1 }) { }
         #endregion
     }
 ```
