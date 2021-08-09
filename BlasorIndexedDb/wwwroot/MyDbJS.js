@@ -4,8 +4,8 @@
         /**
          * Initializing instance of a DB with a model send
          * @param {any} model
-         */
-        Init: (model) => db = new jsDB(model),
+        */
+        Init: (model) => db = new jsDB(JSON.parse(model)),
         Connected: () => db.Connected(),
         /**
          * Request all data from a table name. Return the data or JSON response
@@ -30,13 +30,13 @@
          * @param {string} table table name
          * @param {JSON} data data with the model format to insert
          */
-        Insert: (table, data) => db.Insert(table, data),
+        Insert: (table, data) => db.Insert(table, JSON.parse(data)),
         /**
          * Update data into the table. The data always must be content all the columns, if not the function retrieve the actual data to keep always same data into a table. Alway return a JSON response
          * @param {string} table table name
          * @param {JSON} data data with the model format to update
          */
-        Update: (table, data) => db.Update(table, data),
+        Update: (table, data) => db.Update(table, JSON.parse(data)),
         /**
          * Delete one row from a table. Alway return a JSON response
          * @param {string} table table name
