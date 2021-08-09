@@ -10,10 +10,8 @@
     <Copyright>Free</Copyright>
     <PackageLicenseFile>License.txt</PackageLicenseFile>
     <PackageTags>webassembly, blazor, indexedDb, interop, javascript, database</PackageTags>
-    <PackageReleaseNotes>
-		1.4.16 fixed always parse the object receive for initialize a db, inser and update actions.
-		1.4.15 change how to initialize the StoreContext. Now is not necessary send namespace about where is the entities, this set more flexible setup the StoreContext because auto search all the Class inherits StoreContext and StoreSet
-		1.4.14 Fixed if Model don't have keypath and it's addes automatic then can add new rows when the keypath must be null in teh JSON object send to the indexedDb Store</PackageReleaseNotes>
+    <PackageReleaseNotes>fixed always parse the object receive for initialize a db, inser and update actions.
+add function to clean a data table. Can delete all rows within one transaction.</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/drualcman/BlasorIndexedDb</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
     <PackageId>DrUalcman-BlazorIndexedDb</PackageId>

@@ -274,6 +274,27 @@
             <param name="id">column to compare</param>
             <returns></returns>
         </member>
+        <member name="T:BlazorIndexedDb.Commands.TableActions">
+            <summary>
+            Manage tables
+            </summary>
+        </member>
+        <member name="M:BlazorIndexedDb.Commands.TableActions.DbCleanTable``1(Microsoft.JSInterop.IJSRuntime)">
+            <summary>
+            Delete all rows from a table
+            </summary>
+            <typeparam name="TModel">Table or store to use</typeparam>
+            <param name="jsRuntime"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Commands.TableActions.DbCleanTable(Microsoft.JSInterop.IJSRuntime,System.String)">
+            <summary>
+            Delete all rows from a table
+            </summary>
+            <param name="jsRuntime"></param>
+            <param name="name"></param>
+            <returns></returns>
+        </member>
         <member name="T:BlazorIndexedDb.Commands.UpdateActions">
             <summary>
             Update commands
@@ -787,6 +808,12 @@
             </summary>
             <param name="toUpdate"></param>
             <param name="isOffline"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Store.StoreSet`1.CleanAsync">
+            <summary>
+            Delete all rows from a table
+            </summary>
             <returns></returns>
         </member>
         <member name="M:BlazorIndexedDb.Store.StoreSet`1.DeleteAsync(System.Int32)">

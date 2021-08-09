@@ -44,7 +44,12 @@
          */
         Delete: (table, id) => db.Delete(table, id),
         /**
-         * Drop a table. Alway return a JSON response
+         * Delete all the data from a table. Alway return a JSON response
+         * @param {string} table table name
+         */
+        Clean: (table) => db.Clean(table),
+        /**
+         * This is equal to Clean. Alway return a JSON response
          * @param {string} table table name
          */
         Drop: (table) => db.Drop(table),

@@ -158,6 +158,13 @@ namespace BlazorIndexedDb.Store
         }
 
         /// <summary>
+        /// Delete all rows from a table
+        /// </summary>
+        /// <returns></returns>
+        public async Task<CommandResponse> CleanAsync() => 
+            Utils.CommandResponse(await DBConn.DbCleanTable<TModel>());
+
+        /// <summary>
         /// Delete record from a table store
         /// </summary>
         /// <param name="id"></param>
