@@ -373,7 +373,7 @@ class jsDB {
                 result.then(function (rows) {
                     setTimeout(() => {
                         ok(transactionResult);
-                    }, rows * 5);
+                    }, rows * 50);
                 }, bad);
             } catch (e) {
                 bad([context.SetResponse(false, e.message)]);
@@ -421,16 +421,14 @@ class jsDB {
                                         let o = context.CheckModel(table, element);
                                         let ssnId = o[keyPath];
                                         if (ssnId) {
-                                            //retrieve the actual data for the index about the element
                                             let request = store.get(ssnId);
+                                            //retrieve the actual data for the index about the element
                                             request.onsuccess = function () {
-                                                let data = context.UpdateModel(request.result, o);
-                                                let objRequest = store.put(data);
-
+                                                let dat = context.UpdateModel(request.result, o);
+                                                let objRequest = store.put(dat);
                                                 objRequest.onsuccess = () => {
                                                     transactionResult.push(context.SetResponse(true, `Success in updating record ${ssnId}`));
                                                 };
-
                                                 objRequest.onerror = () => {
                                                     transactionResult.push(context.SetResponse(false, `Error in updating record ${ssnId}`));
                                                 };
@@ -439,14 +437,14 @@ class jsDB {
                                         else {
                                             let data = context.MergeObjects(o, element);
                                             store.put(data);
+                                            transaction.oncomplete = () => {
+                                                db.close();
+                                                transactionResult.push(context.SetResponse(true, 'Insert done!'));
+                                            };
                                             transaction.onerror = ev => {
                                                 db.close();
                                                 transactionResult.push(context.SetResponse(false, ev.target.error.message));
                                                 console.warn(ev.target.error.message);
-                                            };
-                                            transaction.oncomplete = () => {
-                                                db.close();
-                                                transactionResult.push(context.SetResponse(true, 'Insert done!'));
                                             };
                                         }
                                     } catch (e) {
@@ -465,7 +463,7 @@ class jsDB {
                 result.then(function (rows) {
                     setTimeout(() => {
                         ok(transactionResult);
-                    }, rows * 5);
+                    }, rows * 50);
                 }, bad);
             } catch (e) {
                 bad([context.SetResponse(false, e.message)]);
