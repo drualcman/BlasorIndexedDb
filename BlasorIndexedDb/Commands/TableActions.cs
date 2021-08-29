@@ -35,27 +35,35 @@ namespace BlazorIndexedDb.Commands
         /// <returns></returns>
         public static async ValueTask<ResponseJsDb> DbCleanTable(this IJSRuntime jsRuntime, [NotNull] string name)
         {
-            List<ResponseJsDb> result = new List<ResponseJsDb>();
-            if (Settings.Initialized)
+            try
             {
-                try
+                List<ResponseJsDb> result = new List<ResponseJsDb>();
+                if (Settings.Initialized)
                 {
-                    result.AddRange(await jsRuntime.InvokeAsync<List<ResponseJsDb>>($"MyDb.Clean", name));
+                    try
+                    {
+                        result.AddRange(await jsRuntime.InvokeAsync<List<ResponseJsDb>>($"MyDb.Clean", name));
+                    }
+                    catch (Exception ex)
+                    {
+                        if (Settings.EnableDebug) Console.WriteLine($"DbCleanTable: {name} Error: {ex}");
+                        result = new List<ResponseJsDb>();
+                        result.Add(new ResponseJsDb { Result = false, Message = ex.Message });
+                    }
                 }
-                catch (Exception ex)
+                else
                 {
-                    if (Settings.EnableDebug) Console.WriteLine($"DbCleanTable: {name} Error: {ex}");
+                    if (Settings.EnableDebug) Console.WriteLine($"TableActions: IndexedDb not initialized yet!");
                     result = new List<ResponseJsDb>();
-                    result.Add(new ResponseJsDb { Result = false, Message = ex.Message });
+                    result.Add(new ResponseJsDb { Result = false, Message = $"IndexedDb not initialized yet!" });
                 }
+                return result[0];
             }
-            else
+            catch (Exception ex)
             {
-                if (Settings.EnableDebug) Console.WriteLine($"TableActions: IndexedDb not initialized yet!");
-                result = new List<ResponseJsDb>();
-                result.Add(new ResponseJsDb { Result = false, Message = $"IndexedDb not initialized yet!" });
+                throw new ResponseException(nameof(DbCleanTable), name, ex.Message, ex);
             }
-            return result[0];
+            
         }
 
     }

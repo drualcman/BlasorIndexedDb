@@ -581,6 +581,49 @@
             Return a result from the transaction
             </summary>
         </member>
+        <member name="T:BlazorIndexedDb.Models.ResponseException">
+            <summary>
+            Manage own exceptions
+            </summary>
+        </member>
+        <member name="P:BlazorIndexedDb.Models.ResponseException.Command">
+            <summary>
+            Command throw the exception
+            </summary>
+        </member>
+        <member name="P:BlazorIndexedDb.Models.ResponseException.StoreName">
+            <summary>
+            Store name throw the exception
+            </summary>
+        </member>
+        <member name="P:BlazorIndexedDb.Models.ResponseException.TransactionData">
+            <summary>
+            Data inside the transaction if have
+            </summary>
+        </member>
+        <member name="M:BlazorIndexedDb.Models.ResponseException.#ctor(System.String,System.String,System.String)">
+            <summary>
+            Basic internal constructor
+            </summary>
+            <param name="command"></param>
+            <param name="storeName"></param>
+            <param name="data"></param>
+        </member>
+        <member name="M:BlazorIndexedDb.Models.ResponseException.#ctor(System.String,System.String,System.String,System.Exception)">
+            <summary>
+            Constructor with the inner Exception
+            </summary>
+            <param name="command"></param>
+            <param name="storeName"></param>
+            <param name="data"></param>
+            <param name="innerException"></param>
+        </member>
+        <member name="M:BlazorIndexedDb.Models.ResponseException.ToString">
+            <summary>
+            Return error formated
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:BlazorIndexedDb.Models.ResponseJsDb">
             <summary>
             Response object for the commands

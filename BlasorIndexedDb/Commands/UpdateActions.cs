@@ -41,36 +41,38 @@ namespace BlazorIndexedDb.Commands
         /// <returns></returns>
         public static async ValueTask<List<ResponseJsDb>> DbUpdate<TModel>(this IJSRuntime jsRuntime, [NotNull] List<TModel> rows)
         {
-            List<ResponseJsDb> result = new List<ResponseJsDb>();
-            if (Settings.Initialized)
+            try
             {
-                int c = rows.Count;
-                if (c > 0)
+                List<ResponseJsDb> result = new List<ResponseJsDb>();
+                if (Settings.Initialized)
                 {
-                    try
+                    int c = rows.Count;
+                    if (c > 0)
                     {
-                        result.AddRange(await Commands.DbCommand(jsRuntime, DbCommands.Update, Utils.GetName<TModel>(), await ObjectConverter.ToJsonAsync(rows)));
-                    }
-                    catch (Exception ex)
-                    {
-                        if (Settings.EnableDebug) Console.WriteLine($"DbUpdate Model: {Utils.GetName<TModel>()} Error: {ex}");
-                        result = new List<ResponseJsDb>{
+                        try
+                        {
+                            result.AddRange(await Commands.DbCommand(jsRuntime, DbCommands.Update, Utils.GetName<TModel>(), await ObjectConverter.ToJsonAsync(rows)));
+                        }
+                        catch (Exception ex)
+                        {
+                            if (Settings.EnableDebug) Console.WriteLine($"DbUpdate Model: {Utils.GetName<TModel>()} Error: {ex}");
+                            result = new List<ResponseJsDb>{
                         new ResponseJsDb { Result = false, Message = ex.Message }
+                    };
+                        }
+                    }
+                    else
+                    {
+                        if (Settings.EnableDebug) Console.WriteLine($"DbUpdate No need update into {Utils.GetName<TModel>()}");
+                        result = new List<ResponseJsDb>{
+                        new ResponseJsDb { Result = true, Message =$"No need update into {Utils.GetName<TModel>()}!" }
                     };
                     }
                 }
                 else
                 {
-                    if (Settings.EnableDebug) Console.WriteLine($"DbUpdate No need update into {Utils.GetName<TModel>()}");
-                    result = new List<ResponseJsDb>{
-                        new ResponseJsDb { Result = true, Message =$"No need update into {Utils.GetName<TModel>()}!" }
-                    };
-                }
-            }
-            else
-            {
-                if (Settings.EnableDebug) Console.WriteLine($"UpdateActions: IndexedDb not initialized yet!");
-                result = new List<ResponseJsDb>()
+                    if (Settings.EnableDebug) Console.WriteLine($"UpdateActions: IndexedDb not initialized yet!");
+                    result = new List<ResponseJsDb>()
                 {
                     new ResponseJsDb()
                     {
@@ -78,8 +80,14 @@ namespace BlazorIndexedDb.Commands
                          Result = false
                     }
                 };
+                }
+                return result;
             }
-            return result;
+            catch (Exception ex)
+            {
+                throw new ResponseException(nameof(DbUpdate), typeof(TModel).Name, ex.Message, ex);
+            }
+            
         }
 
 
@@ -107,9 +115,17 @@ namespace BlazorIndexedDb.Commands
         /// <returns></returns>
         public static async ValueTask<List<ResponseJsDb>> DbUpdateOffLine<TModel>(this IJSRuntime jsRuntime, [NotNull] List<TModel> rows)
         {
-            List<dynamic> expanded = await AddOflineProperty.AddOfflineAsync(rows);
-            if (Settings.EnableDebug) Console.WriteLine($"DbUpdateOffLine in modelL  = {Utils.GetName<TModel>()}");            
-            return await DbUpdate(jsRuntime, expanded);
+            try
+            {
+                List<dynamic> expanded = await AddOflineProperty.AddOfflineAsync(rows);
+                if (Settings.EnableDebug) Console.WriteLine($"DbUpdateOffLine in modelL  = {Utils.GetName<TModel>()}");
+                return await DbUpdate(jsRuntime, expanded);
+            }
+            catch (Exception ex)
+            {
+                throw new ResponseException(nameof(DbUpdateOffLine), typeof(TModel).Name, ex.Message, ex);
+            }
+            
         }
     }
 }

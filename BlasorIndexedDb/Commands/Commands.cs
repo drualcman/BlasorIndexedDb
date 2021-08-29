@@ -45,7 +45,14 @@ namespace BlazorIndexedDb.Commands
             DbCommands command, string modelName, string data)
         {
             if (Settings.EnableDebug) Console.WriteLine($"DbInsert data = {data}");
-            return await jsRuntime.InvokeAsync<List<ResponseJsDb>>($"MyDb.{command}", modelName, data);
+            try
+            {
+                return await jsRuntime.InvokeAsync<List<ResponseJsDb>>($"MyDb.{command}", modelName, data);
+            }
+            catch (Exception ex)
+            {
+                throw new ResponseException(command.ToString(), modelName, data, ex);
+            }
         }
 
         /// <summary>

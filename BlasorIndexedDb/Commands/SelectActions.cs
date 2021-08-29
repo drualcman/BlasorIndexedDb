@@ -1,5 +1,6 @@
 ﻿using BlazorIndexedDb.Configuration;
 using BlazorIndexedDb.Helpers;
+using BlazorIndexedDb.Models;
 using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
@@ -31,9 +32,9 @@ namespace BlazorIndexedDb.Commands
                 {
                     data = await jsRuntime.InvokeAsync<List<TModel>>("MyDb.Select", typeof(TModel).Name);
                 }
-                catch 
+                catch (Exception ex)
                 {
-                    data = new List<TModel>();
+                    throw new ResponseException(nameof(DbSelect), typeof(TModel).Name, ex.Message, ex);
                 }
             }
             else
@@ -42,6 +43,7 @@ namespace BlazorIndexedDb.Commands
                 data = new List<TModel>();
             }
             return data;
+
         }
 
         /// <summary>
@@ -61,9 +63,9 @@ namespace BlazorIndexedDb.Commands
                 {
                     data = await jsRuntime.InvokeAsync<List<TModel>>("MyDb.SelectWhere", typeof(TModel).Name, column, value);
                 }
-                catch
+                catch (Exception ex)
                 {
-                    data = new List<TModel>();
+                    throw new ResponseException(nameof(DbSelect), typeof(TModel).Name, ex.Message, ex);
                 }
             }
             else
@@ -72,6 +74,7 @@ namespace BlazorIndexedDb.Commands
                 data = new List<TModel>();
             }
             return data;
+
         }
         #endregion
 
@@ -93,16 +96,16 @@ namespace BlazorIndexedDb.Commands
                     List<TModel> data = await jsRuntime.InvokeAsync<List<TModel>>("MyDb.SelectId", typeof(TModel).Name, id);
                     return data[0];
                 }
-                catch
+                catch (Exception ex)
                 {
-                    return null;
+                    throw new ResponseException(nameof(SingleRecord), typeof(TModel).Name, ex.Message, ex);
                 }
             }
             else
             {
                 if (Settings.EnableDebug) Console.WriteLine($"SelectActions: IndexedDb not initialized yet!");
                 return null;
-            }           
+            }
         }
 
         /// <summary>
@@ -121,9 +124,9 @@ namespace BlazorIndexedDb.Commands
                     List<TModel> data = await jsRuntime.InvokeAsync<List<TModel>>("MyDb.SelectId", typeof(TModel).Name, id);
                     return data[0];
                 }
-                catch
+                catch (Exception ex)
                 {
-                    return null;
+                    throw new ResponseException(nameof(SingleRecord), typeof(TModel).Name, ex.Message, ex);
                 }
             }
             else
@@ -150,9 +153,9 @@ namespace BlazorIndexedDb.Commands
                     List<TModel> data = await jsRuntime.InvokeAsync<List<TModel>>("MyDb.SelectId", typeof(TModel).Name, id);
                     return data[0];
                 }
-                catch
+                catch (Exception ex)
                 {
-                    return null;
+                    throw new ResponseException(nameof(SingleRecord), typeof(TModel).Name, ex.Message, ex);
                 }
             }
             else
@@ -178,9 +181,9 @@ namespace BlazorIndexedDb.Commands
                     List<TModel> data = await jsRuntime.InvokeAsync<List<TModel>>("MyDb.SelectId", typeof(TModel).Name, id);
                     return data[0];
                 }
-                catch
+                catch (Exception ex)
                 {
-                    return null;
+                    throw new ResponseException(nameof(SingleRecord), typeof(TModel).Name, ex.Message, ex);
                 }
             }
             else
@@ -206,9 +209,9 @@ namespace BlazorIndexedDb.Commands
                     List<TModel> data = await jsRuntime.InvokeAsync<List<TModel>>("MyDb.SelectId", typeof(TModel).Name, id);
                     return data[0];
                 }
-                catch
+                catch (Exception ex)
                 {
-                    return null;
+                    throw new ResponseException(nameof(SingleRecord), typeof(TModel).Name, ex.Message, ex);
                 }
             }
             else
@@ -234,9 +237,9 @@ namespace BlazorIndexedDb.Commands
                     List<TModel> data = await jsRuntime.InvokeAsync<List<TModel>>("MyDb.SelectId", typeof(TModel).Name, id);
                     return data[0];
                 }
-                catch
+                catch (Exception ex)
                 {
-                    return null;
+                    throw new ResponseException(nameof(SingleRecord), typeof(TModel).Name, ex.Message, ex);
                 }
             }
             else
@@ -263,9 +266,9 @@ namespace BlazorIndexedDb.Commands
                     List<TModel> data = await jsRuntime.InvokeAsync<List<TModel>>("MyDb.SelectId", typeof(TModel).Name, id);
                     return data[0];
                 }
-                catch
+                catch (Exception ex)
                 {
-                    return null;
+                    throw new ResponseException(nameof(SingleRecord), typeof(TModel).Name, ex.Message, ex);
                 }
             }
             else
