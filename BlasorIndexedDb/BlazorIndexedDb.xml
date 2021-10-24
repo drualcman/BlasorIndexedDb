@@ -639,46 +639,6 @@
             Transaction message
             </summary>
         </member>
-        <member name="T:BlazorIndexedDb.Store.IStoreService`1">
-            <summary>
-            Interface to implement in all services
-            </summary>
-            <typeparam name="TModel"></typeparam>
-        </member>
-        <member name="M:BlazorIndexedDb.Store.IStoreService`1.FilesStore">
-            <summary>
-            Get all rows from the table
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:BlazorIndexedDb.Store.IStoreService`1.FilesStore(System.String)">
-            <summary>
-            Get Only one row from the table
-            </summary>
-            <param name="id">column name to compare in the where</param>
-            <returns></returns>
-        </member>
-        <member name="M:BlazorIndexedDb.Store.IStoreService`1.AddAsync(`0)">
-            <summary>
-            Add data to the table
-            </summary>
-            <param name="toAdd"></param>
-            <returns></returns>
-        </member>
-        <member name="M:BlazorIndexedDb.Store.IStoreService`1.UpdateAsync(`0)">
-            <summary>
-            Update data into a table
-            </summary>
-            <param name="toAdd"></param>
-            <returns></returns>
-        </member>
-        <member name="M:BlazorIndexedDb.Store.IStoreService`1.DeleteAsync(System.String)">
-            <summary>
-            Delete row from a table
-            </summary>
-            <param name="id"></param>
-            <returns></returns>
-        </member>
         <member name="T:BlazorIndexedDb.Store.StoreContext">
             <summary>
                 A StoreContext instance represents a instance of a indexedDb into the browser
@@ -703,57 +663,6 @@
             Initialize the connection with a indexedDb
             </summary>
             <param name="settings"></param>
-        </member>
-        <member name="T:BlazorIndexedDb.Store.StoreService`1">
-            <summary>
-            Interface to implement in all services
-            </summary>
-            <typeparam name="TModel"></typeparam>
-        </member>
-        <member name="F:BlazorIndexedDb.Store.StoreService`1.DBConn">
-            <summary>
-            Manage JAVASCRIPT
-            </summary>
-        </member>
-        <member name="M:BlazorIndexedDb.Store.StoreService`1.#ctor(Microsoft.JSInterop.IJSRuntime)">
-            <summary>
-            Inject IJSRuntime when instance this class
-            </summary>
-            <param name="js"></param>
-        </member>
-        <member name="M:BlazorIndexedDb.Store.StoreService`1.FilesStore">
-            <summary>
-            Get all rows from the table
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:BlazorIndexedDb.Store.StoreService`1.FilesStore(System.String)">
-            <summary>
-            Get Only one row from the table
-            </summary>
-            <param name="id"></param>
-            <returns></returns>
-        </member>
-        <member name="M:BlazorIndexedDb.Store.StoreService`1.AddAsync(`0)">
-            <summary>
-            Add data to the table
-            </summary>
-            <param name="toAdd"></param>
-            <returns></returns>
-        </member>
-        <member name="M:BlazorIndexedDb.Store.StoreService`1.UpdateAsync(`0)">
-            <summary>
-            Update data into a table
-            </summary>
-            <param name="toAdd"></param>
-            <returns></returns>
-        </member>
-        <member name="M:BlazorIndexedDb.Store.StoreService`1.DeleteAsync(System.String)">
-            <summary>
-            Delete row from a table
-            </summary>
-            <param name="id"></param>
-            <returns></returns>
         </member>
         <member name="T:BlazorIndexedDb.Store.StoreSet`1">
             <summary>

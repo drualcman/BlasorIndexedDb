@@ -15,7 +15,7 @@ namespace BlazorIndexedDb.Store
     ///     A StoreContext instance represents a instance of a indexedDb into the browser
     ///     with the stores and can be used to query and save instances of your entities.
     /// </summary>
-    public class StoreContext
+    public abstract class StoreContext
     {
         private readonly IJSRuntime DBConn;
 
