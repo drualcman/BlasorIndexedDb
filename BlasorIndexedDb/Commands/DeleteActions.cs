@@ -45,7 +45,8 @@ namespace BlazorIndexedDb.Commands
                 result = new List<ResponseJsDb>();
                 result.Add(new ResponseJsDb { Result = false, Message = $"IndexedDb not initialized yet!" });
             }
-            return result[0];
+            if (result.Count > 0) return result[0];
+            else return new ResponseJsDb { Result = false, Message = "No results" };
         }
 
         /// <summary>
@@ -78,7 +79,8 @@ namespace BlazorIndexedDb.Commands
                 result = new List<ResponseJsDb>();
                 result.Add(new ResponseJsDb { Result = false, Message = $"IndexedDb not initialized yet!" });
             }
-            return result[0]; 
+            if (result.Count > 0) return result[0];
+            else return new ResponseJsDb { Result = false, Message = "No results" };
         }
 
 
@@ -112,7 +114,8 @@ namespace BlazorIndexedDb.Commands
                 result = new List<ResponseJsDb>();
                 result.Add(new ResponseJsDb { Result = false, Message = $"IndexedDb not initialized yet!" });
             }
-            return result[0];
+            if (result.Count > 0) return result[0];
+            else return new ResponseJsDb { Result = false, Message = "No results" };
         }
 
 
@@ -146,7 +149,8 @@ namespace BlazorIndexedDb.Commands
                 result = new List<ResponseJsDb>();
                 result.Add(new ResponseJsDb { Result = false, Message = $"IndexedDb not initialized yet!" });
             }
-            return result[0];
+            if (result.Count > 0) return result[0];
+            else return new ResponseJsDb { Result = false, Message = "No results" };
         }
 
         /// <summary>
@@ -178,7 +182,8 @@ namespace BlazorIndexedDb.Commands
                 result = new List<ResponseJsDb>();
                 result.Add(new ResponseJsDb { Result = false, Message = $"IndexedDb not initialized yet!" });
             }
-            return result[0];
+            if (result.Count > 0) return result[0];
+            else return new ResponseJsDb { Result = false, Message = "No results" };
         }
     }
 }

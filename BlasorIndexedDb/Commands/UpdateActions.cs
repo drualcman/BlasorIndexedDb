@@ -29,7 +29,8 @@ namespace BlazorIndexedDb.Commands
             List<TModel> rows = new List<TModel>();
             rows.Add(data);
             List<ResponseJsDb> response = await DbUpdate(jsRuntime, rows);
-            return response[0];
+            if (response.Count > 0) return response[0];
+            else return new ResponseJsDb { Result = false, Message = "No results" };
         }
 
         /// <summary>
@@ -103,7 +104,8 @@ namespace BlazorIndexedDb.Commands
             List<TModel> rows = new List<TModel>();
             rows.Add(data);
             List<ResponseJsDb> response = await DbUpdateOffLine(jsRuntime, rows);
-            return response[0];
+            if (response.Count > 0) return response[0];
+            else return new ResponseJsDb { Result = false, Message = "No results" };
         }
 
         /// <summary>

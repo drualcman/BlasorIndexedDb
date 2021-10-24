@@ -3,25 +3,25 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.5.17</Version>
+    <Version>1.5.18</Version>
     <Authors>Sergi Ortiz Gomez</Authors>
     <Company>DrUalcman</Company>
     <Description>Manage IndexedDb from Blazor WebAssembly applications. Create a StoreDbContext similar how is working in EF</Description>
     <Copyright>Free</Copyright>
     <PackageLicenseFile>License.txt</PackageLicenseFile>
     <PackageTags>webassembly, blazor, indexedDb, interop, javascript, database</PackageTags>
-    <PackageReleaseNotes>Fixed wrong exception on update from Blazor because Javascript finished a promise too early.
-Add ResponseException to encapsulate and manage the exceptions .</PackageReleaseNotes>
+    <PackageReleaseNotes>Fixed a bug when no transactions. Fixed a bug when have enum property in the object for the Store.</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/drualcman/BlasorIndexedDb</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
     <PackageId>DrUalcman-BlazorIndexedDb</PackageId>
     <Product>BlazorIndexedDb</Product>
     <PackageProjectUrl>https://blazorindexdb.community-mall.com/</PackageProjectUrl>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <AssemblyVersion>1.5.17.2</AssemblyVersion>
-    <FileVersion>1.5.17.2</FileVersion>
+    <AssemblyVersion>1.5.18.3</AssemblyVersion>
+    <FileVersion>1.5.18.3</FileVersion>
     <AssemblyName>DrUalcman-BlazorIndexedDb</AssemblyName>
     <RootNamespace>BlazorIndexedDb</RootNamespace>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -39,6 +39,10 @@ Add ResponseException to encapsulate and manage the exceptions .</PackageRelease
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
     <None Include="License.txt">
       <Pack>True</Pack>
       <PackagePath></PackagePath>

@@ -68,6 +68,10 @@ namespace BlazorIndexedDb.Configuration
         /// </summary>
         public static string[] Tables { get; set; }
 
+        ///// <summary>
+        ///// Names about the models to use
+        ///// </summary>
+        //public static Dictionary<string, string> Tables1 { get; set; }
 
         private static bool InitializedBk;
 

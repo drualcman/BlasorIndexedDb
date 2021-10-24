@@ -30,7 +30,8 @@ namespace BlazorIndexedDb.Commands
             List<TModel> rows = new List<TModel>();
             rows.Add(data);
             List<ResponseJsDb> response = await DbInsert(jsRuntime, rows);
-            return response[0];
+            if (response.Count > 0) return response[0];
+            else return new ResponseJsDb { Result = false, Message = "No results" };            
         }
 
         /// <summary>
@@ -56,12 +57,13 @@ namespace BlazorIndexedDb.Commands
 
                             bool allGood = false;
                             c = result.Count;
+
                             int i = 0;
-                            do
+                            while (c > 0 && !allGood && i < c)
                             {
                                 allGood = result[i].Result;
                                 i++;
-                            } while (!allGood && i < c);
+                            }
 
                             if (allGood)
                             {
@@ -144,7 +146,8 @@ namespace BlazorIndexedDb.Commands
             List<TModel> rows = new List<TModel>();
             rows.Add(data);
             List<ResponseJsDb> response = await DbInserOffline(jsRuntime, rows);
-            return response[0];
+            if (response.Count > 0) return response[0];
+            else return new ResponseJsDb { Result = false, Message = "No results" };
         }
 
         /// <summary>

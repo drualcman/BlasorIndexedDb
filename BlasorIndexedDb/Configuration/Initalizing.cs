@@ -80,11 +80,16 @@ namespace BlazorIndexedDb.Configuration
 
                 try
                 {
-                    Type type = typeof(StoreContext);
+                    //Type type = typeof(StoreContext);
 
                     IEnumerable<Type> storeContexts = AppDomain.CurrentDomain.GetAssemblies()
                         .SelectMany(s => s.GetTypes())
-                        .Where(p => type.IsAssignableFrom(p));
+                        .Where(p => typeof(StoreContext).IsAssignableFrom(p));
+
+                    //IEnumerable<PropertyInfo> storeSets = storeContexts
+                    //   .SelectMany(s => s.GetProperties(BindingFlags.Public | BindingFlags.Instance))
+                    //   .Where(x => x.GetType().IsGenericType && 
+                    //               x.GetType().GetGenericTypeDefinition() == typeof(StoreSet<>));
 
                     IEnumerable<PropertyInfo> storeSets = storeContexts
                        .SelectMany(s => s.GetProperties(BindingFlags.Public | BindingFlags.Instance))
@@ -93,6 +98,8 @@ namespace BlazorIndexedDb.Configuration
                     List<Type> types = new List<Type>();
                     foreach (PropertyInfo item in storeSets)
                     {
+                        //Console.WriteLine($"property name {item.PropertyType.Name}");
+                        //Console.WriteLine($"table name {item.Name}");
                         types.Add(item.PropertyType);
                         string tableName = Utils.GetGenericTypeName(item.PropertyType);
                         tables.Add(tableName);
