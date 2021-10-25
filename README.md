@@ -8,16 +8,18 @@ Manage indexedDb from c# with Blazor. Simple way to interact with IndexedDB simi
 # NuGet installation
 ```PM> Install-Package DrUalcman-BlazorIndexedDb```
 
-## New version changes coming
-Working in a new version with StoreContext and StoreSet to easy manage and work from C#. New version 1.4.14. Last stable version 1.4.13
-Add references between tables. Update multiple tables same time, and more...
+## We are working in...
+Working in set the storename like the name set into the StoreSet. Now is getting from the class model name. 
+This create you can't have 2 StoreSet with same class model (not usuall but can be).
+Excample, class is Person and you have Employee table and Customer table using this class. 
+Then in indexed DB only create one Store with name Person.
 
 # Current features
-Create StoreContext.
+Create StoreContext from abstract class.
 StoreSet per each model you need into a database.
 Set PrimaKey in the model.
 CURD from StoreSet
-Select all or one by PrimaryKey from StoreSet
+Select all or one by PrimaryKey or property (field only one field for the where action) from StoreSet
 
 # How to use
 BlazorIndexedDb requires an instance IJSRuntime, should normally already be registered.
