@@ -53,8 +53,8 @@ namespace BlazorIndexedDb.Store
             if (Settings.EnableDebug) Console.WriteLine($"StoreContext Init => Need is Initialized {Settings.Initialized}");
             if (!Settings.Initialized)
             {
-                InitStores();
                 _ = Initalizing.DbInit(DBConn, settings);
+                InitStores();
             }
         }
 
@@ -62,7 +62,7 @@ namespace BlazorIndexedDb.Store
         {
             PropertyInfo[] properties = this.GetType()
                    .GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                   .Where(x => x.PropertyType.Name == "StoreSet`1").ToArray();
+                   .Where(x => x.PropertyType.IsGenericType && x.PropertyType.GetGenericTypeDefinition().IsAssignableTo(typeof(StoreSet<>))).ToArray();
 
             int c = properties.Length;
             for (int i = 0; i < c; i++)

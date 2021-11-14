@@ -24,7 +24,7 @@ namespace BlazorIndexedDb.Commands
         /// <returns></returns>
         public static async ValueTask<ResponseJsDb> DbCleanTable<TModel>(this IJSRuntime jsRuntime)
         {
-            return await DbCleanTable(jsRuntime, Utils.GetName<TModel>());
+            return await DbCleanTable(jsRuntime, Settings.Tables.GetTable<TModel>());
         }
 
         /// <summary>

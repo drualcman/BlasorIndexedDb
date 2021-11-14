@@ -20,12 +20,13 @@ namespace BlazorIndexedDb.Helpers
         public string StoreIndexName { get; set; }
         public string FieldName { get; set; }
 
+
         /// <summary>
         /// Get all the indexdb attributes from the porperty
         /// </summary>
         /// <param name="p"></param>
-        public PropertyOptions(PropertyInfo p)
-        {            
+        public PropertyOptions(PropertyInfo p) 
+        {        
             this.Name = p.Name;
             IEnumerable<Attribute> attrs = p.GetCustomAttributes();  // Reflection.  
             // Displaying output.  

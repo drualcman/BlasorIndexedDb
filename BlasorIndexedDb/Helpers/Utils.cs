@@ -31,44 +31,6 @@ namespace BlazorIndexedDb.Helpers
             return new(allGood, allGood ? "All transactions finished with true" : "Some transaction can't be finished", response);
         }
 
-        public static bool InTables(PropertyInfo property)
-        {
-            bool result = Settings.Tables.Contains(property.PropertyType.Name);
-            if (!result) result = Settings.Tables.Contains(GetGenericTypeName(property.PropertyType));
-            return result;
-        }
-
-        /// <summary>
-        /// Get class name
-        /// </summary>
-        /// <typeparam name="TModel"></typeparam>
-        /// <returns></returns>
-        public static string GetName<TModel>()
-        {
-            Type myType = typeof(TModel);
-            return myType.Name;
-        }
-
-        /// <summary>
-        /// Get class name
-        /// </summary>
-        /// <returns></returns>
-        public static string GetName(object sender)
-        {
-            Type myType = sender.GetType();
-            return myType.Name;
-        }
-
-        /// <summary>
-        /// Get object type name in lower case
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <returns></returns>
-        public static string GetNameToLower(object sender)
-        {
-            return sender.GetType().Name.ToLower();
-        }
-
         /// <summary>
         /// Get only the name from the type passed if it's from a generic type
         /// </summary>

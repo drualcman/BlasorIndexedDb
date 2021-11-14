@@ -38,20 +38,25 @@ namespace BlazorIndexedDb.Commands
         /// </summary>
         /// <param name="jsRuntime"></param>
         /// <param name="command"></param>
-        /// <param name="modelName"></param>
+        /// <param name="storeName"></param>
         /// <param name="data"></param>
         /// <returns></returns>
         public static async ValueTask<List<ResponseJsDb>> DbCommand(this IJSRuntime jsRuntime,
-            DbCommands command, string modelName, string data)
-        {
-            if (Settings.EnableDebug) Console.WriteLine($"DbInsert data = {data}");
-            try
+            DbCommands command, string storeName, string data)
+        {            
+            if (Settings.EnableDebug) Console.WriteLine($"DbInsert store = {storeName}, data = {data}");
+            if (string.IsNullOrEmpty(storeName)) throw new ResponseException(command.ToString(), "StoreName can't be null", data);
+            else if (string.IsNullOrEmpty(data)) throw new ResponseException(command.ToString(), storeName, "Data can't be null");
+            else
             {
-                return await jsRuntime.InvokeAsync<List<ResponseJsDb>>($"MyDb.{command}", modelName, data);
-            }
-            catch (Exception ex)
-            {
-                throw new ResponseException(command.ToString(), modelName, data, ex);
+                try
+                {
+                    return await jsRuntime.InvokeAsync<List<ResponseJsDb>>($"MyDb.{command}", storeName, data);
+                }
+                catch (Exception ex)
+                {
+                    throw new ResponseException(command.ToString(), storeName, data, ex);
+                }
             }
         }
 

@@ -86,7 +86,7 @@
             </summary>
             <param name="jsRuntime"></param>
             <param name="command"></param>
-            <param name="modelName"></param>
+            <param name="storeName"></param>
             <param name="data"></param>
             <returns></returns>
         </member>
@@ -544,26 +544,6 @@
             Internal utilities
             </summary>
         </member>
-        <member name="M:BlazorIndexedDb.Helpers.Utils.GetName``1">
-            <summary>
-            Get class name
-            </summary>
-            <typeparam name="TModel"></typeparam>
-            <returns></returns>
-        </member>
-        <member name="M:BlazorIndexedDb.Helpers.Utils.GetName(System.Object)">
-            <summary>
-            Get class name
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:BlazorIndexedDb.Helpers.Utils.GetNameToLower(System.Object)">
-            <summary>
-            Get object type name in lower case
-            </summary>
-            <param name="sender"></param>
-            <returns></returns>
-        </member>
         <member name="M:BlazorIndexedDb.Helpers.Utils.GetGenericTypeName(System.Type)">
             <summary>
             Get only the name from the type passed if it's from a generic type
@@ -663,6 +643,62 @@
             Initialize the connection with a indexedDb
             </summary>
             <param name="settings"></param>
+        </member>
+        <member name="T:BlazorIndexedDb.Store.StoreNames">
+            <summary>
+            Encapsulate manage tables and model for the database
+            </summary>
+        </member>
+        <member name="M:BlazorIndexedDb.Store.StoreNames.#ctor">
+            <summary>
+            Create a instance and initialized private tabes list with TableWithModel class
+            </summary>
+        </member>
+        <member name="M:BlazorIndexedDb.Store.StoreNames.AddTable(BlazorIndexedDb.Store.StoreSetDefinition)">
+            <summary>
+            Add new table with object definition
+            </summary>
+            <param name="table"></param>
+        </member>
+        <member name="M:BlazorIndexedDb.Store.StoreNames.AddTable(System.String,System.String)">
+            <summary>
+            Add new table with model
+            </summary>
+            <param name="name"></param>
+            <param name="model"></param>
+        </member>
+        <member name="M:BlazorIndexedDb.Store.StoreNames.InTables(System.String)">
+            <summary>
+            Serach if the table already exists
+            </summary>
+            <param name="tableName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Store.StoreNames.InTables``1">
+            <summary>
+            Serach if the model already exists in some table
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Store.StoreNames.GetTable(System.String)">
+            <summary>
+            Get table name from the model
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Store.StoreNames.GetTable``1">
+            <summary>
+            Get table name from the model
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Store.StoreNames.GetModel(System.String)">
+            <summary>
+            Get table name from the model
+            </summary>
+            <param name="table"></param>
+            <returns></returns>
         </member>
         <member name="T:BlazorIndexedDb.Store.StoreSet`1">
             <summary>
@@ -802,6 +838,21 @@
             </summary>
             <param name="id"></param>
             <returns></returns>
+        </member>
+        <member name="T:BlazorIndexedDb.Store.StoreSetDefinition">
+            <summary>
+            Define Tables and model name
+            </summary>
+        </member>
+        <member name="P:BlazorIndexedDb.Store.StoreSetDefinition.Name">
+            <summary>
+            StoreSet Name
+            </summary>
+        </member>
+        <member name="P:BlazorIndexedDb.Store.StoreSetDefinition.Model">
+            <summary>
+            StoreSet Model name
+            </summary>
         </member>
     </members>
 </doc>

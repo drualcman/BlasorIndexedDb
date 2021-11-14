@@ -1,4 +1,6 @@
-﻿using System;
+﻿using BlazorIndexedDb.Helpers;
+using BlazorIndexedDb.Store;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -66,7 +68,7 @@ namespace BlazorIndexedDb.Configuration
         /// <summary>
         /// Names about the models to use
         /// </summary>
-        public static string[] Tables { get; set; }
+        public static StoreNames Tables { get; set; }
 
         ///// <summary>
         ///// Names about the models to use
@@ -96,7 +98,7 @@ namespace BlazorIndexedDb.Configuration
 
         static Settings()
         {            
-            Tables = new string[0];
+            Tables = new StoreNames();
             Initialized = false;
         }
         #endregion

@@ -53,7 +53,7 @@ namespace BlazorIndexedDb.Commands
                     {
                         try
                         {
-                            result.AddRange(await Commands.DbCommand(jsRuntime, DbCommands.Insert, Utils.GetName<TModel>(), await ObjectConverter.ToJsonAsync(rows)));
+                            result.AddRange(await Commands.DbCommand(jsRuntime, DbCommands.Insert, Settings.Tables.GetTable<TModel>(), await ObjectConverter.ToJsonAsync(rows)));
 
                             bool allGood = false;
                             c = result.Count;
@@ -78,7 +78,7 @@ namespace BlazorIndexedDb.Commands
                                     int p = properties.Length;
                                     for (int a = 0; a < p; a++)
                                     {
-                                        if (Utils.InTables(properties[a]))
+                                        if (Settings.Tables.InTables<TModel>())
                                         {
                                             if (ObjectConverter.IsGenericList(properties[a].GetValue(rows[i])))
                                             {
@@ -99,7 +99,7 @@ namespace BlazorIndexedDb.Commands
                         }
                         catch (Exception ex)
                         {
-                            if (Settings.EnableDebug) Console.WriteLine($"DbInsert Model: {Utils.GetName<TModel>()} Error: {ex}");
+                            if (Settings.EnableDebug) Console.WriteLine($"DbInsert Model: {Settings.Tables.GetTable<TModel>()} Error: {ex}");
                             result = new List<ResponseJsDb>{
                             new ResponseJsDb { Result = false, Message = ex.Message }
                         };
@@ -107,9 +107,9 @@ namespace BlazorIndexedDb.Commands
                     }
                     else
                     {
-                        if (Settings.EnableDebug) Console.WriteLine($"DbInsert No need insert into {Utils.GetName<TModel>()}");
+                        if (Settings.EnableDebug) Console.WriteLine($"DbInsert No need insert into {Settings.Tables.GetTable<TModel>()}");
                         result = new List<ResponseJsDb>{
-                        new ResponseJsDb { Result = true, Message = $"No need insert into {Utils.GetName<TModel>()}!" }
+                        new ResponseJsDb { Result = true, Message = $"No need insert into {Settings.Tables.GetTable<TModel>()}!" }
                     };
                     }
                 }
@@ -162,7 +162,7 @@ namespace BlazorIndexedDb.Commands
             try
             {
                 List<dynamic> expanded = await AddOflineProperty.AddOfflineAsync(rows);
-                if (Settings.EnableDebug) Console.WriteLine($"DbInserOffline in model: {Utils.GetName<TModel>()}");
+                if (Settings.EnableDebug) Console.WriteLine($"DbInserOffline in model: {Settings.Tables.GetTable<TModel>()}");
                 return await DbInsert(jsRuntime, expanded);
             }
             catch (Exception ex)

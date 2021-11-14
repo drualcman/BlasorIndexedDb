@@ -30,11 +30,11 @@ namespace BlazorIndexedDb.Commands
             {
                 try
                 {                    
-                    result.AddRange(await jsRuntime.InvokeAsync<List<ResponseJsDb>>($"MyDb.Delete", Utils.GetName<TModel>(), id));
+                    result.AddRange(await jsRuntime.InvokeAsync<List<ResponseJsDb>>($"MyDb.Delete", Settings.Tables.GetTable<TModel>(), id));
                 }
                 catch (Exception ex)
                 {
-                    if (Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Utils.GetName<TModel>()} Error: {ex}");
+                    if (Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Settings.Tables.GetTable<TModel>()} Error: {ex}");
                     result = new List<ResponseJsDb>();
                     result.Add(new ResponseJsDb { Result = false, Message = ex.Message });
                 }
@@ -64,11 +64,11 @@ namespace BlazorIndexedDb.Commands
             {
                 try
                 {
-                    result.AddRange(await jsRuntime.InvokeAsync<List<ResponseJsDb>>($"MyDb.Delete", Utils.GetName<TModel>(), id));
+                    result.AddRange(await jsRuntime.InvokeAsync<List<ResponseJsDb>>($"MyDb.Delete", Settings.Tables.GetTable<TModel>(), id));
                 }
                 catch (Exception ex)
                 {
-                    if (Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Utils.GetName<TModel>()} Error: {ex}");
+                    if (Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Settings.Tables.GetTable<TModel>()} Error: {ex}");
                     result = new List<ResponseJsDb>();
                     result.Add(new ResponseJsDb { Result = false, Message = ex.Message });
                 }
@@ -99,11 +99,11 @@ namespace BlazorIndexedDb.Commands
             {
                 try
                 {
-                    result.AddRange(await jsRuntime.InvokeAsync<List<ResponseJsDb>>($"MyDb.Delete", Utils.GetName<TModel>(), id));
+                    result.AddRange(await jsRuntime.InvokeAsync<List<ResponseJsDb>>($"MyDb.Delete", Settings.Tables.GetTable<TModel>(), id));
                 }
                 catch (Exception ex)
                 {
-                    if (Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Utils.GetName<TModel>()} Error: {ex}");
+                    if (Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Settings.Tables.GetTable<TModel>()} Error: {ex}");
                     result = new List<ResponseJsDb>();
                     result.Add(new ResponseJsDb { Result = false, Message = ex.Message });
                 }
@@ -134,11 +134,11 @@ namespace BlazorIndexedDb.Commands
             {
                 try
                 {
-                    result.AddRange(await jsRuntime.InvokeAsync<List<ResponseJsDb>>($"MyDb.Delete", Utils.GetName<TModel>(), id));
+                    result.AddRange(await jsRuntime.InvokeAsync<List<ResponseJsDb>>($"MyDb.Delete", Settings.Tables.GetTable<TModel>(), id));
                 }
                 catch (Exception ex)
                 {
-                    if (Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Utils.GetName<TModel>()} Error: {ex}");
+                    if (Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Settings.Tables.GetTable<TModel>()} Error: {ex}");
                     result = new List<ResponseJsDb>();
                     result.Add(new ResponseJsDb { Result = false, Message = ex.Message });
                 }
@@ -167,11 +167,11 @@ namespace BlazorIndexedDb.Commands
             {
                 try
                 {                    
-                    result.AddRange(await jsRuntime.InvokeAsync<List<ResponseJsDb>>($"MyDb.Delete", Utils.GetName<TModel>(), id));
+                    result.AddRange(await jsRuntime.InvokeAsync<List<ResponseJsDb>>($"MyDb.Delete", Settings.Tables.GetTable<TModel>(), id));
                 }
                 catch (Exception ex)
                 {
-                    if (Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Utils.GetName<TModel>()} Error: {ex}");
+                    if (Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Settings.Tables.GetTable<TModel>()} Error: {ex}");
                     result = new List<ResponseJsDb>();
                     result.Add(new ResponseJsDb { Result = false, Message = ex.Message });
                 }

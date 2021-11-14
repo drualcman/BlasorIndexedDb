@@ -146,7 +146,7 @@ namespace BlazorIndexedDb.Helpers
                     PropertyOptions property = new PropertyOptions(properties[i]);
                     if (!property.ToIgnore)
                     {
-                        if (!Utils.InTables(properties[i]))
+                        if (Settings.Tables.InTables<TModel>())
                         {
                             if (Settings.EnableDebug) Console.WriteLine("ToJson parse Property {0} not ignored", properties[i].Name);
                             jsonString.Append($"\"{property.Name}\":");
@@ -263,7 +263,7 @@ namespace BlazorIndexedDb.Helpers
                     if (!property.ToIgnore)
                     {
                         if (Settings.EnableDebug) Console.WriteLine("ToJson parse Property {0} not ignored", properties[i].Name);                        
-                        if (!Utils.InTables(properties[i]))
+                        if (Settings.Tables.InTables<TModel>())
                         {
                             jsonString.Append($"\"{property.Name}\":");
                             if (IsGenericList(properties[i]))
@@ -300,64 +300,69 @@ namespace BlazorIndexedDb.Helpers
         static string ValueToString(object sender, PropertyInfo property, string pName)
         {
             string result;
-            bool isEnum = property.GetValue(sender).GetType().IsEnum;
-            if (!isEnum)
+
+            if (property.GetValue(sender) is null)
             {
-                if (property.GetValue(sender) is null)
+                result = $"null";
+            }
+            else
+            {
+                bool isEnum = property.GetValue(sender).GetType().IsEnum;
+                if (!isEnum)
                 {
-                    result = $"null";
-                }
-                else if (property.GetType() == typeof(object))
-                {
-                    result = ToJson(property.GetValue(sender));
-                }
-                else if (pName == typeof(DateTime).Name)
-                {
-                    result = "\"";
-                    result += Convert.ToDateTime(property.GetValue(sender)).ToString("yyyy-MM-dd HH':'mm':'ss");
-                    result += "\"";
-                }
-                else if (pName == typeof(bool).Name)
-                {
-                    result = Convert.ToBoolean(property.GetValue(sender)) ? "true" : "false";
-                }
-                else if (pName == typeof(string).Name)
-                {
-                    result = $"\"{property.GetValue(sender).ToString().Replace("\"", "\\\"").Replace(Environment.NewLine, "\\n")}\"";
-                }
-                else if (pName == typeof(Int16).Name ||
-                    pName == typeof(Int32).Name ||
-                    pName == typeof(Int64).Name ||
-                    pName == typeof(Double).Name ||
-                    pName == typeof(Decimal).Name ||
-                    pName == typeof(Single).Name ||
-                    pName == typeof(Byte).Name ||
-                    pName == typeof(int).Name ||
-                    pName == typeof(double).Name ||
-                    pName == typeof(float).Name ||
-                    pName == typeof(long).Name ||
-                    pName == typeof(decimal).Name ||
-                    pName == typeof(short).Name)
-                {
-                    try
+                    if (property.GetType() == typeof(object))
                     {
-                        result = $"{property.GetValue(sender)}";
+                        result = ToJson(property.GetValue(sender));
                     }
-                    catch
+                    else if (pName == typeof(DateTime).Name)
                     {
-                        result = "null";
+                        result = "\"";
+                        result += Convert.ToDateTime(property.GetValue(sender)).ToString("yyyy-MM-dd HH':'mm':'ss");
+                        result += "\"";
+                    }
+                    else if (pName == typeof(bool).Name)
+                    {
+                        result = Convert.ToBoolean(property.GetValue(sender)) ? "true" : "false";
+                    }
+                    else if (pName == typeof(string).Name)
+                    {
+                        result = $"\"{property.GetValue(sender).ToString().Replace("\"", "\\\"").Replace(Environment.NewLine, "\\n")}\"";
+                    }
+                    else if (pName == typeof(Int16).Name ||
+                        pName == typeof(Int32).Name ||
+                        pName == typeof(Int64).Name ||
+                        pName == typeof(Double).Name ||
+                        pName == typeof(Decimal).Name ||
+                        pName == typeof(Single).Name ||
+                        pName == typeof(Byte).Name ||
+                        pName == typeof(int).Name ||
+                        pName == typeof(double).Name ||
+                        pName == typeof(float).Name ||
+                        pName == typeof(long).Name ||
+                        pName == typeof(decimal).Name ||
+                        pName == typeof(short).Name)
+                    {
+                        try
+                        {
+                            result = $"{property.GetValue(sender)}";
+                        }
+                        catch
+                        {
+                            result = "null";
+                        }
+                    }
+                    else
+                    {
+                        result = ToJson(property.GetValue(sender));
                     }
                 }
                 else
                 {
-                    result = ToJson(property.GetValue(sender));
+                    int e = (int)property.GetValue(sender);
+                    result = e.ToString();
                 }
             }
-            else
-            {
-                int e = (int)property.GetValue(sender);
-                result = e.ToString();
-            }
+            
             return result;
         }
         static string ValueToString(object sender, string pValue, PropertyInfo property)

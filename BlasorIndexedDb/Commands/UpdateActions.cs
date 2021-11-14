@@ -52,11 +52,11 @@ namespace BlazorIndexedDb.Commands
                     {
                         try
                         {
-                            result.AddRange(await Commands.DbCommand(jsRuntime, DbCommands.Update, Utils.GetName<TModel>(), await ObjectConverter.ToJsonAsync(rows)));
+                            result.AddRange(await Commands.DbCommand(jsRuntime, DbCommands.Update, Settings.Tables.GetTable<TModel>(), await ObjectConverter.ToJsonAsync(rows)));
                         }
                         catch (Exception ex)
                         {
-                            if (Settings.EnableDebug) Console.WriteLine($"DbUpdate Model: {Utils.GetName<TModel>()} Error: {ex}");
+                            if (Settings.EnableDebug) Console.WriteLine($"DbUpdate Model: {Settings.Tables.GetTable<TModel>()} Error: {ex}");
                             result = new List<ResponseJsDb>{
                         new ResponseJsDb { Result = false, Message = ex.Message }
                     };
@@ -64,9 +64,9 @@ namespace BlazorIndexedDb.Commands
                     }
                     else
                     {
-                        if (Settings.EnableDebug) Console.WriteLine($"DbUpdate No need update into {Utils.GetName<TModel>()}");
+                        if (Settings.EnableDebug) Console.WriteLine($"DbUpdate No need update into {Settings.Tables.GetTable<TModel>()}");
                         result = new List<ResponseJsDb>{
-                        new ResponseJsDb { Result = true, Message =$"No need update into {Utils.GetName<TModel>()}!" }
+                        new ResponseJsDb { Result = true, Message =$"No need update into {Settings.Tables.GetTable<TModel>()}!" }
                     };
                     }
                 }
@@ -120,7 +120,7 @@ namespace BlazorIndexedDb.Commands
             try
             {
                 List<dynamic> expanded = await AddOflineProperty.AddOfflineAsync(rows);
-                if (Settings.EnableDebug) Console.WriteLine($"DbUpdateOffLine in modelL  = {Utils.GetName<TModel>()}");
+                if (Settings.EnableDebug) Console.WriteLine($"DbUpdateOffLine in modelL  = {Settings.Tables.GetTable<TModel>()}");
                 return await DbUpdate(jsRuntime, expanded);
             }
             catch (Exception ex)
