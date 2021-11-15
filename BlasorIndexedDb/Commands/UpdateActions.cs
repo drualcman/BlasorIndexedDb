@@ -86,7 +86,7 @@ namespace BlazorIndexedDb.Commands
             }
             catch (Exception ex)
             {
-                throw new ResponseException(nameof(DbUpdate), typeof(TModel).Name, ex.Message, ex);
+                throw new ResponseException(nameof(DbUpdate), Settings.Tables.GetTable<TModel>(), ex.Message, ex);
             }
             
         }
@@ -125,7 +125,7 @@ namespace BlazorIndexedDb.Commands
             }
             catch (Exception ex)
             {
-                throw new ResponseException(nameof(DbUpdateOffLine), typeof(TModel).Name, ex.Message, ex);
+                throw new ResponseException(nameof(DbUpdateOffLine), Settings.Tables.GetTable<TModel>(), ex.Message, ex);
             }
             
         }

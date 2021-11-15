@@ -78,7 +78,7 @@ namespace BlazorIndexedDb.Commands
                                     int p = properties.Length;
                                     for (int a = 0; a < p; a++)
                                     {
-                                        if (Settings.Tables.InTables<TModel>())
+                                        if (Settings.Tables.InTables(t.Name))
                                         {
                                             if (ObjectConverter.IsGenericList(properties[a].GetValue(rows[i])))
                                             {
@@ -167,7 +167,7 @@ namespace BlazorIndexedDb.Commands
             }
             catch (Exception ex)
             {
-                throw new ResponseException(nameof(DbInserOffline), typeof(TModel).Name, ex.Message, ex);
+                throw new ResponseException(nameof(DbInserOffline), Settings.Tables.GetTable<TModel>(), ex.Message, ex);
             }
         }
 

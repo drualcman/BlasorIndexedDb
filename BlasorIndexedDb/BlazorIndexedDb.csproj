@@ -3,22 +3,22 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.5.20</Version>
+    <Version>1.5.21</Version>
     <Authors>Sergi Ortiz Gomez</Authors>
     <Company>DrUalcman</Company>
     <Description>Manage IndexedDb from Blazor WebAssembly applications. Create a StoreDbContext similar how is working in EF</Description>
     <Copyright>Free</Copyright>
     <PackageLicenseFile>License.txt</PackageLicenseFile>
     <PackageTags>webassembly, blazor, indexedDb, interop, javascript, database</PackageTags>
-    <PackageReleaseNotes>Optimized performance when init storecontext. Fixed set storename with same name about StoreSet and not the class model name. Remove unecesary tools to optimize performance. Created new class to control stores and model asociated.</PackageReleaseNotes>
+    <PackageReleaseNotes>Optimized performance when init storecontext. Fixed set storename with same name about StoreSet and not the class model name. Remove unecesary tools to optimize performance. Created new class to control stores and model asociated. Fixed a bug with DateTime properties. Fixed performance when create a JSON parse object.</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/drualcman/BlasorIndexedDb</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
     <PackageId>DrUalcman-BlazorIndexedDb</PackageId>
     <Product>BlazorIndexedDb</Product>
     <PackageProjectUrl>https://blazorindexdb.community-mall.com/</PackageProjectUrl>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <AssemblyVersion>1.5.20</AssemblyVersion>
-    <FileVersion>1.5.20</FileVersion>
+    <AssemblyVersion>1.5.21</AssemblyVersion>
+    <FileVersion>1.5.21</FileVersion>
     <AssemblyName>DrUalcman-BlazorIndexedDb</AssemblyName>
     <RootNamespace>BlazorIndexedDb</RootNamespace>
     <PackageReadmeFile>README.md</PackageReadmeFile>

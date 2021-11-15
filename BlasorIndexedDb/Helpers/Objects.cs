@@ -299,11 +299,11 @@ namespace BlazorIndexedDb.Helpers
 
         static string ValueToString(object sender, PropertyInfo property, string pName)
         {
-            string result;
+            StringBuilder result = new StringBuilder();
 
             if (property.GetValue(sender) is null)
             {
-                result = $"null";
+                result.Append("null");
             }
             else
             {
@@ -312,21 +312,21 @@ namespace BlazorIndexedDb.Helpers
                 {
                     if (property.GetType() == typeof(object))
                     {
-                        result = ToJson(property.GetValue(sender));
+                        result.Append(ToJson(property.GetValue(sender)));
                     }
                     else if (pName == typeof(DateTime).Name)
                     {
-                        result = "\"";
-                        result += Convert.ToDateTime(property.GetValue(sender)).ToString("yyyy-MM-dd HH':'mm':'ss");
-                        result += "\"";
+                        result.Append("\"");
+                        result.Append(Convert.ToDateTime(property.GetValue(sender)).ToString("o"));
+                        result.Append("\"");
                     }
                     else if (pName == typeof(bool).Name)
                     {
-                        result = Convert.ToBoolean(property.GetValue(sender)) ? "true" : "false";
+                        result.Append(Convert.ToBoolean(property.GetValue(sender)) ? "true" : "false");
                     }
                     else if (pName == typeof(string).Name)
                     {
-                        result = $"\"{property.GetValue(sender).ToString().Replace("\"", "\\\"").Replace(Environment.NewLine, "\\n")}\"";
+                        result.Append($"\"{property.GetValue(sender).ToString().Replace("\"", "\\\"").Replace(Environment.NewLine, "\\n")}\"");
                     }
                     else if (pName == typeof(Int16).Name ||
                         pName == typeof(Int32).Name ||
@@ -344,26 +344,25 @@ namespace BlazorIndexedDb.Helpers
                     {
                         try
                         {
-                            result = $"{property.GetValue(sender)}";
+                            result.Append($"{property.GetValue(sender)}");
                         }
                         catch
                         {
-                            result = "null";
+                            result.Append("null");
                         }
                     }
                     else
                     {
-                        result = ToJson(property.GetValue(sender));
+                        result.Append(ToJson(property.GetValue(sender)));
                     }
                 }
                 else
                 {
                     int e = (int)property.GetValue(sender);
-                    result = e.ToString();
+                    result.Append(e.ToString());
                 }
-            }
-            
-            return result;
+            }            
+            return result.ToString();
         }
         static string ValueToString(object sender, string pValue, PropertyInfo property)
         {

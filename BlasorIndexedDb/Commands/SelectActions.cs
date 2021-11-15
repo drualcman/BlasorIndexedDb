@@ -30,11 +30,11 @@ namespace BlazorIndexedDb.Commands
             {
                 try
                 {
-                    data = await jsRuntime.InvokeAsync<List<TModel>>("MyDb.Select", typeof(TModel).Name);
+                    data = await jsRuntime.InvokeAsync<List<TModel>>("MyDb.Select", Settings.Tables.GetTable<TModel>());
                 }
                 catch (Exception ex)
                 {
-                    throw new ResponseException(nameof(DbSelect), typeof(TModel).Name, ex.Message, ex);
+                    throw new ResponseException(nameof(DbSelect), Settings.Tables.GetTable<TModel>(), ex.Message, ex);
                 }
             }
             else
@@ -61,11 +61,11 @@ namespace BlazorIndexedDb.Commands
             {
                 try
                 {
-                    data = await jsRuntime.InvokeAsync<List<TModel>>("MyDb.SelectWhere", typeof(TModel).Name, column, value);
+                    data = await jsRuntime.InvokeAsync<List<TModel>>("MyDb.SelectWhere", Settings.Tables.GetTable<TModel>(), column, value);
                 }
                 catch (Exception ex)
                 {
-                    throw new ResponseException(nameof(DbSelect), typeof(TModel).Name, ex.Message, ex);
+                    throw new ResponseException(nameof(DbSelect), Settings.Tables.GetTable<TModel>(), ex.Message, ex);
                 }
             }
             else
@@ -93,12 +93,12 @@ namespace BlazorIndexedDb.Commands
             {
                 try
                 {
-                    List<TModel> data = await jsRuntime.InvokeAsync<List<TModel>>("MyDb.SelectId", typeof(TModel).Name, id);
+                    List<TModel> data = await jsRuntime.InvokeAsync<List<TModel>>("MyDb.SelectId", Settings.Tables.GetTable<TModel>(), id);
                     return data[0];
                 }
                 catch (Exception ex)
                 {
-                    throw new ResponseException(nameof(SingleRecord), typeof(TModel).Name, ex.Message, ex);
+                    throw new ResponseException(nameof(SingleRecord), Settings.Tables.GetTable<TModel>(), ex.Message, ex);
                 }
             }
             else
@@ -121,12 +121,12 @@ namespace BlazorIndexedDb.Commands
             {
                 try
                 {
-                    List<TModel> data = await jsRuntime.InvokeAsync<List<TModel>>("MyDb.SelectId", typeof(TModel).Name, id);
+                    List<TModel> data = await jsRuntime.InvokeAsync<List<TModel>>("MyDb.SelectId", Settings.Tables.GetTable<TModel>(), id);
                     return data[0];
                 }
                 catch (Exception ex)
                 {
-                    throw new ResponseException(nameof(SingleRecord), typeof(TModel).Name, ex.Message, ex);
+                    throw new ResponseException(nameof(SingleRecord), Settings.Tables.GetTable<TModel>(), ex.Message, ex);
                 }
             }
             else
@@ -150,12 +150,12 @@ namespace BlazorIndexedDb.Commands
             {
                 try
                 {
-                    List<TModel> data = await jsRuntime.InvokeAsync<List<TModel>>("MyDb.SelectId", typeof(TModel).Name, id);
+                    List<TModel> data = await jsRuntime.InvokeAsync<List<TModel>>("MyDb.SelectId", Settings.Tables.GetTable<TModel>(), id);
                     return data[0];
                 }
                 catch (Exception ex)
                 {
-                    throw new ResponseException(nameof(SingleRecord), typeof(TModel).Name, ex.Message, ex);
+                    throw new ResponseException(nameof(SingleRecord), Settings.Tables.GetTable<TModel>(), ex.Message, ex);
                 }
             }
             else
@@ -178,12 +178,12 @@ namespace BlazorIndexedDb.Commands
             {
                 try
                 {
-                    List<TModel> data = await jsRuntime.InvokeAsync<List<TModel>>("MyDb.SelectId", typeof(TModel).Name, id);
+                    List<TModel> data = await jsRuntime.InvokeAsync<List<TModel>>("MyDb.SelectId", Settings.Tables.GetTable<TModel>(), id);
                     return data[0];
                 }
                 catch (Exception ex)
                 {
-                    throw new ResponseException(nameof(SingleRecord), typeof(TModel).Name, ex.Message, ex);
+                    throw new ResponseException(nameof(SingleRecord), Settings.Tables.GetTable<TModel>(), ex.Message, ex);
                 }
             }
             else
@@ -206,12 +206,12 @@ namespace BlazorIndexedDb.Commands
             {
                 try
                 {
-                    List<TModel> data = await jsRuntime.InvokeAsync<List<TModel>>("MyDb.SelectId", typeof(TModel).Name, id);
+                    List<TModel> data = await jsRuntime.InvokeAsync<List<TModel>>("MyDb.SelectId", Settings.Tables.GetTable<TModel>(), id);
                     return data[0];
                 }
                 catch (Exception ex)
                 {
-                    throw new ResponseException(nameof(SingleRecord), typeof(TModel).Name, ex.Message, ex);
+                    throw new ResponseException(nameof(SingleRecord), Settings.Tables.GetTable<TModel>(), ex.Message, ex);
                 }
             }
             else
@@ -234,12 +234,12 @@ namespace BlazorIndexedDb.Commands
             {
                 try
                 {
-                    List<TModel> data = await jsRuntime.InvokeAsync<List<TModel>>("MyDb.SelectId", typeof(TModel).Name, id);
+                    List<TModel> data = await jsRuntime.InvokeAsync<List<TModel>>("MyDb.SelectId", Settings.Tables.GetTable<TModel>(), id);
                     return data[0];
                 }
                 catch (Exception ex)
                 {
-                    throw new ResponseException(nameof(SingleRecord), typeof(TModel).Name, ex.Message, ex);
+                    throw new ResponseException(nameof(SingleRecord), Settings.Tables.GetTable<TModel>(), ex.Message, ex);
                 }
             }
             else
@@ -263,12 +263,12 @@ namespace BlazorIndexedDb.Commands
             {
                 try
                 {
-                    List<TModel> data = await jsRuntime.InvokeAsync<List<TModel>>("MyDb.SelectId", typeof(TModel).Name, id);
+                    List<TModel> data = await jsRuntime.InvokeAsync<List<TModel>>("MyDb.SelectId", Settings.Tables.GetTable<TModel>(), id);
                     return data[0];
                 }
                 catch (Exception ex)
                 {
-                    throw new ResponseException(nameof(SingleRecord), typeof(TModel).Name, ex.Message, ex);
+                    throw new ResponseException(nameof(SingleRecord), Settings.Tables.GetTable<TModel>(), ex.Message, ex);
                 }
             }
             else
