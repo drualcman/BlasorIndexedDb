@@ -21,6 +21,7 @@ namespace BlazorIndexedDb.Commands
         /// </summary>
         /// <typeparam name="TModel">Table or store to use</typeparam>
         /// <param name="jsRuntime"></param>
+        /// <exception cref="ResponseException"></exception>
         /// <returns></returns>
         public static async ValueTask<ResponseJsDb> DbCleanTable<TModel>(this IJSRuntime jsRuntime)
         {
@@ -32,6 +33,7 @@ namespace BlazorIndexedDb.Commands
         /// </summary>
         /// <param name="jsRuntime"></param>
         /// <param name="name"></param>
+        /// <exception cref="ResponseException"></exception>
         /// <returns></returns>
         public static async ValueTask<ResponseJsDb> DbCleanTable(this IJSRuntime jsRuntime, [NotNull] string name)
         {
@@ -40,9 +42,9 @@ namespace BlazorIndexedDb.Commands
                 List<ResponseJsDb> result = new List<ResponseJsDb>();
                 if (Settings.Initialized)
                 {
+                    result.AddRange(await jsRuntime.InvokeAsync<List<ResponseJsDb>>($"MyDb.Clean", name));
                     try
                     {
-                        result.AddRange(await jsRuntime.InvokeAsync<List<ResponseJsDb>>($"MyDb.Clean", name));
                     }
                     catch (Exception ex)
                     {

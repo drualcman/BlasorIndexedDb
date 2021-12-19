@@ -23,6 +23,7 @@ namespace BlazorIndexedDb.Commands
         /// <typeparam name="TModel">Table or store to use</typeparam>
         /// <param name="jsRuntime"></param>
         /// <param name="data">data to insert</param>
+        /// <exception cref="ResponseException"></exception>
         /// <returns></returns>
         public static async ValueTask<ResponseJsDb> DbUpdate<TModel>(this IJSRuntime jsRuntime, [NotNull] TModel data)
         {
@@ -39,6 +40,7 @@ namespace BlazorIndexedDb.Commands
         /// <typeparam name="TModel">Table or store to use</typeparam>
         /// <param name="jsRuntime"></param>
         /// <param name="rows">data to insert</param>
+        /// <exception cref="ResponseException"></exception>
         /// <returns></returns>
         public static async ValueTask<List<ResponseJsDb>> DbUpdate<TModel>(this IJSRuntime jsRuntime, [NotNull] List<TModel> rows)
         {
@@ -50,39 +52,34 @@ namespace BlazorIndexedDb.Commands
                     int c = rows.Count;
                     if (c > 0)
                     {
-                        try
-                        {
-                            result.AddRange(await Commands.DbCommand(jsRuntime, DbCommands.Update, Settings.Tables.GetTable<TModel>(), await ObjectConverter.ToJsonAsync(rows)));
-                        }
-                        catch (Exception ex)
-                        {
-                            if (Settings.EnableDebug) Console.WriteLine($"DbUpdate Model: {Settings.Tables.GetTable<TModel>()} Error: {ex}");
-                            result = new List<ResponseJsDb>{
-                        new ResponseJsDb { Result = false, Message = ex.Message }
-                    };
-                        }
+                        result.AddRange(await Commands.DbCommand(jsRuntime, DbCommands.Update, Settings.Tables.GetTable<TModel>(), await ObjectConverter.ToJsonAsync(rows)));                        
                     }
                     else
                     {
                         if (Settings.EnableDebug) Console.WriteLine($"DbUpdate No need update into {Settings.Tables.GetTable<TModel>()}");
-                        result = new List<ResponseJsDb>{
-                        new ResponseJsDb { Result = true, Message =$"No need update into {Settings.Tables.GetTable<TModel>()}!" }
-                    };
+                            result = new List<ResponseJsDb>{
+                            new ResponseJsDb { Result = true, Message =$"No need update into {Settings.Tables.GetTable<TModel>()}!" }
+                        };
                     }
                 }
                 else
                 {
                     if (Settings.EnableDebug) Console.WriteLine($"UpdateActions: IndexedDb not initialized yet!");
                     result = new List<ResponseJsDb>()
-                {
-                    new ResponseJsDb()
                     {
-                         Message = $"IndexedDb not initialized yet!",
-                         Result = false
-                    }
-                };
+                        new ResponseJsDb()
+                        {
+                                Message = $"IndexedDb not initialized yet!",
+                                Result = false
+                        }
+                    };
                 }
                 return result;
+            }
+            catch (ResponseException ex)
+            {
+                if (Settings.EnableDebug) Console.WriteLine($"DbUpdate Model: {ex.StoreName} Error: {ex.Message} PayLoad: {ex.TransactionData}");
+                throw ex;
             }
             catch (Exception ex)
             {
@@ -114,6 +111,7 @@ namespace BlazorIndexedDb.Commands
         /// <typeparam name="TModel">Table or store to use</typeparam>
         /// <param name="jsRuntime"></param>
         /// <param name="rows">data to insert</param>
+        /// <exception cref="ResponseException"></exception>
         /// <returns></returns>
         public static async ValueTask<List<ResponseJsDb>> DbUpdateOffLine<TModel>(this IJSRuntime jsRuntime, [NotNull] List<TModel> rows)
         {
@@ -122,6 +120,12 @@ namespace BlazorIndexedDb.Commands
                 List<dynamic> expanded = await AddOflineProperty.AddOfflineAsync(rows);
                 if (Settings.EnableDebug) Console.WriteLine($"DbUpdateOffLine in modelL  = {Settings.Tables.GetTable<TModel>()}");
                 return await DbUpdate(jsRuntime, expanded);
+            }
+
+            catch (ResponseException ex)
+            {
+                if (Settings.EnableDebug) Console.WriteLine($"DbUpdateOffLine Model: {ex.StoreName} Error: {ex.Message} PayLoad: {ex.TransactionData}");
+                throw ex;
             }
             catch (Exception ex)
             {

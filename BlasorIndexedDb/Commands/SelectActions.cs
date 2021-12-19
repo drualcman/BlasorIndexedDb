@@ -22,6 +22,7 @@ namespace BlazorIndexedDb.Commands
         /// </summary>
         /// <typeparam name="TModel">Table or store to use</typeparam>
         /// <param name="jsRuntime"></param>
+        /// <exception cref="ResponseException"></exception>
         /// <returns></returns>
         public static async ValueTask<List<TModel>> DbSelect<TModel>(this IJSRuntime jsRuntime)
         {
@@ -53,6 +54,7 @@ namespace BlazorIndexedDb.Commands
         /// <param name="jsRuntime"></param>
         /// <param name="column">column to compare</param>
         /// <param name="value">value to compare</param>
+        /// <exception cref="ResponseException"></exception>
         /// <returns></returns>
         public static async ValueTask<List<TModel>> DbSelect<TModel>(this IJSRuntime jsRuntime, [NotNull] string column, [NotNull] object value)
         {
@@ -86,6 +88,7 @@ namespace BlazorIndexedDb.Commands
         /// <typeparam name="TModel">Table or store to use</typeparam>
         /// <param name="jsRuntime"></param>
         /// <param name="id">column to compare</param>
+        /// <exception cref="ResponseException"></exception>
         /// <returns></returns>
         public static async ValueTask<TModel> SingleRecord<TModel>(this IJSRuntime jsRuntime, [NotNull] object id) where TModel : class
         {
@@ -114,6 +117,7 @@ namespace BlazorIndexedDb.Commands
         /// <typeparam name="TModel">Table or store to use</typeparam>
         /// <param name="jsRuntime"></param>
         /// <param name="id">column to compare</param>
+        /// <exception cref="ResponseException"></exception>
         /// <returns></returns>
         public static async ValueTask<TModel> SingleRecord<TModel>(this IJSRuntime jsRuntime, [NotNull] int id) where TModel : class
         {
@@ -143,6 +147,7 @@ namespace BlazorIndexedDb.Commands
         /// <typeparam name="TModel">Table or store to use</typeparam>
         /// <param name="jsRuntime"></param>
         /// <param name="id">column to compare</param>
+        /// <exception cref="ResponseException"></exception>
         /// <returns></returns>
         public static async ValueTask<TModel> SingleRecord<TModel>(this IJSRuntime jsRuntime, [NotNull] double id) where TModel : class
         {
@@ -171,6 +176,7 @@ namespace BlazorIndexedDb.Commands
         /// <typeparam name="TModel">Table or store to use</typeparam>
         /// <param name="jsRuntime"></param>
         /// <param name="id">column to compare</param>
+        /// <exception cref="ResponseException"></exception>
         /// <returns></returns>
         public static async ValueTask<TModel> SingleRecord<TModel>(this IJSRuntime jsRuntime, [NotNull] decimal id) where TModel : class
         {
@@ -199,6 +205,7 @@ namespace BlazorIndexedDb.Commands
         /// <typeparam name="TModel">Table or store to use</typeparam>
         /// <param name="jsRuntime"></param>
         /// <param name="id">column to compare</param>
+        /// <exception cref="ResponseException"></exception>
         /// <returns></returns>
         public static async ValueTask<TModel> SingleRecord<TModel>(this IJSRuntime jsRuntime, [NotNull] long id) where TModel : class
         {
@@ -227,6 +234,7 @@ namespace BlazorIndexedDb.Commands
         /// <typeparam name="TModel">Table or store to use</typeparam>
         /// <param name="jsRuntime"></param>
         /// <param name="id">column to compare</param>
+        /// <exception cref="ResponseException"></exception>
         /// <returns></returns>
         public static async ValueTask<TModel> SingleRecord<TModel>(this IJSRuntime jsRuntime, [NotNull] string id) where TModel : class
         {
@@ -256,6 +264,7 @@ namespace BlazorIndexedDb.Commands
         /// <typeparam name="TModel">Table or store to use</typeparam>
         /// <param name="jsRuntime"></param>
         /// <param name="id">column to compare</param>
+        /// <exception cref="ResponseException"></exception>
         /// <returns></returns>
         public static async ValueTask<TModel> SingleRecord<TModel>(this IJSRuntime jsRuntime, [NotNull] DateTime id) where TModel : class
         {

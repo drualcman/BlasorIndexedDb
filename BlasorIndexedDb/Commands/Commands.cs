@@ -40,6 +40,7 @@ namespace BlazorIndexedDb.Commands
         /// <param name="command"></param>
         /// <param name="storeName"></param>
         /// <param name="data"></param>
+        /// <exception cref="ResponseException"></exception>
         /// <returns></returns>
         public static async ValueTask<List<ResponseJsDb>> DbCommand(this IJSRuntime jsRuntime,
             DbCommands command, string storeName, string data)
@@ -55,6 +56,7 @@ namespace BlazorIndexedDb.Commands
                 }
                 catch (Exception ex)
                 {
+                    if (Settings.EnableDebug) Console.WriteLine($"Exception: {ex.Message}");
                     throw new ResponseException(command.ToString(), storeName, data, ex);
                 }
             }

@@ -24,6 +24,19 @@ namespace BlazorIndexedDb.Models
         /// </summary>
         public string TransactionData { get; set; }
         /// <summary>
+        /// Basic constructor
+        /// </summary>
+        public ResponseException():base() { }
+        /// <summary>
+        /// Constructor with message
+        /// </summary>
+        public ResponseException(string message):base(message) { }
+        /// <summary>
+        /// Contructur with message and exception
+        /// </summary>
+        public ResponseException(string message, Exception innerException):base(message, innerException) { }
+
+        /// <summary>
         /// Basic internal constructor
         /// </summary>
         /// <param name="command"></param>
