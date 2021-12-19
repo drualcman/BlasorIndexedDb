@@ -23,7 +23,7 @@ namespace BlazorIndexedDb.Helpers
         /// <param name="sender"></param>
         /// <returns></returns>
         public static string ToJson(System.Collections.IList sender)
-        {
+        {            
             if (Settings.EnableDebug) Console.WriteLine($"ToJson parse generic list");
             StringBuilder jsonString = new StringBuilder();
             jsonString.Append("[ ");
@@ -39,28 +39,14 @@ namespace BlazorIndexedDb.Helpers
             if (Settings.EnableDebug) Console.WriteLine("ToJson parse System.Collections.IList result = {0}", jsonString.ToString());
             return jsonString.ToString();
         }
+
         /// <summary>
         /// Convert into a Json string the model send
         /// </summary>
         /// <param name="sender"></param>
         /// <returns></returns>
-        public static string ToJson(List<object> sender)
-        {
-            if (Settings.EnableDebug) Console.WriteLine($"ToJson parse generic list {typeof(object).Name}");
-            StringBuilder jsonString = new StringBuilder();
-            jsonString.Append("[ ");
-            int c = sender.Count;
-            for (int i = 0; i < c; i++)
-            {
-                if (Settings.EnableDebug) Console.WriteLine($"ToJson parse generic list {sender[i].GetType().Name}");
-                jsonString.Append(ToJson(sender[i]));
-                jsonString.Append(",");
-            }
-            jsonString.Remove(jsonString.Length - 1, 1);
-            jsonString.Append("]");
-            if (Settings.EnableDebug) Console.WriteLine("ToJson parse List<object> result = {0}", jsonString.ToString());
-            return jsonString.ToString();
-        }
+        public static string ToJson(List<object> sender) =>
+            ToJson(sender.AsEnumerable());
 
         /// <summary>
         /// Convert into a Json string the model send
@@ -68,23 +54,8 @@ namespace BlazorIndexedDb.Helpers
         /// <typeparam name="TModel"></typeparam>
         /// <param name="sender"></param>
         /// <returns></returns>
-        public static string ToJson<TModel>(List<TModel> sender)
-        {
-            if (Settings.EnableDebug) Console.WriteLine($"ToJson parse generic list {typeof(TModel).Name}");
-            StringBuilder jsonString = new StringBuilder();
-            jsonString.Append("[ ");
-            int c = sender.Count;
-            for (int i = 0; i < c; i++)
-            {
-                if (Settings.EnableDebug) Console.WriteLine($"ToJson parse generic list {sender[i].GetType().Name}");
-                jsonString.Append(ToJson(sender[i]));
-                jsonString.Append(",");
-            }
-            jsonString.Remove(jsonString.Length - 1, 1);
-            jsonString.Append("]");
-            if (Settings.EnableDebug) Console.WriteLine("ToJson parse List<TModel> result = {0}", jsonString.ToString());            
-            return jsonString.ToString();
-        }
+        public static string ToJson<TModel>(List<TModel> sender) =>
+            ToJson(sender.AsEnumerable());
 
         /// <summary>
         /// Convert into a Json string the model send
@@ -167,6 +138,12 @@ namespace BlazorIndexedDb.Helpers
                             {
                                 jsonString.Append($"\"{property.FieldName}\":");
                                 jsonString.Append(ValueToString(sender, property.StoreIndexName, properties[i]));
+                            }
+                            else
+                            {
+                                //is not other table parse the model directly
+                                jsonString.Append($"\"{property.Name}\":");
+                                jsonString.Append(ValueToString(sender, properties[i], properties[i].PropertyType.Name));
                             }
                         }
                         jsonString.Append(",");

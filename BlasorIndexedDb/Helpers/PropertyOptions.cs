@@ -26,57 +26,150 @@ namespace BlazorIndexedDb.Helpers
         /// </summary>
         /// <param name="p"></param>
         public PropertyOptions(PropertyInfo p) 
-        {        
+        {      
+            string tableName = p.ReflectedType.Name;
             this.Name = p.Name;
             IEnumerable<Attribute> attrs = p.GetCustomAttributes();  // Reflection.  
-            // Displaying output.  
-            foreach (Attribute attr in attrs)
+            if (attrs.Any())
             {
-                //check main field attributes
-                if (attr is System.Text.Json.Serialization.JsonIgnoreAttribute) this.ToIgnore = true;
-                else if (attr is Attributes.FieldAttribute)
+                // Displaying output.  
+                foreach (Attribute attr in attrs)
                 {
-                    Attributes.FieldAttribute a = attr as Attributes.FieldAttribute;
-                    this.IsKeyPath = a.IsKeyPath;
-                    this.IsAutoIncrement = a.IsAutoIncremental;
-                    this.ToIgnore = a.IsIgnore;
-                    this.IsUnique = a.IsUnique;
-                }
-                else if (attr is System.ComponentModel.DataAnnotations.RequiredAttribute)
-                {
-                    this.IsKeyPath = true;
-                    string t = p.GetMethod.ReturnType.Name.ToLower();
-                    switch (t)
+                    //check main field attributes
+                    if (attr is System.Text.Json.Serialization.JsonIgnoreAttribute) this.ToIgnore = true;
+                    else if (attr is Attributes.FieldAttribute)
                     {
-                        case "int":
-                        case "int16":
-                        case "int32":
-                        case "int64":
-                            this.IsAutoIncrement = true;
-                            break;
-                        default:
-                            this.IsAutoIncrement = false;
-                            break;
+                        Attributes.FieldAttribute a = attr as Attributes.FieldAttribute;
+                        this.IsKeyPath = a.IsKeyPath;
+                        this.IsAutoIncrement = a.IsAutoIncremental;
+                        this.ToIgnore = a.IsIgnore;
+                        this.IsUnique = a.IsUnique;
+                    }
+                    else if (attr is System.ComponentModel.DataAnnotations.RequiredAttribute)
+                    {
+                        this.IsKeyPath = true;
+                        string t = p.GetMethod.ReturnType.Name.ToLower();
+                        switch (t)
+                        {
+                            case "int":
+                            case "int16":
+                            case "int32":
+                            case "int64":
+                                this.IsAutoIncrement = true;
+                                break;
+                            default:
+                                this.IsAutoIncrement = false;
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        this.IsKeyPath = false;
+                        this.IsAutoIncrement = false;
+                        this.ToIgnore = false;
+                        this.IsUnique = false;
+                    }
+                    //check relationship attribute
+                    if (attr is Attributes.RelationAttribute)
+                    {
+                        Attributes.RelationAttribute a = attr as Attributes.RelationAttribute;
+                        this.StoreIndexName = a.StoreIndexName;
+                        this.FieldName = a.FieldName;
+                    }
+                    else
+                    {
+                        this.StoreIndexName = string.Empty;
+                        this.FieldName = string.Empty;
                     }
                 }
-                else 
+            }
+            else
+            {
+                this.ToIgnore = false;
+                if (this.Name.ToLower() == "id")
                 {
-                    this.IsKeyPath = false;
-                    this.IsAutoIncrement = false;
-                    this.ToIgnore = false;
-                    this.IsUnique = false;
+                    this.IsKeyPath = true;
+                    this.IsAutoIncrement = true;
+                    this.IsUnique = true;
                 }
-                //check relationship attribute
-                if (attr is Attributes.RelationAttribute)
+                else if (this.Name == $"{tableName.ToLower()}id")
                 {
-                    Attributes.RelationAttribute a = attr as Attributes.RelationAttribute;
-                    this.StoreIndexName = a.StoreIndexName;
-                    this.FieldName = a.FieldName;
+                    this.IsKeyPath = true;
+                    this.IsAutoIncrement = true;
+                    this.IsUnique = true;
+                }
+                else if (this.Name == $"id{tableName.ToLower()}")
+                {
+                    this.IsKeyPath = true;
+                    this.IsAutoIncrement = true;
+                    this.IsUnique = true;
+                }
+                else if (this.Name == $"id{tableName.ToLower()}s")                 //plural possibility
+                {
+                    this.IsKeyPath = true;
+                    this.IsAutoIncrement = true;
+                    this.IsUnique = true;
+                }
+                else if (this.Name == $"id{tableName.ToLower().Remove(tableName.Length - 1, 1)}")                 //singular possibility
+                {
+                    this.IsKeyPath = true;
+                    this.IsAutoIncrement = true;
+                    this.IsUnique = true;
+                } //next
+                else if (this.Name == $"{tableName.ToLower()}Id")
+                {
+                    this.IsKeyPath = true;
+                    this.IsAutoIncrement = true;
+                    this.IsUnique = true;
+                }
+                else if (this.Name == $"Id{tableName.ToLower()}")
+                {
+                    this.IsKeyPath = true;
+                    this.IsAutoIncrement = true;
+                    this.IsUnique = true;
+                }
+                else if (this.Name == $"Id{tableName.ToLower()}s")                 //plural possibility
+                {
+                    this.IsKeyPath = true;
+                    this.IsAutoIncrement = true;
+                    this.IsUnique = true;
+                }
+                else if (this.Name == $"Id{tableName.ToLower().Remove(tableName.Length - 1, 1)}")                 //singular possibility
+                {
+                    this.IsKeyPath = true;
+                    this.IsAutoIncrement = true;
+                    this.IsUnique = true;
+
+                } //last
+                else if (this.Name == $"{tableName.ToLower()}ID")
+                {
+                    this.IsKeyPath = true;
+                    this.IsAutoIncrement = true;
+                    this.IsUnique = true;
+                }
+                else if (this.Name == $"ID{tableName.ToLower()}")
+                {
+                    this.IsKeyPath = true;
+                    this.IsAutoIncrement = true;
+                    this.IsUnique = true;
+                }
+                else if (this.Name == $"ID{tableName.ToLower()}s")                 //plural possibility
+                {
+                    this.IsKeyPath = true;
+                    this.IsAutoIncrement = true;
+                    this.IsUnique = true;
+                }
+                else if (this.Name == $"ID{tableName.ToLower().Remove(tableName.Length - 1, 1)}")                 //singular possibility
+                {
+                    this.IsKeyPath = true;
+                    this.IsAutoIncrement = true;
+                    this.IsUnique = true;
                 }
                 else
                 {
-                    this.StoreIndexName = string.Empty;
-                    this.FieldName = string.Empty;
+                    this.IsKeyPath = false;
+                    this.IsAutoIncrement = false;
+                    this.IsUnique = false;
                 }
             }
         }

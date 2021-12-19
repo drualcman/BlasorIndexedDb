@@ -124,7 +124,7 @@ namespace BlazorIndexedDb.Configuration
                                 }
                                 else
                                 {
-                                    if (propName == "id")
+                                    if (propName.ToLower() == "id")
                                     {
                                         identifer = property.Name;
                                         autoIncrement = property.IsAutoIncrement;
@@ -149,11 +149,6 @@ namespace BlazorIndexedDb.Configuration
                                         identifer = property.Name;
                                         autoIncrement = property.IsAutoIncrement;
                                     } //next
-                                    else if (propName == "Id")
-                                    {
-                                        identifer = property.Name;
-                                        autoIncrement = property.IsAutoIncrement;
-                                    }
                                     else if (propName == $"{tableName.ToLower()}Id")
                                     {
                                         identifer = property.Name;
@@ -175,11 +170,6 @@ namespace BlazorIndexedDb.Configuration
                                         autoIncrement = property.IsAutoIncrement;
 
                                     } //last
-                                    else if (propName == "ID")
-                                    {
-                                        identifer = property.Name;
-                                        autoIncrement = property.IsAutoIncrement;
-                                    }
                                     else if (propName == $"{tableName.ToLower()}ID")
                                     {
                                         identifer = property.Name;
@@ -243,7 +233,11 @@ namespace BlazorIndexedDb.Configuration
                 }
                 finally
                 {
-                    if (Settings.EnableDebug) Console.WriteLine("DbInit finished with Settings.Initiallezed = {0}", Settings.Initialized);
+                    if (Settings.EnableDebug)
+                    {
+                        Console.WriteLine("DbInit DB Model = {0}", model);
+                        Console.WriteLine("DbInit finished with Settings.Initiallezed = {0}", Settings.Initialized);
+                    }
                 }
             }
         }

@@ -157,7 +157,7 @@ class jsDB {
             let defaultObj = '{';       //to create a default json for the table
             //compare object receive with table definition
             //check primary key            
-            if (model.options && model.options.keyPath && model.options.autoIncrement && model.options.autoIncrement == false) {
+            if (model.options && model.options.keyPath && model.options.autoIncrement == false) {
                 //have a primary key required
                 if (context.HasKeyPath(o, model.options.keyPath)) {
                     defaultObj += '"' + model.options.keyPath + '": null,';
@@ -343,7 +343,7 @@ class jsDB {
                                         let model = context.MODELS.find(el => el.name === table);
                                         let keyPath = model.options.keyPath;
                                         let o = context.MergeObjects(defaultModel, element);
-                                        if (o[keyPath] === null) {
+                                        if (o[keyPath] != null && model.options.autoIncrement) {
                                             delete o[keyPath];
                                         }
                                         store.add(o);

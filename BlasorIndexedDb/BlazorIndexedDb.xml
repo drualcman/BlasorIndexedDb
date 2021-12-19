@@ -88,6 +88,7 @@
             <param name="command"></param>
             <param name="storeName"></param>
             <param name="data"></param>
+            <exception cref="T:BlazorIndexedDb.Models.ResponseException"></exception>
             <returns></returns>
         </member>
         <member name="M:BlazorIndexedDb.Commands.Commands.DbConnected(Microsoft.JSInterop.IJSRuntime)">
@@ -109,6 +110,7 @@
             <typeparam name="TModel">Table or store to use</typeparam>
             <param name="jsRuntime"></param>
             <param name="id"></param>
+            <exception cref="T:BlazorIndexedDb.Models.ResponseException"></exception>
             <returns></returns>
         </member>
         <member name="M:BlazorIndexedDb.Commands.DeleteActions.DbDelete``1(Microsoft.JSInterop.IJSRuntime,System.Double)">
@@ -118,6 +120,7 @@
             <typeparam name="TModel">Table or store to use</typeparam>
             <param name="jsRuntime"></param>
             <param name="id">id from the row to delete</param>
+            <exception cref="T:BlazorIndexedDb.Models.ResponseException"></exception>
             <returns></returns>
         </member>
         <member name="M:BlazorIndexedDb.Commands.DeleteActions.DbDelete``1(Microsoft.JSInterop.IJSRuntime,System.Decimal)">
@@ -127,6 +130,7 @@
             <typeparam name="TModel">Table or store to use</typeparam>
             <param name="jsRuntime"></param>
             <param name="id">id from the row to delete</param>
+            <exception cref="T:BlazorIndexedDb.Models.ResponseException"></exception>
             <returns></returns>
         </member>
         <member name="M:BlazorIndexedDb.Commands.DeleteActions.DbDelete``1(Microsoft.JSInterop.IJSRuntime,System.String)">
@@ -136,6 +140,7 @@
             <typeparam name="TModel">Table or store to use</typeparam>
             <param name="jsRuntime"></param>
             <param name="id">id from the row to delete</param>
+            <exception cref="T:BlazorIndexedDb.Models.ResponseException"></exception>
             <returns></returns>
         </member>
         <member name="M:BlazorIndexedDb.Commands.DeleteActions.DbDelete``1(Microsoft.JSInterop.IJSRuntime,System.DateTime)">
@@ -145,6 +150,7 @@
             <typeparam name="TModel">Table or store to use</typeparam>
             <param name="jsRuntime"></param>
             <param name="id">id from the row to delete</param>
+            <exception cref="T:BlazorIndexedDb.Models.ResponseException"></exception>
             <returns></returns>
         </member>
         <member name="T:BlazorIndexedDb.Commands.InsertActions">
@@ -159,6 +165,7 @@
             <typeparam name="TModel">Table or store to use</typeparam>
             <param name="jsRuntime"></param>
             <param name="data"></param>
+            <exception cref="T:BlazorIndexedDb.Models.ResponseException"></exception>
             <returns></returns>
         </member>
         <member name="M:BlazorIndexedDb.Commands.InsertActions.DbInsert``1(Microsoft.JSInterop.IJSRuntime,System.Collections.Generic.List{``0})">
@@ -168,6 +175,7 @@
             <typeparam name="TModel">Table or store to use</typeparam>
             <param name="jsRuntime"></param>
             <param name="rows">data to insert</param>
+            <exception cref="T:BlazorIndexedDb.Models.ResponseException"></exception>
             <returns></returns>
         </member>
         <member name="M:BlazorIndexedDb.Commands.InsertActions.DbInserOffline``1(Microsoft.JSInterop.IJSRuntime,``0)">
@@ -186,6 +194,7 @@
             <typeparam name="TModel">Table or store to use</typeparam>
             <param name="jsRuntime"></param>
             <param name="rows">data to insert</param>
+            <exception cref="T:BlazorIndexedDb.Models.ResponseException"></exception>
             <returns></returns>
         </member>
         <member name="T:BlazorIndexedDb.Commands.SelectActions">
@@ -199,6 +208,7 @@
             </summary>
             <typeparam name="TModel">Table or store to use</typeparam>
             <param name="jsRuntime"></param>
+            <exception cref="T:BlazorIndexedDb.Models.ResponseException"></exception>
             <returns></returns>
         </member>
         <member name="M:BlazorIndexedDb.Commands.SelectActions.DbSelect``1(Microsoft.JSInterop.IJSRuntime,System.String,System.Object)">
@@ -209,6 +219,7 @@
             <param name="jsRuntime"></param>
             <param name="column">column to compare</param>
             <param name="value">value to compare</param>
+            <exception cref="T:BlazorIndexedDb.Models.ResponseException"></exception>
             <returns></returns>
         </member>
         <member name="M:BlazorIndexedDb.Commands.SelectActions.SingleRecord``1(Microsoft.JSInterop.IJSRuntime,System.Object)">
@@ -218,6 +229,7 @@
             <typeparam name="TModel">Table or store to use</typeparam>
             <param name="jsRuntime"></param>
             <param name="id">column to compare</param>
+            <exception cref="T:BlazorIndexedDb.Models.ResponseException"></exception>
             <returns></returns>
         </member>
         <member name="M:BlazorIndexedDb.Commands.SelectActions.SingleRecord``1(Microsoft.JSInterop.IJSRuntime,System.Int32)">
@@ -227,6 +239,7 @@
             <typeparam name="TModel">Table or store to use</typeparam>
             <param name="jsRuntime"></param>
             <param name="id">column to compare</param>
+            <exception cref="T:BlazorIndexedDb.Models.ResponseException"></exception>
             <returns></returns>
         </member>
         <member name="M:BlazorIndexedDb.Commands.SelectActions.SingleRecord``1(Microsoft.JSInterop.IJSRuntime,System.Double)">
@@ -236,6 +249,7 @@
             <typeparam name="TModel">Table or store to use</typeparam>
             <param name="jsRuntime"></param>
             <param name="id">column to compare</param>
+            <exception cref="T:BlazorIndexedDb.Models.ResponseException"></exception>
             <returns></returns>
         </member>
         <member name="M:BlazorIndexedDb.Commands.SelectActions.SingleRecord``1(Microsoft.JSInterop.IJSRuntime,System.Decimal)">
@@ -245,6 +259,7 @@
             <typeparam name="TModel">Table or store to use</typeparam>
             <param name="jsRuntime"></param>
             <param name="id">column to compare</param>
+            <exception cref="T:BlazorIndexedDb.Models.ResponseException"></exception>
             <returns></returns>
         </member>
         <member name="M:BlazorIndexedDb.Commands.SelectActions.SingleRecord``1(Microsoft.JSInterop.IJSRuntime,System.Int64)">
@@ -254,6 +269,7 @@
             <typeparam name="TModel">Table or store to use</typeparam>
             <param name="jsRuntime"></param>
             <param name="id">column to compare</param>
+            <exception cref="T:BlazorIndexedDb.Models.ResponseException"></exception>
             <returns></returns>
         </member>
         <member name="M:BlazorIndexedDb.Commands.SelectActions.SingleRecord``1(Microsoft.JSInterop.IJSRuntime,System.String)">
@@ -263,6 +279,7 @@
             <typeparam name="TModel">Table or store to use</typeparam>
             <param name="jsRuntime"></param>
             <param name="id">column to compare</param>
+            <exception cref="T:BlazorIndexedDb.Models.ResponseException"></exception>
             <returns></returns>
         </member>
         <member name="M:BlazorIndexedDb.Commands.SelectActions.SingleRecord``1(Microsoft.JSInterop.IJSRuntime,System.DateTime)">
@@ -272,6 +289,7 @@
             <typeparam name="TModel">Table or store to use</typeparam>
             <param name="jsRuntime"></param>
             <param name="id">column to compare</param>
+            <exception cref="T:BlazorIndexedDb.Models.ResponseException"></exception>
             <returns></returns>
         </member>
         <member name="T:BlazorIndexedDb.Commands.TableActions">
@@ -285,6 +303,7 @@
             </summary>
             <typeparam name="TModel">Table or store to use</typeparam>
             <param name="jsRuntime"></param>
+            <exception cref="T:BlazorIndexedDb.Models.ResponseException"></exception>
             <returns></returns>
         </member>
         <member name="M:BlazorIndexedDb.Commands.TableActions.DbCleanTable(Microsoft.JSInterop.IJSRuntime,System.String)">
@@ -293,6 +312,7 @@
             </summary>
             <param name="jsRuntime"></param>
             <param name="name"></param>
+            <exception cref="T:BlazorIndexedDb.Models.ResponseException"></exception>
             <returns></returns>
         </member>
         <member name="T:BlazorIndexedDb.Commands.UpdateActions">
@@ -307,6 +327,7 @@
             <typeparam name="TModel">Table or store to use</typeparam>
             <param name="jsRuntime"></param>
             <param name="data">data to insert</param>
+            <exception cref="T:BlazorIndexedDb.Models.ResponseException"></exception>
             <returns></returns>
         </member>
         <member name="M:BlazorIndexedDb.Commands.UpdateActions.DbUpdate``1(Microsoft.JSInterop.IJSRuntime,System.Collections.Generic.List{``0})">
@@ -316,6 +337,7 @@
             <typeparam name="TModel">Table or store to use</typeparam>
             <param name="jsRuntime"></param>
             <param name="rows">data to insert</param>
+            <exception cref="T:BlazorIndexedDb.Models.ResponseException"></exception>
             <returns></returns>
         </member>
         <member name="M:BlazorIndexedDb.Commands.UpdateActions.DbUpdateOffLine``1(Microsoft.JSInterop.IJSRuntime,``0)">
@@ -334,6 +356,7 @@
             <typeparam name="TModel">Table or store to use</typeparam>
             <param name="jsRuntime"></param>
             <param name="rows">data to insert</param>
+            <exception cref="T:BlazorIndexedDb.Models.ResponseException"></exception>
             <returns></returns>
         </member>
         <member name="T:BlazorIndexedDb.Configuration.Initalizing">
@@ -579,6 +602,21 @@
         <member name="P:BlazorIndexedDb.Models.ResponseException.TransactionData">
             <summary>
             Data inside the transaction if have
+            </summary>
+        </member>
+        <member name="M:BlazorIndexedDb.Models.ResponseException.#ctor">
+            <summary>
+            Basic constructor
+            </summary>
+        </member>
+        <member name="M:BlazorIndexedDb.Models.ResponseException.#ctor(System.String)">
+            <summary>
+            Constructor with message
+            </summary>
+        </member>
+        <member name="M:BlazorIndexedDb.Models.ResponseException.#ctor(System.String,System.Exception)">
+            <summary>
+            Contructur with message and exception
             </summary>
         </member>
         <member name="M:BlazorIndexedDb.Models.ResponseException.#ctor(System.String,System.String,System.String)">
