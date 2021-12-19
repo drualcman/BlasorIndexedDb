@@ -167,6 +167,20 @@ The store set always return the model or list of the model for all select action
  public record CommandResponse(bool Result, string Message, List<ResponseJsDb> Response);
 ```
 
+# Exceptions
+When exception is fire will return a ResponseException
+
+```
+    public class ResponseException : Exception
+    {
+        public string Command { get; set; }
+
+        public string StoreName { get; set; }
+
+        public string TransactionData { get; set; }
+    }
+```
+
 # More info
 Check <a href="https://blazorindexdb.community-mall.com/">our web</a> to get more info.
 
