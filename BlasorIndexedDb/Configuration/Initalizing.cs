@@ -1,13 +1,13 @@
-﻿using Microsoft.JSInterop;
+﻿using BlazorIndexedDb.Helpers;
+using BlazorIndexedDb.Store;
+using Microsoft.JSInterop;
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using System.Diagnostics.CodeAnalysis;
-using BlazorIndexedDb.Helpers;
-using BlazorIndexedDb.Store;
 
 namespace BlazorIndexedDb.Configuration
 {
@@ -63,9 +63,9 @@ namespace BlazorIndexedDb.Configuration
         /// <param name="name">database name</param>
         /// <param name="version">database version</param>
         /// <returns></returns>
-        public async static Task DbInit([NotNull] IJSRuntime jsRuntime, [NotNull] string name,  int version)
+        public async static Task DbInit([NotNull] IJSRuntime jsRuntime, [NotNull] string name, int version)
         {
-            if (Settings.EnableDebug) Console.WriteLine($"DbInit need be initialized? {(Settings.Initialized ? "NO":"YES")}");
+            if (Settings.EnableDebug) Console.WriteLine($"DbInit need be initialized? {(Settings.Initialized ? "NO" : "YES")}");
             if (!Settings.Initialized)
             {
                 string model = $@"{{

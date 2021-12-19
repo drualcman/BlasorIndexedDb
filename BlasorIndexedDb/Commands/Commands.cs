@@ -3,8 +3,6 @@ using BlazorIndexedDb.Models;
 using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace BlazorIndexedDb.Commands
@@ -44,7 +42,7 @@ namespace BlazorIndexedDb.Commands
         /// <returns></returns>
         public static async ValueTask<List<ResponseJsDb>> DbCommand(this IJSRuntime jsRuntime,
             DbCommands command, string storeName, string data)
-        {            
+        {
             if (Settings.EnableDebug) Console.WriteLine($"{command} store = {storeName}, data = {data}");
             if (string.IsNullOrEmpty(storeName)) throw new ResponseException(command.ToString(), "StoreName can't be null", data);
             else if (string.IsNullOrEmpty(data)) throw new ResponseException(command.ToString(), storeName, "Data can't be null");

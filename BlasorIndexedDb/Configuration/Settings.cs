@@ -1,10 +1,5 @@
-﻿using BlazorIndexedDb.Helpers;
-using BlazorIndexedDb.Store;
+﻿using BlazorIndexedDb.Store;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BlazorIndexedDb.Configuration
 {
@@ -39,7 +34,7 @@ namespace BlazorIndexedDb.Configuration
         [Obsolete("No need anymore")]
         public string EntitiesNamespace
         {
-            get { return string.IsNullOrEmpty(entitiesNamespace_BK) ? AssemblyName: entitiesNamespace_BK; }
+            get { return string.IsNullOrEmpty(entitiesNamespace_BK) ? AssemblyName : entitiesNamespace_BK; }
             set { entitiesNamespace_BK = value; }
         }
 
@@ -97,7 +92,7 @@ namespace BlazorIndexedDb.Configuration
         }
 
         static Settings()
-        {            
+        {
             Tables = new StoreNames();
             Initialized = false;
         }

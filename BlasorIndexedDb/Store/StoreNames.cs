@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BlazorIndexedDb.Store
 {
@@ -34,7 +31,7 @@ namespace BlazorIndexedDb.Store
         /// </summary>
         /// <param name="tableName"></param>
         /// <returns></returns>
-        public bool InTables(string tableName) => Tables.Exists(t=> t.Name == tableName);
+        public bool InTables(string tableName) => Tables.Exists(t => t.Name == tableName);
 
         /// <summary>
         /// Serach if the model already exists in some table
@@ -47,7 +44,7 @@ namespace BlazorIndexedDb.Store
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public string GetTable(string model) => Tables.Where(m=> m.Model == model).Select(t=>t.Name).FirstOrDefault();
+        public string GetTable(string model) => Tables.Where(m => m.Model == model).Select(t => t.Name).FirstOrDefault();
 
         /// <summary>
         /// Get table name from the model

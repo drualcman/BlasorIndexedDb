@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BlazorIndexedDb.Models
 {
@@ -26,15 +22,15 @@ namespace BlazorIndexedDb.Models
         /// <summary>
         /// Basic constructor
         /// </summary>
-        public ResponseException():base() { }
+        public ResponseException() : base() { }
         /// <summary>
         /// Constructor with message
         /// </summary>
-        public ResponseException(string message):base(message) { }
+        public ResponseException(string message) : base(message) { }
         /// <summary>
         /// Contructur with message and exception
         /// </summary>
-        public ResponseException(string message, Exception innerException):base(message, innerException) { }
+        public ResponseException(string message, Exception innerException) : base(message, innerException) { }
 
         /// <summary>
         /// Basic internal constructor
@@ -51,7 +47,7 @@ namespace BlazorIndexedDb.Models
         /// <param name="storeName"></param>
         /// <param name="data"></param>
         /// <param name="innerException"></param>
-        public ResponseException(string command, string storeName, string data, Exception innerException): base($"[{command}] {storeName}", innerException) =>
+        public ResponseException(string command, string storeName, string data, Exception innerException) : base($"[{command}] {storeName}", innerException) =>
             (Command, StoreName, TransactionData) = (command, storeName, data);
         /// <summary>
         /// Return error formated

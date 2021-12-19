@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BlazorIndexedDb.Helpers
 {
@@ -25,8 +23,8 @@ namespace BlazorIndexedDb.Helpers
         /// Get all the indexdb attributes from the porperty
         /// </summary>
         /// <param name="p"></param>
-        public PropertyOptions(PropertyInfo p) 
-        {      
+        public PropertyOptions(PropertyInfo p)
+        {
             string tableName = p.ReflectedType.Name;
             this.Name = p.Name;
             IEnumerable<Attribute> attrs = p.GetCustomAttributes();  // Reflection.  
@@ -138,7 +136,7 @@ namespace BlazorIndexedDb.Helpers
                 else if (this.Name == $"ID{tableName.ToLower().Remove(tableName.Length - 1, 1)}")                 //singular possibility
                 {
                     this.IsKeyPath = true;
-                    this.IsUnique = true;                     
+                    this.IsUnique = true;
                 }
                 else
                 {

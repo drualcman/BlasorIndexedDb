@@ -1,12 +1,11 @@
-﻿using System;
+﻿using BlazorIndexedDb.Configuration;
+using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using System.Text.Json;
-using System.Data;
-using System.Reflection;
-using BlazorIndexedDb.Configuration;
 
 namespace BlazorIndexedDb.Helpers
 {
@@ -23,7 +22,7 @@ namespace BlazorIndexedDb.Helpers
         /// <param name="sender"></param>
         /// <returns></returns>
         public static string ToJson(System.Collections.IList sender)
-        {            
+        {
             if (Settings.EnableDebug) Console.WriteLine($"ToJson parse generic list");
             StringBuilder jsonString = new StringBuilder();
             jsonString.Append("[ ");
@@ -113,7 +112,7 @@ namespace BlazorIndexedDb.Helpers
 
                 jsonString.Append("{ ");
                 for (int i = 0; i < properties.Length; i++)
-                {                    
+                {
                     PropertyOptions property = new PropertyOptions(properties[i]);
                     if (!property.ToIgnore)
                     {
@@ -155,7 +154,7 @@ namespace BlazorIndexedDb.Helpers
                 jsonString.Append("}");
 
             }
-            return jsonString.ToString();           
+            return jsonString.ToString();
         }
         #endregion
 
@@ -239,7 +238,7 @@ namespace BlazorIndexedDb.Helpers
                     PropertyOptions property = new PropertyOptions(properties[i]);
                     if (!property.ToIgnore)
                     {
-                        if (Settings.EnableDebug) Console.WriteLine("ToJson parse Property {0} not ignored", properties[i].Name);                        
+                        if (Settings.EnableDebug) Console.WriteLine("ToJson parse Property {0} not ignored", properties[i].Name);
                         if (Settings.Tables.InTables<TModel>())
                         {
                             jsonString.Append($"\"{property.Name}\":");
@@ -249,7 +248,7 @@ namespace BlazorIndexedDb.Helpers
                                 jsonString.Append(ToJson(properties[i].GetValue(sender)));
                             }
                             else
-                            {                                
+                            {
                                 jsonString.Append(ValueToString(sender, properties[i], properties[i].PropertyType.Name));
                             }
                         }
@@ -338,7 +337,7 @@ namespace BlazorIndexedDb.Helpers
                     int e = (int)property.GetValue(sender);
                     result.Append(e.ToString());
                 }
-            }            
+            }
             return result.ToString();
         }
         static string ValueToString(object sender, string pValue, PropertyInfo property)

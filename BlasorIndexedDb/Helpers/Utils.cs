@@ -1,11 +1,7 @@
-﻿using BlazorIndexedDb.Configuration;
-using BlazorIndexedDb.Models;
+﻿using BlazorIndexedDb.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BlazorIndexedDb.Helpers
 {
@@ -14,7 +10,7 @@ namespace BlazorIndexedDb.Helpers
     /// </summary>
     class Utils
     {
-        public static CommandResponse CommandResponse(ResponseJsDb response) => 
+        public static CommandResponse CommandResponse(ResponseJsDb response) =>
             new(response.Result, response.Message, new List<ResponseJsDb> { response });
 
         public static CommandResponse CommandResponse(List<ResponseJsDb> response)

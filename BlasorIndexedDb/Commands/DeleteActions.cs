@@ -1,12 +1,9 @@
 ﻿using BlazorIndexedDb.Configuration;
-using BlazorIndexedDb.Helpers;
 using BlazorIndexedDb.Models;
 using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace BlazorIndexedDb.Commands
@@ -52,7 +49,7 @@ namespace BlazorIndexedDb.Commands
                 if (Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Settings.Tables.GetTable<TModel>()} Error: {ex}");
                 throw new ResponseException(nameof(DbDelete), typeof(TModel).Name, ex.Message, ex);
             }
-            
+
         }
 
         /// <summary>
@@ -93,7 +90,7 @@ namespace BlazorIndexedDb.Commands
                 if (Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Settings.Tables.GetTable<TModel>()} Error: {ex}");
                 throw new ResponseException(nameof(DbDelete), typeof(TModel).Name, ex.Message, ex);
             }
-            
+
         }
 
 
@@ -134,7 +131,7 @@ namespace BlazorIndexedDb.Commands
                 if (Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Settings.Tables.GetTable<TModel>()} Error: {ex}");
                 throw new ResponseException(nameof(DbDelete), typeof(TModel).Name, ex.Message, ex);
             }
-           
+
         }
 
 
@@ -175,7 +172,7 @@ namespace BlazorIndexedDb.Commands
                 if (Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Settings.Tables.GetTable<TModel>()} Error: {ex}");
                 throw new ResponseException(nameof(DbDelete), typeof(TModel).Name, ex.Message, ex);
             }
-            
+
         }
 
         /// <summary>
@@ -193,7 +190,7 @@ namespace BlazorIndexedDb.Commands
                 List<ResponseJsDb> result = new List<ResponseJsDb>();
                 if (Settings.Initialized)
                 {
-                    result.AddRange(await jsRuntime.InvokeAsync<List<ResponseJsDb>>($"MyDb.Delete", Settings.Tables.GetTable<TModel>(), id));                    
+                    result.AddRange(await jsRuntime.InvokeAsync<List<ResponseJsDb>>($"MyDb.Delete", Settings.Tables.GetTable<TModel>(), id));
                 }
                 else
                 {
@@ -214,7 +211,7 @@ namespace BlazorIndexedDb.Commands
                 if (Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Settings.Tables.GetTable<TModel>()} Error: {ex}");
                 throw new ResponseException(nameof(DbDelete), typeof(TModel).Name, ex.Message, ex);
             }
-            
+
         }
     }
 }

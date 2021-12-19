@@ -5,9 +5,6 @@ using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace BlazorIndexedDb.Commands
@@ -52,12 +49,12 @@ namespace BlazorIndexedDb.Commands
                     int c = rows.Count;
                     if (c > 0)
                     {
-                        result.AddRange(await Commands.DbCommand(jsRuntime, DbCommands.Update, Settings.Tables.GetTable<TModel>(), await ObjectConverter.ToJsonAsync(rows)));                        
+                        result.AddRange(await Commands.DbCommand(jsRuntime, DbCommands.Update, Settings.Tables.GetTable<TModel>(), await ObjectConverter.ToJsonAsync(rows)));
                     }
                     else
                     {
                         if (Settings.EnableDebug) Console.WriteLine($"DbUpdate No need update into {Settings.Tables.GetTable<TModel>()}");
-                            result = new List<ResponseJsDb>{
+                        result = new List<ResponseJsDb>{
                             new ResponseJsDb { Result = true, Message =$"No need update into {Settings.Tables.GetTable<TModel>()}!" }
                         };
                     }
@@ -85,7 +82,7 @@ namespace BlazorIndexedDb.Commands
             {
                 throw new ResponseException(nameof(DbUpdate), Settings.Tables.GetTable<TModel>(), ex.Message, ex);
             }
-            
+
         }
 
 
@@ -131,7 +128,7 @@ namespace BlazorIndexedDb.Commands
             {
                 throw new ResponseException(nameof(DbUpdateOffLine), Settings.Tables.GetTable<TModel>(), ex.Message, ex);
             }
-            
+
         }
     }
 }

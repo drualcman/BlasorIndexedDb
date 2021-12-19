@@ -4,13 +4,7 @@ using BlazorIndexedDb.Helpers;
 using BlazorIndexedDb.Models;
 using Microsoft.JSInterop;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace BlazorIndexedDb.Store
@@ -52,7 +46,7 @@ namespace BlazorIndexedDb.Store
         /// </summary>
         /// <param name="id">primary key id to search</param>
         /// <returns></returns>
-        public async Task<TModel> SelectAsync(int id)=>
+        public async Task<TModel> SelectAsync(int id) =>
             await DBConn.SingleRecord<TModel>(id);
 
         /// <summary>
@@ -60,7 +54,7 @@ namespace BlazorIndexedDb.Store
         /// </summary>
         /// <param name="id">primary key id to search</param>
         /// <returns></returns>
-        public async Task<TModel> SelectAsync(double id)  =>
+        public async Task<TModel> SelectAsync(double id) =>
             await DBConn.SingleRecord<TModel>(id);
 
         /// <summary>
@@ -68,7 +62,7 @@ namespace BlazorIndexedDb.Store
         /// </summary>
         /// <param name="id">primary key id to search</param>
         /// <returns></returns>
-        public async Task<TModel> SelectAsync(decimal id)  =>
+        public async Task<TModel> SelectAsync(decimal id) =>
             await DBConn.SingleRecord<TModel>(id);
 
         /// <summary>
@@ -76,7 +70,7 @@ namespace BlazorIndexedDb.Store
         /// </summary>
         /// <param name="id">primary key id to search</param>
         /// <returns></returns>
-        public async Task<TModel> SelectAsync(long id)  =>
+        public async Task<TModel> SelectAsync(long id) =>
             await DBConn.SingleRecord<TModel>(id);
 
         /// <summary>
@@ -84,7 +78,7 @@ namespace BlazorIndexedDb.Store
         /// </summary>
         /// <param name="id">primary key id to search</param>
         /// <returns></returns>
-        public async Task<TModel> SelectAsync(string id)  =>
+        public async Task<TModel> SelectAsync(string id) =>
             await DBConn.SingleRecord<TModel>(id);
 
         /// <summary>
@@ -92,7 +86,7 @@ namespace BlazorIndexedDb.Store
         /// </summary>
         /// <param name="id">primary key id to search</param>
         /// <returns></returns>
-        public async Task<TModel> SelectAsync(DateTime id)  =>
+        public async Task<TModel> SelectAsync(DateTime id) =>
             await DBConn.SingleRecord<TModel>(id);
 
         /// <summary>
@@ -124,7 +118,7 @@ namespace BlazorIndexedDb.Store
                 result = await DBConn.DbInserOffline(toAdd);
             else
                 result = await DBConn.DbInsert(toAdd);
-            return Utils.CommandResponse(result); 
+            return Utils.CommandResponse(result);
         }
 
         /// <summary>
@@ -163,7 +157,7 @@ namespace BlazorIndexedDb.Store
         /// Delete all rows from a table
         /// </summary>
         /// <returns></returns>
-        public async Task<CommandResponse> CleanAsync() => 
+        public async Task<CommandResponse> CleanAsync() =>
             Utils.CommandResponse(await DBConn.DbCleanTable<TModel>());
 
         /// <summary>

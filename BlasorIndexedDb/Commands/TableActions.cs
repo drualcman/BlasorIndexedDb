@@ -1,12 +1,9 @@
 ﻿using BlazorIndexedDb.Configuration;
-using BlazorIndexedDb.Helpers;
 using BlazorIndexedDb.Models;
 using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace BlazorIndexedDb.Commands
@@ -65,7 +62,7 @@ namespace BlazorIndexedDb.Commands
             {
                 throw new ResponseException(nameof(DbCleanTable), name, ex.Message, ex);
             }
-            
+
         }
 
     }
