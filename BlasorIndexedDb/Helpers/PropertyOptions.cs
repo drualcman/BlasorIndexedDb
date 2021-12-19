@@ -48,19 +48,7 @@ namespace BlazorIndexedDb.Helpers
                     else if (attr is System.ComponentModel.DataAnnotations.RequiredAttribute)
                     {
                         this.IsKeyPath = true;
-                        string t = p.GetMethod.ReturnType.Name.ToLower();
-                        switch (t)
-                        {
-                            case "int":
-                            case "int16":
-                            case "int32":
-                            case "int64":
-                                this.IsAutoIncrement = true;
-                                break;
-                            default:
-                                this.IsAutoIncrement = false;
-                                break;
-                        }
+                        this.IsUnique = true;
                     }
                     else
                     {
@@ -89,81 +77,68 @@ namespace BlazorIndexedDb.Helpers
                 if (this.Name.ToLower() == "id")
                 {
                     this.IsKeyPath = true;
-                    this.IsAutoIncrement = true;
                     this.IsUnique = true;
                 }
                 else if (this.Name == $"{tableName.ToLower()}id")
                 {
                     this.IsKeyPath = true;
-                    this.IsAutoIncrement = true;
                     this.IsUnique = true;
                 }
                 else if (this.Name == $"id{tableName.ToLower()}")
                 {
                     this.IsKeyPath = true;
-                    this.IsAutoIncrement = true;
                     this.IsUnique = true;
                 }
                 else if (this.Name == $"id{tableName.ToLower()}s")                 //plural possibility
                 {
                     this.IsKeyPath = true;
-                    this.IsAutoIncrement = true;
                     this.IsUnique = true;
                 }
                 else if (this.Name == $"id{tableName.ToLower().Remove(tableName.Length - 1, 1)}")                 //singular possibility
                 {
                     this.IsKeyPath = true;
-                    this.IsAutoIncrement = true;
                     this.IsUnique = true;
                 } //next
                 else if (this.Name == $"{tableName.ToLower()}Id")
                 {
                     this.IsKeyPath = true;
-                    this.IsAutoIncrement = true;
                     this.IsUnique = true;
                 }
                 else if (this.Name == $"Id{tableName.ToLower()}")
                 {
                     this.IsKeyPath = true;
-                    this.IsAutoIncrement = true;
                     this.IsUnique = true;
                 }
                 else if (this.Name == $"Id{tableName.ToLower()}s")                 //plural possibility
                 {
                     this.IsKeyPath = true;
-                    this.IsAutoIncrement = true;
                     this.IsUnique = true;
                 }
                 else if (this.Name == $"Id{tableName.ToLower().Remove(tableName.Length - 1, 1)}")                 //singular possibility
                 {
                     this.IsKeyPath = true;
-                    this.IsAutoIncrement = true;
                     this.IsUnique = true;
 
                 } //last
                 else if (this.Name == $"{tableName.ToLower()}ID")
                 {
                     this.IsKeyPath = true;
-                    this.IsAutoIncrement = true;
                     this.IsUnique = true;
                 }
                 else if (this.Name == $"ID{tableName.ToLower()}")
                 {
                     this.IsKeyPath = true;
-                    this.IsAutoIncrement = true;
                     this.IsUnique = true;
                 }
                 else if (this.Name == $"ID{tableName.ToLower()}s")                 //plural possibility
                 {
                     this.IsKeyPath = true;
-                    this.IsAutoIncrement = true;
                     this.IsUnique = true;
                 }
                 else if (this.Name == $"ID{tableName.ToLower().Remove(tableName.Length - 1, 1)}")                 //singular possibility
                 {
                     this.IsKeyPath = true;
-                    this.IsAutoIncrement = true;
-                    this.IsUnique = true;
+                    this.IsUnique = true;                     
                 }
                 else
                 {
@@ -171,6 +146,19 @@ namespace BlazorIndexedDb.Helpers
                     this.IsAutoIncrement = false;
                     this.IsUnique = false;
                 }
+            }
+            if (this.IsKeyPath && this.IsUnique)
+            {
+                Type t = p.GetMethod.ReturnType;
+                if (t == typeof(Int16)) this.IsAutoIncrement = true;
+                else if (t == typeof(Int32)) this.IsAutoIncrement = true;
+                else if (t == typeof(Int64)) this.IsAutoIncrement = true;
+                else if (t == typeof(Double)) this.IsAutoIncrement = true;
+                else if (t == typeof(Decimal)) this.IsAutoIncrement = true;
+                else if (t == typeof(UInt16)) this.IsAutoIncrement = true;
+                else if (t == typeof(UInt32)) this.IsAutoIncrement = true;
+                else if (t == typeof(UInt64)) this.IsAutoIncrement = true;
+                else this.IsAutoIncrement = false;
             }
         }
     }
