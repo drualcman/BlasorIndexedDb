@@ -9,12 +9,12 @@ Manage indexedDb from c# with Blazor. Simple way to interact with IndexedDB simi
 ```PM> Install-Package DrUalcman-BlazorIndexedDb```
 
 ## New version changes coming
-Working on change version control to avoid need to delete the previos database if add, delete or change StoreSet
+Working on change version control to avoid need to delete the previus database if add, delete or change StoreSet
 
 # Current features
 Create StoreContext from abstract class.
 StoreSet per each model you need into a database.
-Set PrimaKey in the model. Using convention if have property Id or TableNameId or IdTableName then this is used like PrimaryKey AutoIncremental
+Set PrimaKey in the model. Using convention if have property Id or TableNameId or IdTableName then this is used like PrimaryKey AutoIncremental (only if it's a number is autoincremental)
 CRUD from StoreSet
 Select all or one by PrimaryKey or property (field only one field for the where action) from StoreSet
 Clean all data in a storeSet
