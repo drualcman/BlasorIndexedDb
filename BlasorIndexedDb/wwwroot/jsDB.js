@@ -159,14 +159,10 @@ class jsDB {
             //check primary key            
             if (model.options && model.options.keyPath && model.options.autoIncrement == false) {
                 //have a primary key required
-                if (context.HasKeyPath(o, model.options.keyPath)) {
-                    defaultObj += '"' + model.options.keyPath + '": null,';
-                }
-                else defaultObj += '"ssnId": null,';
+                defaultObj += '"' + model.options.keyPath + '": null,';
             }
             else {
-                if (model.options && model.options.keyPath) defaultObj += '"' + model.options.keyPath + '": null,';
-                else defaultObj += '"ssnId": null,';
+                defaultObj += '"ssnId": null,';
             }
             //create a default json object for the table
             const c = model.columns.length;

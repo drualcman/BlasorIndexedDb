@@ -117,11 +117,12 @@ namespace BlazorIndexedDb.Commands
             }
             catch (ResponseException ex)
             {
-                if (Settings.EnableDebug) Console.WriteLine($"DbInsert Model: {Settings.Tables.GetTable<TModel>()} Error: {ex.Message}");
+                if (Settings.EnableDebug) Console.WriteLine($"DbInsert Model: {Settings.Tables.GetTable<TModel>()} ResponseException: {ex.Message}");
                 throw;
             }
             catch (Exception ex)
             {
+                if (Settings.EnableDebug) Console.WriteLine($"DbInsert Model: {Settings.Tables.GetTable<TModel>()} Exception: {ex.Message}");
                 throw new ResponseException(nameof(DbInsert), typeof(TModel).Name, ex.Message, ex);
             }
 

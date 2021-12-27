@@ -89,7 +89,7 @@ namespace BlazorIndexedDb.Configuration
                     bool haveTables = false;
                     foreach (PropertyInfo item in storeSets)
                     {
-                        Console.WriteLine($"table name {item.Name}");
+                        if (Settings.EnableDebug) Console.WriteLine($"table name {item.Name}");
                         string tableName = item.Name;
                         Settings.Tables.AddTable(tableName, item.PropertyType.GetGenericArguments()[0].Name);
                         StringBuilder tableModels = new StringBuilder();
