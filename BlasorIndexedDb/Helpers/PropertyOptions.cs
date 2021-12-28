@@ -25,11 +25,13 @@ namespace BlazorIndexedDb.Helpers
         /// <param name="p"></param>
         public PropertyOptions(PropertyInfo p)
         {
+            bool notFoundKeyPath = true;
             string tableName = p.ReflectedType.Name;
             this.Name = p.Name;
             IEnumerable<Attribute> attrs = p.GetCustomAttributes();  // Reflection.  
             if (attrs.Any())
             {
+                notFoundKeyPath = false;
                 // Displaying output.  
                 foreach (Attribute attr in attrs)
                 {
@@ -145,7 +147,7 @@ namespace BlazorIndexedDb.Helpers
                     this.IsUnique = false;
                 }
             }
-            if (this.IsKeyPath && this.IsUnique)
+            if (this.IsKeyPath && this.IsUnique && notFoundKeyPath)
             {
                 Type t = p.GetMethod.ReturnType;
                 if (t == typeof(Int16)) this.IsAutoIncrement = true;
