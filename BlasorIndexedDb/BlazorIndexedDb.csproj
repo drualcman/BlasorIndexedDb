@@ -3,22 +3,22 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.5.23</Version>
+    <Version>1.5.24</Version>
     <Authors>Sergi Ortiz Gomez</Authors>
     <Company>DrUalcman</Company>
     <Description>Manage IndexedDb from Blazor WebAssembly applications. Create a StoreDbContext similar how is working in EF</Description>
     <Copyright>Free</Copyright>
     <PackageLicenseFile>License.txt</PackageLicenseFile>
     <PackageTags>webassembly, blazor, indexedDb, interop, javascript, database</PackageTags>
-    <PackageReleaseNotes>Fixed a bug in a javascript file about object not initialize when check the model and the model don't have autonumeric keypath. Clean cache in the browser must be required.</PackageReleaseNotes>
+    <PackageReleaseNotes>Fixed a bug relative to keypath (primary key) when is a numeric and it's decorated with attribute not autonumeric in the class, always set like autonumeric in the indexed db.</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/drualcman/BlasorIndexedDb</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
     <PackageId>DrUalcman-BlazorIndexedDb</PackageId>
     <Product>BlazorIndexedDb</Product>
     <PackageProjectUrl>https://blazorindexdb.community-mall.com/</PackageProjectUrl>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-    <AssemblyVersion>1.5.23</AssemblyVersion>
-    <FileVersion>1.5.23</FileVersion>
+    <AssemblyVersion>1.5.24</AssemblyVersion>
+    <FileVersion>1.5.24</FileVersion>
     <AssemblyName>DrUalcman-BlazorIndexedDb</AssemblyName>
     <RootNamespace>BlazorIndexedDb</RootNamespace>
     <PackageReadmeFile>README.md</PackageReadmeFile>
