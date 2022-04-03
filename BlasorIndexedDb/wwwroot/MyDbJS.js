@@ -237,8 +237,8 @@ class jsDB {
                             const request = store.getAll();
                             request.onerror = ev => {
                                 db.close();
-                                console.warn(ev.target.error.message);
                                 resolve([context.SetResponse(false, ev.target.error.message)]);
+                                console.warn(ev.target.error.message);
                             };
                             request.onsuccess = ev => {
                                 db.close();
@@ -246,8 +246,8 @@ class jsDB {
                             };
                         } catch (e) {
                             db.close();
-                            console.warn(e.message);
                             error([context.SetResponse(false, e.message)]);
+                            console.warn(e.message);
                         }
                     }
                     dbconnect.onerror = function (e) {
@@ -278,8 +278,8 @@ class jsDB {
                         const request = store.getAll(id);
                         request.onerror = ev => {
                             db.close();
-                            console.warn(ev.target.error.message);
                             resolve([context.SetResponse(false, ev.target.error.message)]);
+                            console.warn(ev.target.error.message);
                         };
                         request.onsuccess = () => {
                             db.close();
@@ -314,8 +314,8 @@ class jsDB {
                         const request = index.getAll(value);
                         request.onerror = ev => {
                             db.close();
-                            console.warn(ev.target.error.message);
                             resolve([context.SetResponse(false, ev.target.error.message)]);
+                            console.warn(ev.target.error.message);
                         };
                         request.onsuccess = () => {
                             db.close();
@@ -323,8 +323,8 @@ class jsDB {
                         }
                     } catch (e) {
                         db.close();
-                        console.warn(e.message);
                         error([context.SetResponse(false, e.message)]);
+                        console.warn(e.message);
                     }
                 }
             }
@@ -373,8 +373,8 @@ class jsDB {
                                             store.add(o);
                                             transaction.onerror = ev => {
                                                 db.close();
-                                                console.warn(ev.target.error.message);
                                                 transactionResult.push(context.SetResponse(false, ev.target.error.message));
+                                                console.warn(ev.target.error.message);
                                             };
                                             transaction.oncomplete = () => {
                                                 db.close();
@@ -457,8 +457,8 @@ class jsDB {
                                                         transactionResult.push(context.SetResponse(true, `Success in updating record ${ssnId}`));
                                                     };
                                                     objRequest.onerror = ev => {
-                                                        console.warn(ev.target.error.message);
                                                         transactionResult.push(context.SetResponse(false, `Error in updating record ${ssnId}`));
+                                                        console.warn(ev.target.error.message);
                                                     };
                                                 }
                                             }
@@ -471,8 +471,8 @@ class jsDB {
                                                 };
                                                 transaction.onerror = ev => {
                                                     db.close();
-                                                    console.warn(ev.target.error.message);
                                                     transactionResult.push(context.SetResponse(false, ev.target.error.message));
+                                                    console.warn(ev.target.error.message);
                                                 };
                                             }
                                         } catch (e) {
@@ -518,8 +518,8 @@ class jsDB {
                         store.delete(id);
                         transaction.onerror = ev => {
                             db.close();
-                            console.warn(ev.target.error.message);
                             resolve([context.SetResponse(false, ev.target.error.message)]);
+                            console.warn(ev.target.error.message);
                         };
                         transaction.oncomplete = r => {
                             db.close();
@@ -527,8 +527,8 @@ class jsDB {
                         };
                     } catch (e) {
                         db.close();
-                        console.warn(e);
                         error([context.SetResponse(false, e.message)]);
+                        console.warn(e);
                     }
                 };
             }
@@ -556,13 +556,13 @@ class jsDB {
                         };
                         transaction.onerror = ev => {
                             db.close();
-                            console.warn(ev.target.error.message);
                             resolve([context.SetResponse(false, ev.target.error.message)]);
+                            console.warn(ev.target.error.message);
                         };
                     } catch (e) {
                         db.close();
-                        console.warn(e);
                         error([context.SetResponse(false, e.message)]);
+                        console.warn(e);
                     }
                 };
             }
@@ -632,7 +632,14 @@ let Conn = (function () {
          * @param {any} dbModel
         */
         Init: (dbModel) => db = new jsDB(JSON.parse(dbModel)),
-        Connected: (database, version) => { db.SetDataBaseName(database, version, null); db.Connected(); },
+        Connected: (database, version) => new Promise(function (ok, bad) {
+            db.SetDataBaseName(database, version, null);
+            try {
+                ok(db.Connected());
+            } catch (e) {
+                bad(e);
+            }
+        }),
         /**
          * Request all data from a table name. Return the data or JSON response
          * @param {string} table table name to request the data
@@ -640,9 +647,19 @@ let Conn = (function () {
          * @param {string} version database version
          * @param {string} models models to use
          */
-        Select: (table, database, version, models) => {
-            db.SetDataBaseName(database, version, models); db.Select(table)
-        },
+        Select: (table, database, version, models) => new Promise(function (ok, bad) {
+            db.SetDataBaseName(database, version, null);
+            try {
+                db.SetDataBaseName(database, version, models);
+                db.Select(table).then(function (result) {
+                    ok(result);
+                }).catch(function (error) {
+                    bad(error);
+                });
+            } catch (e) {
+                bad(e);
+            }
+        }),
         /**
          * Request data from a table name with the keyPath with a value. Return the data or JSON response
          * @param {string} table table name
@@ -651,9 +668,19 @@ let Conn = (function () {
          * @param {string} version database version
          * @param {string} models models to use
          */
-        SelectId: (table, id, database, version, models) => {
-            db.SetDataBaseName(database, version, models); db.SelectId(table, id)
-        },
+        SelectId: (table, id, database, version, models) => new Promise(function (ok, bad) {
+            db.SetDataBaseName(database, version, null);
+            try {
+                db.SetDataBaseName(database, version, models);
+                db.Select(table, id).then(function (result) {
+                    ok(result);
+                }).catch(function (error) {
+                    bad(error);
+                });
+            } catch (e) {
+                bad(e);
+            }
+        }),
         /**
          * Request data from a table name filtered by column name and value. Return the data or JSON response
          * @param {string} table table name
@@ -663,9 +690,19 @@ let Conn = (function () {
          * @param {string} version database version
          * @param {string} models models to use
          */
-        SelectWhere: (table, column, value, database, version, models) => {
-            db.SetDataBaseName(database, version, models); db.SelectWhere(table, column, value)
-        },
+        SelectWhere: (table, column, value, database, version, models) => new Promise(function (ok, bad) {
+            db.SetDataBaseName(database, version, null);
+            try {
+                db.SetDataBaseName(database, version, models);
+                db.Select(table, column, value).then(function (result) {
+                    ok(result);
+                }).catch(function (error) {
+                    bad(error);
+                });
+            } catch (e) {
+                bad(e);
+            }
+        }),
         /**
          * Insert data into a table. Alway return a JSON response
          * @param {string} table table name
@@ -674,9 +711,19 @@ let Conn = (function () {
          * @param {string} version database version
          * @param {string} models models to use
          */
-        Insert: (table, data, database, version, models) => {
-            db.SetDataBaseName(database, version, models); db.Insert(table, JSON.parse(data))
-        },
+        Insert: (table, data, database, version, models) => new Promise(function (ok, bad) {
+            db.SetDataBaseName(database, version, null);
+            try {
+                db.SetDataBaseName(database, version, models);
+                db.Insert(table, JSON.parse(data)).then(function (result) {
+                    ok(result);
+                }).catch(function (error) {
+                    bad(error);
+                });
+            } catch (e) {
+                bad(e);
+            }
+        }),
         /**
          * Update data into the table. The data always must be content all the columns, if not the function retrieve the actual data to keep always same data into a table. Alway return a JSON response
          * @param {string} table table name
@@ -685,9 +732,19 @@ let Conn = (function () {
          * @param {string} version database version
          * @param {string} models models to use
          */
-        Update: (table, data, database, version, models) => {
-            db.SetDataBaseName(database, version, models); db.Update(table, JSON.parse(data))
-        },
+        Update: (table, data, database, version, models) => new Promise(function (ok, bad) {
+            db.SetDataBaseName(database, version, null);
+            try {
+                db.SetDataBaseName(database, version, models);
+                db.Update(table, JSON.parse(data)).then(function (result) {
+                    ok(result);
+                }).catch(function (error) {
+                    bad(error);
+                });
+            } catch (e) {
+                bad(e);
+            }
+        }),
         /**
          * Delete one row from a table. Alway return a JSON response
          * @param {string} table table name
@@ -696,9 +753,19 @@ let Conn = (function () {
          * @param {string} version database version
          * @param {string} models models to use
          */
-        Delete: (table, id, database, version, models) => {
-            db.SetDataBaseName(database, version, models); db.Delete(table, id)
-        },
+        Delete: (table, id, database, version, models) => new Promise(function (ok, bad) {
+            db.SetDataBaseName(database, version, null);
+            try {
+                db.SetDataBaseName(database, version, models);
+                db.Delete(table, id).then(function (result) {
+                    ok(result);
+                }).catch(function (error) {
+                    bad(error);
+                });
+            } catch (e) {
+                bad(e);
+            }
+        }),
         /**
          * Delete all the data from a table. Alway return a JSON response
          * @param {string} table table name
@@ -706,9 +773,19 @@ let Conn = (function () {
          * @param {string} version database version
          * @param {string} models models to use
          */
-        Clean: (table, database, version, models) => {
-            db.SetDataBaseName(database, version, models); db.Clean(table)
-        },
+        Clean: (table, database, version, models) => new Promise(function (ok, bad) {
+            db.SetDataBaseName(database, version, null);
+            try {
+                db.SetDataBaseName(database, version, models);
+                db.Clean(table).then(function (result) {
+                    ok(result);
+                }).catch(function (error) {
+                    bad(error);
+                });
+            } catch (e) {
+                bad(e);
+            }
+        }),
         /**
          * This is equal to Clean. Alway return a JSON response
          * @param {string} table table name
@@ -716,9 +793,19 @@ let Conn = (function () {
          * @param {string} version database version
          * @param {string} models models to use
          */
-        Drop: (table, database, version, models) => {
-            db.SetDataBaseName(database, version, models); db.Drop(table)
-        },
+        Drop: (table, database, version, models) => new Promise(function (ok, bad) {
+            db.SetDataBaseName(database, version, null);
+            try {
+                db.SetDataBaseName(database, version, models);
+                db.Drop(table).then(function (result) {
+                    ok(result);
+                }).catch(function (error) {
+                    bad(error);
+                });
+            } catch (e) {
+                bad(e);
+            }
+        }),
         /**
          * To store files into a db for compatibility with most of the browsers
          * @param {bytes} buffer file buffer
@@ -727,9 +814,19 @@ let Conn = (function () {
          * @param {string} version database version
          * @param {string} models models to use
          */
-        HelperArrayBufferToBlob: (buffer, type, database, version, models) => {
-            db.SetDataBaseName(database, version, models); db.HelperArrayBufferToBlob(buffer, type)
-        },
+        HelperArrayBufferToBlob: (buffer, type, database, version, models) => new Promise(function (ok, bad) {
+            db.SetDataBaseName(database, version, null);
+            try {
+                db.SetDataBaseName(database, version, models);
+                db.HelperArrayBufferToBlob(buffer, type).then(function (result) {
+                    ok(result);
+                }).catch(function (error) {
+                    bad(error);
+                });
+            } catch (e) {
+                bad(e);
+            }
+        }),
         /**
          * Promise to get a file from a DB for compatibility with most of the browsers
          * @param {bytes} blob arraybuffer byte to retrieve
@@ -737,9 +834,19 @@ let Conn = (function () {
          * @param {string} version database version
          * @param {string} models models to use
          */
-        HelperBlobToArrayBuffer: (blob, database, version, models) => {
-            db.SetDataBaseName(database, version, models); db.HelperBlobToArrayBuffer(blob)
-        }
+        HelperBlobToArrayBuffer: (blob, database, version, models) => new Promise(function (ok, bad) {
+            db.SetDataBaseName(database, version, null);
+            try {
+                db.SetDataBaseName(database, version, models);
+                db.HelperBlobToArrayBuffer(blob).then(function (result) {
+                    ok(result);
+                }).catch(function (error) {
+                    bad(error);
+                });
+            } catch (e) {
+                bad(e);
+            }
+        })
     };
     return MyDb;
 })();

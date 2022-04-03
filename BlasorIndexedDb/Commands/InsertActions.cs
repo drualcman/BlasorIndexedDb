@@ -64,18 +64,20 @@ namespace BlazorIndexedDb.Commands
                     int c = rows.Count;
                     if (c > 0)
                     {
-                        result.AddRange(await Commands.DbCommand(DbCommands.Insert, Setup.Tables.GetTable<TModel>(), await ObjectConverter.ToJsonAsync(rows)));
-
+                        List<ResponseJsDb> response = await Commands.DbCommand(DbCommands.Insert, Setup.Tables.GetTable<TModel>(), await ObjectConverter.ToJsonAsync(rows));
+                        if(Settings.EnableDebug) Console.WriteLine($"Insert response is null {response == null}");
                         bool allGood = false;
-                        c = result.Count;
-
                         int i = 0;
-                        while (c > 0 && !allGood && i < c)
+                        if(response != null)
                         {
-                            allGood = result[i].Result;
-                            i++;
+                            result.AddRange(response);
+                            c = result.Count;
+                            while(c > 0 && !allGood && i < c)
+                            {
+                                allGood = result[i].Result;
+                                i++;
+                            }
                         }
-
                         if (allGood)
                         {
                             //need check the object received and do the action into the other tables if have
