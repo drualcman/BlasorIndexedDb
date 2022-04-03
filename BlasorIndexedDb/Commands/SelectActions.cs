@@ -11,28 +11,41 @@ namespace BlazorIndexedDb.Commands
     /// <summary>
     /// Select commands
     /// </summary>
-    public static class SelectActions
+    public class SelectActions
     {
+        readonly IJSObjectReference jsRuntime;
+        readonly Settings Setup;
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="js"></param>
+        /// <param name="setup"></param>
+        public SelectActions(IJSObjectReference js, Settings setup)
+        {
+            jsRuntime = js;
+            Setup = setup;
+        }
+
         #region lists
         /// <summary>
         /// Get all resister from a table
         /// </summary>
         /// <typeparam name="TModel">Table or store to use</typeparam>
-        /// <param name="jsRuntime"></param>
         /// <exception cref="ResponseException"></exception>
         /// <returns></returns>
-        public static async ValueTask<List<TModel>> DbSelect<TModel>(this IJSRuntime jsRuntime)
+        public async ValueTask<List<TModel>> DbSelect<TModel>()
         {
             List<TModel> data;
-            if (Settings.Initialized)
+            if (Setup.Initialized)
             {
                 try
                 {
-                    data = await jsRuntime.InvokeAsync<List<TModel>>("MyDb.Select", Settings.Tables.GetTable<TModel>());
+                    data = await jsRuntime.InvokeAsync<List<TModel>>("MyDb.Select", Setup.Tables.GetTable<TModel>(), Setup.DBName, Setup.Version, Setup.ModelsAsJson);
                 }
                 catch (Exception ex)
                 {
-                    throw new ResponseException(nameof(DbSelect), Settings.Tables.GetTable<TModel>(), ex.Message, ex);
+                    throw new ResponseException(nameof(DbSelect), Setup.Tables.GetTable<TModel>(), ex.Message, ex);
                 }
             }
             else
@@ -48,23 +61,22 @@ namespace BlazorIndexedDb.Commands
         /// Get all resister from a table
         /// </summary>
         /// <typeparam name="TModel">Table or store to use</typeparam>
-        /// <param name="jsRuntime"></param>
         /// <param name="column">column to compare</param>
         /// <param name="value">value to compare</param>
         /// <exception cref="ResponseException"></exception>
         /// <returns></returns>
-        public static async ValueTask<List<TModel>> DbSelect<TModel>(this IJSRuntime jsRuntime, [NotNull] string column, [NotNull] object value)
+        public async ValueTask<List<TModel>> DbSelect<TModel>([NotNull] string column, [NotNull] object value)
         {
             List<TModel> data;
-            if (Settings.Initialized)
+            if (Setup.Initialized)
             {
                 try
                 {
-                    data = await jsRuntime.InvokeAsync<List<TModel>>("MyDb.SelectWhere", Settings.Tables.GetTable<TModel>(), column, value);
+                    data = await jsRuntime.InvokeAsync<List<TModel>>("MyDb.SelectWhere", Setup.Tables.GetTable<TModel>(), column, value, Setup.DBName, Setup.Version, Setup.ModelsAsJson);
                 }
                 catch (Exception ex)
                 {
-                    throw new ResponseException(nameof(DbSelect), Settings.Tables.GetTable<TModel>(), ex.Message, ex);
+                    throw new ResponseException(nameof(DbSelect), Setup.Tables.GetTable<TModel>(), ex.Message, ex);
                 }
             }
             else
@@ -83,22 +95,21 @@ namespace BlazorIndexedDb.Commands
         /// Get a single record from store model
         /// </summary>
         /// <typeparam name="TModel">Table or store to use</typeparam>
-        /// <param name="jsRuntime"></param>
         /// <param name="id">column to compare</param>
         /// <exception cref="ResponseException"></exception>
         /// <returns></returns>
-        public static async ValueTask<TModel> SingleRecord<TModel>(this IJSRuntime jsRuntime, [NotNull] object id) where TModel : class
+        public async ValueTask<TModel> SingleRecord<TModel>([NotNull] object id) where TModel : class
         {
-            if (Settings.Initialized)
+            if (Setup.Initialized)
             {
                 try
                 {
-                    List<TModel> data = await jsRuntime.InvokeAsync<List<TModel>>("MyDb.SelectId", Settings.Tables.GetTable<TModel>(), id);
+                    List<TModel> data = await jsRuntime.InvokeAsync<List<TModel>>("MyDb.SelectId", Setup.Tables.GetTable<TModel>(), id, Setup.DBName, Setup.Version, Setup.ModelsAsJson);
                     return data[0];
                 }
                 catch (Exception ex)
                 {
-                    throw new ResponseException(nameof(SingleRecord), Settings.Tables.GetTable<TModel>(), ex.Message, ex);
+                    throw new ResponseException(nameof(SingleRecord), Setup.Tables.GetTable<TModel>(), ex.Message, ex);
                 }
             }
             else
@@ -112,139 +123,21 @@ namespace BlazorIndexedDb.Commands
         /// Get a single record from store model
         /// </summary>
         /// <typeparam name="TModel">Table or store to use</typeparam>
-        /// <param name="jsRuntime"></param>
         /// <param name="id">column to compare</param>
         /// <exception cref="ResponseException"></exception>
         /// <returns></returns>
-        public static async ValueTask<TModel> SingleRecord<TModel>(this IJSRuntime jsRuntime, [NotNull] int id) where TModel : class
+        public async ValueTask<TModel> SingleRecord<TModel>([NotNull] int id) where TModel : class
         {
-            if (Settings.Initialized)
+            if (Setup.Initialized)
             {
                 try
                 {
-                    List<TModel> data = await jsRuntime.InvokeAsync<List<TModel>>("MyDb.SelectId", Settings.Tables.GetTable<TModel>(), id);
+                    List<TModel> data = await jsRuntime.InvokeAsync<List<TModel>>("MyDb.SelectId", Setup.Tables.GetTable<TModel>(), id, Setup.DBName, Setup.Version, Setup.ModelsAsJson);
                     return data[0];
                 }
                 catch (Exception ex)
                 {
-                    throw new ResponseException(nameof(SingleRecord), Settings.Tables.GetTable<TModel>(), ex.Message, ex);
-                }
-            }
-            else
-            {
-                if (Settings.EnableDebug) Console.WriteLine($"SelectActions: IndexedDb not initialized yet!");
-                return null;
-            }
-        }
-
-
-        /// <summary>
-        /// Get a single record from store model
-        /// </summary>
-        /// <typeparam name="TModel">Table or store to use</typeparam>
-        /// <param name="jsRuntime"></param>
-        /// <param name="id">column to compare</param>
-        /// <exception cref="ResponseException"></exception>
-        /// <returns></returns>
-        public static async ValueTask<TModel> SingleRecord<TModel>(this IJSRuntime jsRuntime, [NotNull] double id) where TModel : class
-        {
-            if (Settings.Initialized)
-            {
-                try
-                {
-                    List<TModel> data = await jsRuntime.InvokeAsync<List<TModel>>("MyDb.SelectId", Settings.Tables.GetTable<TModel>(), id);
-                    return data[0];
-                }
-                catch (Exception ex)
-                {
-                    throw new ResponseException(nameof(SingleRecord), Settings.Tables.GetTable<TModel>(), ex.Message, ex);
-                }
-            }
-            else
-            {
-                if (Settings.EnableDebug) Console.WriteLine($"SelectActions: IndexedDb not initialized yet!");
-                return null;
-            }
-        }
-
-        /// <summary>
-        /// Get a single record from store model
-        /// </summary>
-        /// <typeparam name="TModel">Table or store to use</typeparam>
-        /// <param name="jsRuntime"></param>
-        /// <param name="id">column to compare</param>
-        /// <exception cref="ResponseException"></exception>
-        /// <returns></returns>
-        public static async ValueTask<TModel> SingleRecord<TModel>(this IJSRuntime jsRuntime, [NotNull] decimal id) where TModel : class
-        {
-            if (Settings.Initialized)
-            {
-                try
-                {
-                    List<TModel> data = await jsRuntime.InvokeAsync<List<TModel>>("MyDb.SelectId", Settings.Tables.GetTable<TModel>(), id);
-                    return data[0];
-                }
-                catch (Exception ex)
-                {
-                    throw new ResponseException(nameof(SingleRecord), Settings.Tables.GetTable<TModel>(), ex.Message, ex);
-                }
-            }
-            else
-            {
-                if (Settings.EnableDebug) Console.WriteLine($"SelectActions: IndexedDb not initialized yet!");
-                return null;
-            }
-        }
-
-        /// <summary>
-        /// Get a single record from store model
-        /// </summary>
-        /// <typeparam name="TModel">Table or store to use</typeparam>
-        /// <param name="jsRuntime"></param>
-        /// <param name="id">column to compare</param>
-        /// <exception cref="ResponseException"></exception>
-        /// <returns></returns>
-        public static async ValueTask<TModel> SingleRecord<TModel>(this IJSRuntime jsRuntime, [NotNull] long id) where TModel : class
-        {
-            if (Settings.Initialized)
-            {
-                try
-                {
-                    List<TModel> data = await jsRuntime.InvokeAsync<List<TModel>>("MyDb.SelectId", Settings.Tables.GetTable<TModel>(), id);
-                    return data[0];
-                }
-                catch (Exception ex)
-                {
-                    throw new ResponseException(nameof(SingleRecord), Settings.Tables.GetTable<TModel>(), ex.Message, ex);
-                }
-            }
-            else
-            {
-                if (Settings.EnableDebug) Console.WriteLine($"SelectActions: IndexedDb not initialized yet!");
-                return null;
-            }
-        }
-
-        /// <summary>
-        /// Get a single record from store model
-        /// </summary>
-        /// <typeparam name="TModel">Table or store to use</typeparam>
-        /// <param name="jsRuntime"></param>
-        /// <param name="id">column to compare</param>
-        /// <exception cref="ResponseException"></exception>
-        /// <returns></returns>
-        public static async ValueTask<TModel> SingleRecord<TModel>(this IJSRuntime jsRuntime, [NotNull] string id) where TModel : class
-        {
-            if (Settings.Initialized)
-            {
-                try
-                {
-                    List<TModel> data = await jsRuntime.InvokeAsync<List<TModel>>("MyDb.SelectId", Settings.Tables.GetTable<TModel>(), id);
-                    return data[0];
-                }
-                catch (Exception ex)
-                {
-                    throw new ResponseException(nameof(SingleRecord), Settings.Tables.GetTable<TModel>(), ex.Message, ex);
+                    throw new ResponseException(nameof(SingleRecord), Setup.Tables.GetTable<TModel>(), ex.Message, ex);
                 }
             }
             else
@@ -259,22 +152,134 @@ namespace BlazorIndexedDb.Commands
         /// Get a single record from store model
         /// </summary>
         /// <typeparam name="TModel">Table or store to use</typeparam>
-        /// <param name="jsRuntime"></param>
         /// <param name="id">column to compare</param>
         /// <exception cref="ResponseException"></exception>
         /// <returns></returns>
-        public static async ValueTask<TModel> SingleRecord<TModel>(this IJSRuntime jsRuntime, [NotNull] DateTime id) where TModel : class
+        public  async ValueTask<TModel> SingleRecord<TModel>([NotNull] double id) where TModel : class
         {
-            if (Settings.Initialized)
+            if (Setup.Initialized)
             {
                 try
                 {
-                    List<TModel> data = await jsRuntime.InvokeAsync<List<TModel>>("MyDb.SelectId", Settings.Tables.GetTable<TModel>(), id);
+                    List<TModel> data = await jsRuntime.InvokeAsync<List<TModel>>("MyDb.SelectId", Setup.Tables.GetTable<TModel>(), id, Setup.DBName, Setup.Version, Setup.ModelsAsJson);
                     return data[0];
                 }
                 catch (Exception ex)
                 {
-                    throw new ResponseException(nameof(SingleRecord), Settings.Tables.GetTable<TModel>(), ex.Message, ex);
+                    throw new ResponseException(nameof(SingleRecord), Setup.Tables.GetTable<TModel>(), ex.Message, ex);
+                }
+            }
+            else
+            {
+                if (Settings.EnableDebug) Console.WriteLine($"SelectActions: IndexedDb not initialized yet!");
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Get a single record from store model
+        /// </summary>
+        /// <typeparam name="TModel">Table or store to use</typeparam>
+        /// <param name="id">column to compare</param>
+        /// <exception cref="ResponseException"></exception>
+        /// <returns></returns>
+        public  async ValueTask<TModel> SingleRecord<TModel>([NotNull] decimal id) where TModel : class
+        {
+            if (Setup.Initialized)
+            {
+                try
+                {
+                    List<TModel> data = await jsRuntime.InvokeAsync<List<TModel>>("MyDb.SelectId", Setup.Tables.GetTable<TModel>(), id, Setup.DBName, Setup.Version, Setup.ModelsAsJson);
+                    return data[0];
+                }
+                catch (Exception ex)
+                {
+                    throw new ResponseException(nameof(SingleRecord), Setup.Tables.GetTable<TModel>(), ex.Message, ex);
+                }
+            }
+            else
+            {
+                if (Settings.EnableDebug) Console.WriteLine($"SelectActions: IndexedDb not initialized yet!");
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Get a single record from store model
+        /// </summary>
+        /// <typeparam name="TModel">Table or store to use</typeparam>
+        /// <param name="id">column to compare</param>
+        /// <exception cref="ResponseException"></exception>
+        /// <returns></returns>
+        public async ValueTask<TModel> SingleRecord<TModel>([NotNull] long id) where TModel : class
+        {
+            if (Setup.Initialized)
+            {
+                try
+                {
+                    List<TModel> data = await jsRuntime.InvokeAsync<List<TModel>>("MyDb.SelectId", Setup.Tables.GetTable<TModel>(), id, Setup.DBName, Setup.Version, Setup.ModelsAsJson);
+                    return data[0];
+                }
+                catch (Exception ex)
+                {
+                    throw new ResponseException(nameof(SingleRecord), Setup.Tables.GetTable<TModel>(), ex.Message, ex);
+                }
+            }
+            else
+            {
+                if (Settings.EnableDebug) Console.WriteLine($"SelectActions: IndexedDb not initialized yet!");
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Get a single record from store model
+        /// </summary>
+        /// <typeparam name="TModel">Table or store to use</typeparam>
+        /// <param name="id">column to compare</param>
+        /// <exception cref="ResponseException"></exception>
+        /// <returns></returns>
+        public async ValueTask<TModel> SingleRecord<TModel>([NotNull] string id) where TModel : class
+        {
+            if (Setup.Initialized)
+            {
+                try
+                {
+                    List<TModel> data = await jsRuntime.InvokeAsync<List<TModel>>("MyDb.SelectId", Setup.Tables.GetTable<TModel>(), id, Setup.DBName, Setup.Version, Setup.ModelsAsJson);
+                    return data[0];
+                }
+                catch (Exception ex)
+                {
+                    throw new ResponseException(nameof(SingleRecord), Setup.Tables.GetTable<TModel>(), ex.Message, ex);
+                }
+            }
+            else
+            {
+                if (Settings.EnableDebug) Console.WriteLine($"SelectActions: IndexedDb not initialized yet!");
+                return null;
+            }
+        }
+
+
+        /// <summary>
+        /// Get a single record from store model
+        /// </summary>
+        /// <typeparam name="TModel">Table or store to use</typeparam>
+        /// <param name="id">column to compare</param>
+        /// <exception cref="ResponseException"></exception>
+        /// <returns></returns>
+        public async ValueTask<TModel> SingleRecord<TModel>([NotNull] DateTime id) where TModel : class
+        {
+            if (Setup.Initialized)
+            {
+                try
+                {
+                    List<TModel> data = await jsRuntime.InvokeAsync<List<TModel>>("MyDb.SelectId", Setup.Tables.GetTable<TModel>(), id, Setup.DBName, Setup.Version, Setup.ModelsAsJson);
+                    return data[0];
+                }
+                catch (Exception ex)
+                {
+                    throw new ResponseException(nameof(SingleRecord), Setup.Tables.GetTable<TModel>(), ex.Message, ex);
                 }
             }
             else

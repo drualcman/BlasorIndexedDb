@@ -1,24 +1,24 @@
-<Project Sdk="Microsoft.NET.Sdk.Razor">
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.5.24</Version>
+    <Version>1.6.25</Version>
     <Authors>Sergi Ortiz Gomez</Authors>
     <Company>DrUalcman</Company>
-    <Description>Manage IndexedDb from Blazor WebAssembly applications. Create a StoreDbContext similar how is working in EF</Description>
+    <Description>Manage IndexedDb from Blazor WebAssembly applications. Create a StoreDbContext similar how is working in EF. Please report any bug or changes you need using our contact form in the web site. Thanks.</Description>
     <Copyright>Free</Copyright>
     <PackageLicenseFile>License.txt</PackageLicenseFile>
     <PackageTags>webassembly, blazor, indexedDb, interop, javascript, database</PackageTags>
-    <PackageReleaseNotes>Fixed a bug relative to keypath (primary key) when is a numeric and it's decorated with attribute not autonumeric in the class, always set like autonumeric in the indexed db.</PackageReleaseNotes>
+    <PackageReleaseNotes>New version with big changes, and update to NET6. No compatible with previous version from c#, need recode a bitfactor a bit. Change to be refactor in the StoreContext now need to send the class to the recevive the model. This version allow different databases with diferent StoreContext, but database should be different names. Fixed also a bug relative to model don't match some times. Fixed the console warninigs when a exception from javascript. Remove 2 javascript references and only have 1 javascript dependency but no need to have a reference in the index.html, is dynamic.</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/drualcman/BlasorIndexedDb</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
     <PackageId>DrUalcman-BlazorIndexedDb</PackageId>
     <Product>BlazorIndexedDb</Product>
     <PackageProjectUrl>https://blazorindexdb.community-mall.com/</PackageProjectUrl>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-    <AssemblyVersion>1.5.24</AssemblyVersion>
-    <FileVersion>1.5.24</FileVersion>
+    <AssemblyVersion>1.6.25</AssemblyVersion>
+    <FileVersion>1.6.25</FileVersion>
     <AssemblyName>DrUalcman-BlazorIndexedDb</AssemblyName>
     <RootNamespace>BlazorIndexedDb</RootNamespace>
     <PackageReadmeFile>README.md</PackageReadmeFile>
@@ -40,7 +40,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="5.0.8" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.3" />
   </ItemGroup>
 
   <ItemGroup>

@@ -8,6 +8,11 @@ namespace BlazorIndexedDb.Configuration
     /// </summary>
     public class Settings
     {
+        /// <summary>
+        /// Save a copy of how is the tables definition in JSON to send to the Javasctipt to compare the models
+        /// </summary>
+        public string ModelsAsJson { get; set; }
+
         private string DbName_BK;
         /// <summary>
         /// Database name
@@ -63,19 +68,19 @@ namespace BlazorIndexedDb.Configuration
         /// <summary>
         /// Names about the models to use
         /// </summary>
-        public static StoreNames Tables { get; set; }
+        public StoreNames Tables { get; set; } = new StoreNames();
 
         ///// <summary>
         ///// Names about the models to use
         ///// </summary>
         //public static Dictionary<string, string> Tables1 { get; set; }
 
-        private static bool InitializedBk;
+        private bool InitializedBk;
 
         /// <summary>
         /// Know if the instance of a indexDb it's already initialized
         /// </summary>
-        public static bool Initialized
+        public bool Initialized
         {
             get { return InitializedBk; }
             set { InitializedBk = value; }
@@ -85,17 +90,17 @@ namespace BlazorIndexedDb.Configuration
         /// Know if the instance of a indexDb it's already initialized
         /// </summary>
         [Obsolete("Use Initialized because a wrong spelling")]
-        public static bool Initiallezed
+        public bool Initiallezed
         {
             get { return InitializedBk; }
             set { InitializedBk = value; }
         }
 
-        static Settings()
-        {
-            Tables = new StoreNames();
-            Initialized = false;
-        }
+        //static Settings()
+        //{
+        //    Tables = new StoreNames();
+        //    Initialized = false;
+        //}
         #endregion
 
     }

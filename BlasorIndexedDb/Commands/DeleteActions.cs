@@ -11,24 +11,39 @@ namespace BlazorIndexedDb.Commands
     /// <summary>
     /// Delete commands
     /// </summary>
-    public static class DeleteActions
+    public class DeleteActions
     {
+        readonly IJSObjectReference jsRuntime;
+        readonly Settings Setup;
+
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="js"></param>
+        /// <param name="setup"></param>
+        public DeleteActions(IJSObjectReference js, Settings setup)
+        {
+            jsRuntime = js;
+            Setup = setup;
+        }
+
+
         /// <summary>
         /// Delete one row from a table
         /// </summary>
         /// <typeparam name="TModel">Table or store to use</typeparam>
-        /// <param name="jsRuntime"></param>
         /// <param name="id"></param>
         /// <exception cref="ResponseException"></exception>
         /// <returns></returns>
-        public static async ValueTask<ResponseJsDb> DbDelete<TModel>(this IJSRuntime jsRuntime, [NotNull] int id)
+        public async ValueTask<ResponseJsDb> DbDelete<TModel>([NotNull] int id)
         {
             try
             {
                 List<ResponseJsDb> result = new List<ResponseJsDb>();
-                if (Settings.Initialized)
+                if (Setup.Initialized)
                 {
-                    result.AddRange(await jsRuntime.InvokeAsync<List<ResponseJsDb>>($"MyDb.Delete", Settings.Tables.GetTable<TModel>(), id));
+                    result.AddRange(await jsRuntime.InvokeAsync<List<ResponseJsDb>>($"MyDb.Delete", Setup.Tables.GetTable<TModel>(), id, Setup.DBName, Setup.Version, Setup.ModelsAsJson));
                 }
                 else
                 {
@@ -41,12 +56,12 @@ namespace BlazorIndexedDb.Commands
             }
             catch (ResponseException ex)
             {
-                if (Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Settings.Tables.GetTable<TModel>()} Error: {ex}");
+                if (Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
                 throw;
             }
             catch (Exception ex)
             {
-                if (Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Settings.Tables.GetTable<TModel>()} Error: {ex}");
+                if (Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
                 throw new ResponseException(nameof(DbDelete), typeof(TModel).Name, ex.Message, ex);
             }
 
@@ -56,19 +71,18 @@ namespace BlazorIndexedDb.Commands
         /// Delete one row from a table
         /// </summary>
         /// <typeparam name="TModel">Table or store to use</typeparam>
-        /// <param name="jsRuntime"></param>
         /// <param name="id">id from the row to delete</param>
         /// <exception cref="ResponseException"></exception>
         /// <returns></returns>
-        public static async ValueTask<ResponseJsDb> DbDelete<TModel>(this IJSRuntime jsRuntime, [NotNull] double id)
+        public async ValueTask<ResponseJsDb> DbDelete<TModel>([NotNull] double id)
         {
             try
             {
                 List<ResponseJsDb> result = new List<ResponseJsDb>();
 
-                if (Settings.Initialized)
+                if (Setup.Initialized)
                 {
-                    result.AddRange(await jsRuntime.InvokeAsync<List<ResponseJsDb>>($"MyDb.Delete", Settings.Tables.GetTable<TModel>(), id));
+                    result.AddRange(await jsRuntime.InvokeAsync<List<ResponseJsDb>>($"MyDb.Delete", Setup.Tables.GetTable<TModel>(), id, Setup.DBName, Setup.Version, Setup.ModelsAsJson));
                 }
                 else
                 {
@@ -82,53 +96,12 @@ namespace BlazorIndexedDb.Commands
             }
             catch (ResponseException ex)
             {
-                if (Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Settings.Tables.GetTable<TModel>()} Error: {ex}");
+                if (Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
                 throw;
             }
             catch (Exception ex)
             {
-                if (Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Settings.Tables.GetTable<TModel>()} Error: {ex}");
-                throw new ResponseException(nameof(DbDelete), typeof(TModel).Name, ex.Message, ex);
-            }
-
-        }
-
-
-        /// <summary>
-        /// Delete one row from a table
-        /// </summary>
-        /// <typeparam name="TModel">Table or store to use</typeparam>
-        /// <param name="jsRuntime"></param>
-        /// <param name="id">id from the row to delete</param>
-        /// <exception cref="ResponseException"></exception>
-        /// <returns></returns>
-        public static async ValueTask<ResponseJsDb> DbDelete<TModel>(this IJSRuntime jsRuntime, [NotNull] decimal id)
-        {
-            try
-            {
-                List<ResponseJsDb> result = new List<ResponseJsDb>();
-
-                if (Settings.Initialized)
-                {
-                    result.AddRange(await jsRuntime.InvokeAsync<List<ResponseJsDb>>($"MyDb.Delete", Settings.Tables.GetTable<TModel>(), id));
-                }
-                else
-                {
-                    if (Settings.EnableDebug) Console.WriteLine($"DeleteActions: IndexedDb not initialized yet!");
-                    result = new List<ResponseJsDb>();
-                    result.Add(new ResponseJsDb { Result = false, Message = $"IndexedDb not initialized yet!" });
-                }
-                if (result.Count > 0) return result[0];
-                else return new ResponseJsDb { Result = false, Message = "No results" };
-            }
-            catch (ResponseException ex)
-            {
-                if (Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Settings.Tables.GetTable<TModel>()} Error: {ex}");
-                throw;
-            }
-            catch (Exception ex)
-            {
-                if (Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Settings.Tables.GetTable<TModel>()} Error: {ex}");
+                if (Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
                 throw new ResponseException(nameof(DbDelete), typeof(TModel).Name, ex.Message, ex);
             }
 
@@ -139,19 +112,18 @@ namespace BlazorIndexedDb.Commands
         /// Delete one row from a table
         /// </summary>
         /// <typeparam name="TModel">Table or store to use</typeparam>
-        /// <param name="jsRuntime"></param>
         /// <param name="id">id from the row to delete</param>
         /// <exception cref="ResponseException"></exception>
         /// <returns></returns>
-        public static async ValueTask<ResponseJsDb> DbDelete<TModel>(this IJSRuntime jsRuntime, [NotNull] string id)
+        public async ValueTask<ResponseJsDb> DbDelete<TModel>([NotNull] decimal id)
         {
             try
             {
                 List<ResponseJsDb> result = new List<ResponseJsDb>();
 
-                if (Settings.Initialized)
+                if (Setup.Initialized)
                 {
-                    result.AddRange(await jsRuntime.InvokeAsync<List<ResponseJsDb>>($"MyDb.Delete", Settings.Tables.GetTable<TModel>(), id));
+                    result.AddRange(await jsRuntime.InvokeAsync<List<ResponseJsDb>>($"MyDb.Delete", Setup.Tables.GetTable<TModel>(), id, Setup.DBName, Setup.Version, Setup.ModelsAsJson));
                 }
                 else
                 {
@@ -164,12 +136,52 @@ namespace BlazorIndexedDb.Commands
             }
             catch (ResponseException ex)
             {
-                if (Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Settings.Tables.GetTable<TModel>()} Error: {ex}");
+                if (Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
                 throw;
             }
             catch (Exception ex)
             {
-                if (Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Settings.Tables.GetTable<TModel>()} Error: {ex}");
+                if (Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
+                throw new ResponseException(nameof(DbDelete), typeof(TModel).Name, ex.Message, ex);
+            }
+
+        }
+
+
+        /// <summary>
+        /// Delete one row from a table
+        /// </summary>
+        /// <typeparam name="TModel">Table or store to use</typeparam>
+        /// <param name="id">id from the row to delete</param>
+        /// <exception cref="ResponseException"></exception>
+        /// <returns></returns>
+        public async ValueTask<ResponseJsDb> DbDelete<TModel>([NotNull] string id)
+        {
+            try
+            {
+                List<ResponseJsDb> result = new List<ResponseJsDb>();
+
+                if (Setup.Initialized)
+                {
+                    result.AddRange(await jsRuntime.InvokeAsync<List<ResponseJsDb>>($"MyDb.Delete", Setup.Tables.GetTable<TModel>(), id, Setup.DBName, Setup.Version, Setup.ModelsAsJson));
+                }
+                else
+                {
+                    if (Settings.EnableDebug) Console.WriteLine($"DeleteActions: IndexedDb not initialized yet!");
+                    result = new List<ResponseJsDb>();
+                    result.Add(new ResponseJsDb { Result = false, Message = $"IndexedDb not initialized yet!" });
+                }
+                if (result.Count > 0) return result[0];
+                else return new ResponseJsDb { Result = false, Message = "No results" };
+            }
+            catch (ResponseException ex)
+            {
+                if (Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                if (Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
                 throw new ResponseException(nameof(DbDelete), typeof(TModel).Name, ex.Message, ex);
             }
 
@@ -179,18 +191,17 @@ namespace BlazorIndexedDb.Commands
         /// Delete one row from a table
         /// </summary>
         /// <typeparam name="TModel">Table or store to use</typeparam>
-        /// <param name="jsRuntime"></param>
         /// <param name="id">id from the row to delete</param>
         /// <exception cref="ResponseException"></exception>
         /// <returns></returns>
-        public static async ValueTask<ResponseJsDb> DbDelete<TModel>(this IJSRuntime jsRuntime, [NotNull] DateTime id)
+        public async ValueTask<ResponseJsDb> DbDelete<TModel>([NotNull] DateTime id)
         {
             try
             {
                 List<ResponseJsDb> result = new List<ResponseJsDb>();
-                if (Settings.Initialized)
+                if (Setup.Initialized)
                 {
-                    result.AddRange(await jsRuntime.InvokeAsync<List<ResponseJsDb>>($"MyDb.Delete", Settings.Tables.GetTable<TModel>(), id));
+                    result.AddRange(await jsRuntime.InvokeAsync<List<ResponseJsDb>>($"MyDb.Delete", Setup.Tables.GetTable<TModel>(), id, Setup.DBName, Setup.Version, Setup.ModelsAsJson));
                 }
                 else
                 {
@@ -203,12 +214,12 @@ namespace BlazorIndexedDb.Commands
             }
             catch (ResponseException ex)
             {
-                if (Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Settings.Tables.GetTable<TModel>()} Error: {ex}");
+                if (Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
                 throw;
             }
             catch (Exception ex)
             {
-                if (Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Settings.Tables.GetTable<TModel>()} Error: {ex}");
+                if (Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
                 throw new ResponseException(nameof(DbDelete), typeof(TModel).Name, ex.Message, ex);
             }
 

@@ -10,9 +10,13 @@ namespace BlazorIndexedDb.Store
     ///     A StoreContext instance represents a instance of a indexedDb into the browser
     ///     with the stores and can be used to query and save instances of your entities.
     /// </summary>
-    public abstract class StoreContext
+    public abstract class StoreContext<TStore>
     {
-        private readonly IJSRuntime DBConn;
+        /// <summary>
+        /// Manage the javascript file
+        /// </summary>
+        protected IJSObjectReference JsReference = null!;
+        readonly Settings Setup;
 
         /// <summary>
         /// Constructor to get the connection
@@ -21,9 +25,9 @@ namespace BlazorIndexedDb.Store
         public StoreContext(IJSRuntime js)
         {
             if (Settings.EnableDebug) Console.WriteLine($"StoreContext minimum constructor");
-            DBConn = js;
             //GetTables();
-            Init(new Settings());
+            Setup = new Settings();
+            Init(js);
         }
 
         /// <summary>
@@ -34,21 +38,22 @@ namespace BlazorIndexedDb.Store
         public StoreContext(IJSRuntime js, Settings settings)
         {
             if (Settings.EnableDebug) Console.WriteLine($"StoreContext constructor with settings");
-            DBConn = js;
-            //GetTables();
-            Init(settings);
+            Setup = settings;
+            Init(js);
         }
 
         /// <summary>
         /// Initialize the connection with a indexedDb
         /// </summary>
-        /// <param name="settings"></param>
-        public void Init(Settings settings)
+        /// <param name="js"></param>
+        public async void Init(IJSRuntime js)
         {
-            if (Settings.EnableDebug) Console.WriteLine($"StoreContext Init => Need is Initialized {Settings.Initialized}");
-            if (!Settings.Initialized)
+            if (Settings.EnableDebug) Console.WriteLine($"StoreContext Init => Is Initialized {Setup.Initialized}");
+            if (!Setup.Initialized)
             {
-                _ = Initalizing.DbInit(DBConn, settings);
+                JsReference = await js.InvokeAsync<IJSObjectReference>("import", "./_content/DrUalcman-BlazorIndexedDb/MyDbJS.js");                
+                Initalizing<TStore> initalizing = new Initalizing<TStore>(JsReference, Setup);
+                await initalizing.DbInit();
                 InitStores();
             }
         }
@@ -63,7 +68,7 @@ namespace BlazorIndexedDb.Store
             for (int i = 0; i < c; i++)
             {
                 //instance the property with StoreSet type
-                properties[i].SetValue(this, Activator.CreateInstance(properties[i].PropertyType, DBConn));
+                properties[i].SetValue(this, Activator.CreateInstance(properties[i].PropertyType, JsReference, Setup));
             }
         }
     }

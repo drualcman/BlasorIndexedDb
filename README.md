@@ -9,14 +9,14 @@ Manage indexedDb from c# with Blazor. Simple way to interact with IndexedDB simi
 ```PM> Install-Package DrUalcman-BlazorIndexedDb```
 
 ## New version changes coming
-Working on change version control to avoid need to delete the previus database if add, delete or change StoreSet
+Working on change version control to avoid need to delete the previous database if add, delete or change StoreSet
 
 # Current features
-Create StoreContext from abstract class.
+Create StoreContext<TStore> from abstract class. Allow multiple StoreContext but dabase name should be different names.
 StoreSet per each model you need into a database.
 Set PrimaKey in the model. Using convention if have property Id or TableNameId or IdTableName then this is used like PrimaryKey AutoIncremental (only if it's a number is autoincremental)
 CRUD from StoreSet
-Select all or one by PrimaryKey or property (field only one field for the where action) from StoreSet
+Select all or one by PrimaryKey or property from StoreSet
 Clean all data in a storeSet
 
 # How to use
@@ -47,10 +47,10 @@ BlazorIndexedDb.Models
 BlazorIndexedDb.Store
 ```
 
-Then can create a DBContext class inherits from StoreContext to manage the database like in EF using a constructor with IJSRuntime and properties with the server about how to manage your tables.
+Then can create a DBContext class inherits from StoreContext<TSore> to manage the database like in EF using a constructor with IJSRuntime and properties with the server about how to manage your tables.
 
 ```
-public class DBContext : StoreContext
+public class DBContext : StoreContext<DBContext>
     {
         #region properties
         public StoreSet<PlayList> PlaysList { get; set; }
@@ -78,11 +78,7 @@ public class Program
         }
     }
 ```
-In the Index.html or the file are you using to start the app add
-```
-    <script src="_content/DrUalcman-BlazorIndexedDb/jsDB.js"></script>
-    <script src="_content/DrUalcman-BlazorIndexedDb/MyDbJs.js"></script>
-```
+In the Index.html no need add any javascript reference. This file in previous versions is now dynamic add when is needed.
 
 In the component need to use a IndexDb inject DBContext
 
@@ -140,15 +136,7 @@ In the component need to use a IndexDb inject DBContext
 
 You can modify the model classes any time, but if the model you will pass don't match with the model created when create the IndexDb this will return a exception.
 
-# IJSRuntime Db extensions
-1. SingleRecord<TModel>
-2. DbSelect<TModel>
-3. DbInsert<TModel>
-4. DbUpdate<TModel>
-5. DbDelete<TModel>
-6. DbCleanTable<TModel>
-
-# Working with records from IJSRuntime Db extensions
+# Working with records
 In all the select action you will receive the List<TModel> except if you are looking for one Key Id send, then you will receive the Model object.
 In all actions you will receive a ResponseJsDb model or a List<ResponseJsDb> with all the responses, if you are sending a lot of rows.
 
@@ -168,7 +156,7 @@ The store set always return the model or list of the model for all select action
 ```
 
 # Exceptions
-When exception is fire will return a ResponseException
+When exception will return a ResponseException
 
 ```
     public class ResponseException : Exception
@@ -182,7 +170,4 @@ When exception is fire will return a ResponseException
 ```
 
 # More info
-Check <a href="https://blazorindexdb.community-mall.com/">our web</a> to get more info.
-
-## Dependencies
-<a href="https://github.com/drualcman/jsDB">jsDB</a>
+Check [website](https://blazorindexdb.community-mall.com/) for more info.

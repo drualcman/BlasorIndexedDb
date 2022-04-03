@@ -14,16 +14,25 @@ namespace BlazorIndexedDb.Store
     /// </summary>
     public class StoreSet<TModel> where TModel : class
     {
-        private readonly IJSRuntime DBConn;
+        readonly DeleteActions DeleteActions;
+        readonly InsertActions InsertActions;
+        readonly UpdateActions UpdateActions;
+        readonly SelectActions SelectActions;
+        readonly TableActions TableActions;
 
         /// <summary>
         /// Constructor to get the connection
         /// </summary>
         /// <param name="js"></param>
-        public StoreSet(IJSRuntime js)
+        /// <param name="setup"></param>
+        public StoreSet(IJSObjectReference js, Settings setup)
         {
             if (Settings.EnableDebug) Console.WriteLine($"StoreSet constructor for : {Utils.GetGenericTypeName(this.GetType())}");
-            DBConn = js;
+            DeleteActions = new(js, setup);
+            InsertActions = new(js, setup);
+            UpdateActions = new(js, setup);
+            SelectActions = new(js, setup);
+            TableActions = new(js, setup);
         }
 
         /// <summary>
@@ -31,7 +40,7 @@ namespace BlazorIndexedDb.Store
         /// </summary>
         /// <returns></returns>
         public async Task<List<TModel>> SelectAsync() =>
-            await DBConn.DbSelect<TModel>();
+            await SelectActions.DbSelect<TModel>();
 
         /// <summary>
         /// Get a single record from store model
@@ -39,7 +48,7 @@ namespace BlazorIndexedDb.Store
         /// <param name="id">primary key id to search</param>
         /// <returns></returns>
         public async Task<TModel> SelectAsync(object id) =>
-            await DBConn.SingleRecord<TModel>(id);
+            await SelectActions.SingleRecord<TModel>(id);
 
         /// <summary>
         /// Get a single record from store model
@@ -47,7 +56,7 @@ namespace BlazorIndexedDb.Store
         /// <param name="id">primary key id to search</param>
         /// <returns></returns>
         public async Task<TModel> SelectAsync(int id) =>
-            await DBConn.SingleRecord<TModel>(id);
+            await SelectActions.SingleRecord<TModel>(id);
 
         /// <summary>
         /// Get a single record from store model
@@ -55,7 +64,7 @@ namespace BlazorIndexedDb.Store
         /// <param name="id">primary key id to search</param>
         /// <returns></returns>
         public async Task<TModel> SelectAsync(double id) =>
-            await DBConn.SingleRecord<TModel>(id);
+            await SelectActions.SingleRecord<TModel>(id);
 
         /// <summary>
         /// Get a single record from store model
@@ -63,7 +72,7 @@ namespace BlazorIndexedDb.Store
         /// <param name="id">primary key id to search</param>
         /// <returns></returns>
         public async Task<TModel> SelectAsync(decimal id) =>
-            await DBConn.SingleRecord<TModel>(id);
+            await SelectActions.SingleRecord<TModel>(id);
 
         /// <summary>
         /// Get a single record from store model
@@ -71,7 +80,7 @@ namespace BlazorIndexedDb.Store
         /// <param name="id">primary key id to search</param>
         /// <returns></returns>
         public async Task<TModel> SelectAsync(long id) =>
-            await DBConn.SingleRecord<TModel>(id);
+            await SelectActions.SingleRecord<TModel>(id);
 
         /// <summary>
         /// Get a single record from store model
@@ -79,7 +88,7 @@ namespace BlazorIndexedDb.Store
         /// <param name="id">primary key id to search</param>
         /// <returns></returns>
         public async Task<TModel> SelectAsync(string id) =>
-            await DBConn.SingleRecord<TModel>(id);
+            await SelectActions.SingleRecord<TModel>(id);
 
         /// <summary>
         /// Get a single record from store model
@@ -87,7 +96,7 @@ namespace BlazorIndexedDb.Store
         /// <param name="id">primary key id to search</param>
         /// <returns></returns>
         public async Task<TModel> SelectAsync(DateTime id) =>
-            await DBConn.SingleRecord<TModel>(id);
+            await SelectActions.SingleRecord<TModel>(id);
 
         /// <summary>
         /// Add record in a table store
@@ -99,9 +108,9 @@ namespace BlazorIndexedDb.Store
         {
             ResponseJsDb result;
             if (isOffline)
-                result = await DBConn.DbInserOffline(toAdd);
+                result = await InsertActions.DbInserOffline(toAdd);
             else
-                result = await DBConn.DbInsert(toAdd);
+                result = await InsertActions.DbInsert(toAdd);
             return Utils.CommandResponse(result);
         }
 
@@ -115,9 +124,9 @@ namespace BlazorIndexedDb.Store
         {
             List<ResponseJsDb> result;
             if (isOffline)
-                result = await DBConn.DbInserOffline(toAdd);
+                result = await InsertActions.DbInserOffline(toAdd);
             else
-                result = await DBConn.DbInsert(toAdd);
+                result = await InsertActions.DbInsert(toAdd);
             return Utils.CommandResponse(result);
         }
 
@@ -131,9 +140,9 @@ namespace BlazorIndexedDb.Store
         {
             ResponseJsDb result;
             if (isOffline)
-                result = await DBConn.DbUpdateOffLine(toUpdate);
+                result = await UpdateActions.DbUpdateOffLine(toUpdate);
             else
-                result = await DBConn.DbUpdate(toUpdate);
+                result = await UpdateActions.DbUpdate(toUpdate);
             return Utils.CommandResponse(result);
         }
 
@@ -147,9 +156,9 @@ namespace BlazorIndexedDb.Store
         {
             List<ResponseJsDb> result;
             if (isOffline)
-                result = await DBConn.DbUpdateOffLine(toUpdate);
+                result = await UpdateActions.DbUpdateOffLine(toUpdate);
             else
-                result = await DBConn.DbUpdate(toUpdate);
+                result = await UpdateActions.DbUpdate(toUpdate);
             return Utils.CommandResponse(result);
         }
 
@@ -158,7 +167,7 @@ namespace BlazorIndexedDb.Store
         /// </summary>
         /// <returns></returns>
         public async Task<CommandResponse> CleanAsync() =>
-            Utils.CommandResponse(await DBConn.DbCleanTable<TModel>());
+            Utils.CommandResponse(await TableActions.DbCleanTable<TModel>());
 
         /// <summary>
         /// Delete record from a table store
@@ -166,7 +175,7 @@ namespace BlazorIndexedDb.Store
         /// <param name="id"></param>
         /// <returns></returns>
         public async Task<CommandResponse> DeleteAsync(int id)
-            => Utils.CommandResponse(await DBConn.DbDelete<TModel>(id));
+            => Utils.CommandResponse(await DeleteActions.DbDelete<TModel>(id));
 
         /// <summary>
         /// Delete record from a table store
@@ -174,7 +183,7 @@ namespace BlazorIndexedDb.Store
         /// <param name="id"></param>
         /// <returns></returns>
         public async Task<CommandResponse> DeleteAsync(double id)
-            => Utils.CommandResponse(await DBConn.DbDelete<TModel>(id));
+            => Utils.CommandResponse(await DeleteActions.DbDelete<TModel>(id));
 
         /// <summary>
         /// Delete record from a table store
@@ -182,7 +191,7 @@ namespace BlazorIndexedDb.Store
         /// <param name="id"></param>
         /// <returns></returns>
         public async Task<CommandResponse> DeleteAsync(decimal id)
-            => Utils.CommandResponse(await DBConn.DbDelete<TModel>(id));
+            => Utils.CommandResponse(await DeleteActions.DbDelete<TModel>(id));
 
         /// <summary>
         /// Delete record from a table store
@@ -190,7 +199,7 @@ namespace BlazorIndexedDb.Store
         /// <param name="id"></param>
         /// <returns></returns>
         public async Task<CommandResponse> DeleteAsync(string id)
-            => Utils.CommandResponse(await DBConn.DbDelete<TModel>(id));
+            => Utils.CommandResponse(await DeleteActions.DbDelete<TModel>(id));
 
         /// <summary>
         /// Delete record from a table store
@@ -198,7 +207,7 @@ namespace BlazorIndexedDb.Store
         /// <param name="id"></param>
         /// <returns></returns>
         public async Task<CommandResponse> DeleteAsync(DateTime id)
-            => Utils.CommandResponse(await DBConn.DbDelete<TModel>(id));
+            => Utils.CommandResponse(await DeleteActions.DbDelete<TModel>(id));
 
     }
 }

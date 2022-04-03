@@ -11,35 +11,47 @@ namespace BlazorIndexedDb.Commands
     /// <summary>
     /// Manage tables
     /// </summary>
-    public static class TableActions
+    public class TableActions
     {
+        readonly IJSObjectReference jsRuntime;
+        readonly Settings Setup;
+
         /// <summary>
-        /// Delete all rows from a table
+        /// Constructor
         /// </summary>
-        /// <typeparam name="TModel">Table or store to use</typeparam>
-        /// <param name="jsRuntime"></param>
-        /// <exception cref="ResponseException"></exception>
-        /// <returns></returns>
-        public static async ValueTask<ResponseJsDb> DbCleanTable<TModel>(this IJSRuntime jsRuntime)
+        /// <param name="js"></param>
+        /// <param name="setup"></param>
+        public TableActions(IJSObjectReference js, Settings setup)
         {
-            return await DbCleanTable(jsRuntime, Settings.Tables.GetTable<TModel>());
+            jsRuntime = js;
+            Setup = setup;
         }
 
         /// <summary>
         /// Delete all rows from a table
         /// </summary>
-        /// <param name="jsRuntime"></param>
+        /// <typeparam name="TModel">Table or store to use</typeparam>
+        /// <exception cref="ResponseException"></exception>
+        /// <returns></returns>
+        public  async ValueTask<ResponseJsDb> DbCleanTable<TModel>()
+        {
+            return await DbCleanTable(Setup.Tables.GetTable<TModel>());
+        }
+
+        /// <summary>
+        /// Delete all rows from a table
+        /// </summary>
         /// <param name="name"></param>
         /// <exception cref="ResponseException"></exception>
         /// <returns></returns>
-        public static async ValueTask<ResponseJsDb> DbCleanTable(this IJSRuntime jsRuntime, [NotNull] string name)
+        public async ValueTask<ResponseJsDb> DbCleanTable([NotNull] string name)
         {
             try
             {
                 List<ResponseJsDb> result = new List<ResponseJsDb>();
-                if (Settings.Initialized)
+                if (Setup.Initialized)
                 {
-                    result.AddRange(await jsRuntime.InvokeAsync<List<ResponseJsDb>>($"MyDb.Clean", name));
+                    result.AddRange(await jsRuntime.InvokeAsync<List<ResponseJsDb>>($"MyDb.Clean", name, Setup.DBName, Setup.Version, Setup.Tables.GetModel(name)));
                     try
                     {
                     }

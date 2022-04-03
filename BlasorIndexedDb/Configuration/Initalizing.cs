@@ -14,59 +14,52 @@ namespace BlazorIndexedDb.Configuration
     /// <summary>
     /// Setup connection with the indexedDb in the browser
     /// </summary>
-    sealed class Initalizing
+    sealed class Initalizing<TStore>
     {
-        /// <summary>
-        /// Setup a indexedDb in a browser
-        /// </summary>
-        /// <param name="jsRuntime"></param>
-        /// <returns></returns>
-        public async static Task DbInit([NotNull] IJSRuntime jsRuntime)
+        readonly IJSObjectReference JsReference;
+        readonly Settings Setup;
+
+        public Initalizing(IJSObjectReference objRef, Settings setup)
         {
-            string assemblyName = AppDomain.CurrentDomain.FriendlyName;
-            await DbInit(jsRuntime, assemblyName, 1);
+            JsReference = objRef;
+            Setup = setup;
         }
 
         /// <summary>
         /// Setup a indexedDb in a browser
         /// </summary>
-        /// <param name="jsRuntime"></param>
-        /// <param name="settings">database name</param>
         /// <returns></returns>
-        public async static Task DbInit([NotNull] IJSRuntime jsRuntime, [NotNull] Settings settings)
-        {
-            await DbInit(jsRuntime, settings.DBName, settings.Version);
+        public async Task DbInit()
+        {               
+            if(string.IsNullOrEmpty(Setup.DBName))
+            {
+                Setup.DBName = AppDomain.CurrentDomain.FriendlyName;
+            }
+            if(string.IsNullOrEmpty(Setup.AssemblyName))
+            {
+                Setup.AssemblyName = AppDomain.CurrentDomain.FriendlyName;
+            }
+            if (Setup.Version < 1) Setup.Version = 1;
+            await DbInit(Setup.DBName, Setup.Version);
         }
 
         /// <summary>
         /// Setup a indexedDb in a browser
         /// </summary>
-        /// <param name="jsRuntime"></param>
-        /// <param name="name">database name</param>
-        /// <param name="version">database version</param>
-        /// <param name="assemblyName">assembly contains the namespaces from the model class to use</param>
-        /// <param name="entitiesNamespace">namespace from the models class to use</param>
-        /// <param name="tables">string array with the names of the model classes to serialize</param>
-        /// <returns></returns>
-        [Obsolete("This constructor is not necessary anymore. Use DbInit(name, version)")]
-        public async static Task DbInit([NotNull] IJSRuntime jsRuntime, [NotNull] string name,
-            int version, [NotNull] string assemblyName, string entitiesNamespace,
-            [NotNull] string[] tables)
-        {
-            await DbInit(jsRuntime, name, version);
-        }
-
-        /// <summary>
-        /// Setup a indexedDb in a browser
-        /// </summary>
-        /// <param name="jsRuntime"></param>
         /// <param name="name">database name</param>
         /// <param name="version">database version</param>
         /// <returns></returns>
-        public async static Task DbInit([NotNull] IJSRuntime jsRuntime, [NotNull] string name, int version)
+        public async Task DbInit([NotNull] string name, int version)
         {
-            if (Settings.EnableDebug) Console.WriteLine($"DbInit need be initialized? {(Settings.Initialized ? "NO" : "YES")}");
-            if (!Settings.Initialized)
+            if(version < 1) version = 1;
+            if(string.IsNullOrEmpty(name))
+            {
+                name = AppDomain.CurrentDomain.FriendlyName;
+            }
+            Setup.DBName = name;
+            Setup.Version = version;
+            if(Settings.EnableDebug) Console.WriteLine($"DbInit need be initialized? {(Setup.Initialized ? "NO" : "YES")}");
+            if(!Setup.Initialized)
             {
                 string model = $@"{{
                                 ""name"": ""{name}"",
@@ -81,17 +74,17 @@ namespace BlazorIndexedDb.Configuration
                 {
                     IEnumerable<PropertyInfo> storeSets = AppDomain.CurrentDomain.GetAssemblies()
                         .SelectMany(a => a.GetTypes())
-                        .Where(s => s.IsAssignableTo(typeof(StoreContext)))
+                        .Where(s => s.IsAssignableTo(typeof(StoreContext<TStore>)))
                         .SelectMany(p => p.GetProperties(BindingFlags.Public | BindingFlags.Instance))
                         .Where(t => t.PropertyType.IsGenericType && t.PropertyType.GetGenericTypeDefinition().IsAssignableTo(typeof(StoreSet<>)));
 
                     string tableJsonArray = string.Empty;
                     bool haveTables = false;
-                    foreach (PropertyInfo item in storeSets)
+                    foreach(PropertyInfo item in storeSets)
                     {
-                        if (Settings.EnableDebug) Console.WriteLine($"table name {item.Name}");
+                        if(Settings.EnableDebug) Console.WriteLine($"table name {item.Name}");
                         string tableName = item.Name;
-                        Settings.Tables.AddTable(tableName, item.PropertyType.GetGenericArguments()[0].Name);
+                        Setup.Tables.AddTable(tableName, item.PropertyType.GetGenericArguments()[0].Name);
                         StringBuilder tableModels = new StringBuilder();
                         // {name: 'table name', options:{keyPath: 'primary id to use', autoIncrement: true/false},
                         //string tableName = Utils.GetGenericTypeName(t);
@@ -108,84 +101,84 @@ namespace BlazorIndexedDb.Configuration
                         //add columns name from the properties names
                         tableModels.Append($"\"columns\": [");                  //open json array
                         int c = properties.Length;
-                        for (int i = 0; i < c; i++)
+                        for(int i = 0; i < c; i++)
                         {
                             PropertyOptions property = new PropertyOptions(properties[i]);
-                            if (!property.ToIgnore)
+                            if(!property.ToIgnore)
                             {
                                 //  columns: [{name: 'property name', keyPath: true/false, autoIncrement: true/false, unique: true/false}]}                                            
                                 string propName = property.Name.ToLower();
                                 haveTables = true;
                                 //main field from the model, normalize like Id or ModelNameId or IdModelName
-                                if (property.IsKeyPath)
+                                if(property.IsKeyPath)
                                 {
                                     identifer = property.Name;
                                     autoIncrement = property.IsAutoIncrement;
                                 }
                                 else
                                 {
-                                    if (propName.ToLower() == "id")
+                                    if(propName.ToLower() == "id")
                                     {
                                         identifer = property.Name;
                                         autoIncrement = property.IsAutoIncrement;
                                     }
-                                    else if (propName == $"{tableName.ToLower()}id")
+                                    else if(propName == $"{tableName.ToLower()}id")
                                     {
                                         identifer = property.Name;
                                         autoIncrement = property.IsKeyPath;
                                     }
-                                    else if (propName == $"id{tableName.ToLower()}")
+                                    else if(propName == $"id{tableName.ToLower()}")
                                     {
                                         identifer = property.Name;
                                         autoIncrement = property.IsAutoIncrement;
                                     }
-                                    else if (propName == $"id{tableName.ToLower()}s")                 //plural possibility
+                                    else if(propName == $"id{tableName.ToLower()}s")                 //plural possibility
                                     {
                                         identifer = property.Name;
                                         autoIncrement = property.IsAutoIncrement;
                                     }
-                                    else if (propName == $"id{tableName.ToLower().Remove(tableName.Length - 1, 1)}")                 //singular possibility
+                                    else if(propName == $"id{tableName.ToLower().Remove(tableName.Length - 1, 1)}")                 //singular possibility
                                     {
                                         identifer = property.Name;
                                         autoIncrement = property.IsAutoIncrement;
                                     } //next
-                                    else if (propName == $"{tableName.ToLower()}Id")
+                                    else if(propName == $"{tableName.ToLower()}Id")
                                     {
                                         identifer = property.Name;
                                         autoIncrement = property.IsKeyPath;
                                     }
-                                    else if (propName == $"Id{tableName.ToLower()}")
+                                    else if(propName == $"Id{tableName.ToLower()}")
                                     {
                                         identifer = property.Name;
                                         autoIncrement = property.IsAutoIncrement;
                                     }
-                                    else if (propName == $"Id{tableName.ToLower()}s")                 //plural possibility
+                                    else if(propName == $"Id{tableName.ToLower()}s")                 //plural possibility
                                     {
                                         identifer = property.Name;
                                         autoIncrement = property.IsAutoIncrement;
                                     }
-                                    else if (propName == $"Id{tableName.ToLower().Remove(tableName.Length - 1, 1)}")                 //singular possibility
+                                    else if(propName == $"Id{tableName.ToLower().Remove(tableName.Length - 1, 1)}")                 //singular possibility
                                     {
                                         identifer = property.Name;
                                         autoIncrement = property.IsAutoIncrement;
 
                                     } //last
-                                    else if (propName == $"{tableName.ToLower()}ID")
+                                    else if(propName == $"{tableName.ToLower()}ID")
                                     {
                                         identifer = property.Name;
                                         autoIncrement = property.IsKeyPath;
                                     }
-                                    else if (propName == $"ID{tableName.ToLower()}")
+                                    else if(propName == $"ID{tableName.ToLower()}")
                                     {
                                         identifer = property.Name;
                                         autoIncrement = property.IsAutoIncrement;
                                     }
-                                    else if (propName == $"ID{tableName.ToLower()}s")                 //plural possibility
+                                    else if(propName == $"ID{tableName.ToLower()}s")                 //plural possibility
                                     {
                                         identifer = property.Name;
                                         autoIncrement = property.IsAutoIncrement;
                                     }
-                                    else if (propName == $"ID{tableName.ToLower().Remove(tableName.Length - 1, 1)}")                 //singular possibility
+                                    else if(propName == $"ID{tableName.ToLower().Remove(tableName.Length - 1, 1)}")                 //singular possibility
                                     {
                                         identifer = property.Name;
                                         autoIncrement = property.IsAutoIncrement;
@@ -196,7 +189,7 @@ namespace BlazorIndexedDb.Configuration
                         }
                         //always add control if the register it's offline NULL = not offline, only when it's true it's applicable
                         tableModels.Append($"{{\"name\": \"OffLine\", \"keyPath\": false, \"autoIncrement\": false, \"unique\": false}},");
-                        if (string.IsNullOrEmpty(identifer))
+                        if(string.IsNullOrEmpty(identifer))
                         {
                             //because don't have primary key add one
                             identifer = "ssnId";
@@ -211,32 +204,32 @@ namespace BlazorIndexedDb.Configuration
 
                     }
 
-                    tableJsonArray = tableJsonArray.Remove(tableJsonArray.Length - 1, 1);     //remove last ,
-                    model = model.Replace("[]", "[" + tableJsonArray + "]");                  //replace with tables array
 
-                    if (haveTables)
+                    if(haveTables)
                     {
-                        if (Settings.EnableDebug) Console.WriteLine("DbInit DB Model = {0}", model);
-                        await jsRuntime.InvokeVoidAsync("MyDb.Init", model);
-                        Settings.Initialized = true;
+                        tableJsonArray = tableJsonArray.Remove(tableJsonArray.Length - 1, 1);     //remove last ,
+                        Setup.ModelsAsJson = $"[{tableJsonArray}]";
+                        model = model.Replace("[]", $"[{tableJsonArray}]");                  //replace with tables array
+                        await JsReference.InvokeVoidAsync("MyDb.Init", model);
+                        Setup.Initialized = true;
                     }
                     else
                     {
-                        Settings.Initialized = false;
-                        if (Settings.EnableDebug) Console.WriteLine("No tables in a DB Model = {0}", model);
+                        Setup.Initialized = false;
+                        if(Settings.EnableDebug) Console.WriteLine("No tables in a DB Model = {0}", model);
                     }
                 }
-                catch (Exception ex)
+                catch(Exception ex)
                 {
-                    if (Settings.EnableDebug) Console.WriteLine("DbInit exception {0}", ex.Message);
-                    Settings.Initialized = false;
+                    if(Settings.EnableDebug) Console.WriteLine("DbInit exception {0}", ex.Message);
+                    Setup.Initialized = false;
                 }
                 finally
                 {
-                    if (Settings.EnableDebug)
+                    if(Settings.EnableDebug)
                     {
                         Console.WriteLine("DbInit DB Model = {0}", model);
-                        Console.WriteLine("DbInit finished with Settings.Initiallezed = {0}", Settings.Initialized);
+                        Console.WriteLine("DbInit finished with Settings.Initiallezed = {0}", Setup.Initialized);
                     }
                 }
             }

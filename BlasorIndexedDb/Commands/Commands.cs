@@ -29,19 +29,31 @@ namespace BlazorIndexedDb.Commands
     /// <summary>
     /// Other commands to execute
     /// </summary>
-    public static class Commands
+    public class Commands
     {
+        readonly IJSObjectReference jsRuntime;
+        readonly Settings Setup;
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="js"></param>
+        /// <param name="setup"></param>
+        public Commands(IJSObjectReference js, Settings setup)
+        {
+            jsRuntime = js;
+            Setup = setup;
+        }
+
         /// <summary>
         /// Execute a command directly sending a json string
         /// </summary>
-        /// <param name="jsRuntime"></param>
         /// <param name="command"></param>
         /// <param name="storeName"></param>
         /// <param name="data"></param>
         /// <exception cref="ResponseException"></exception>
         /// <returns></returns>
-        public static async ValueTask<List<ResponseJsDb>> DbCommand(this IJSRuntime jsRuntime,
-            DbCommands command, string storeName, string data)
+        public async ValueTask<List<ResponseJsDb>> DbCommand(DbCommands command, string storeName, string data)
         {
             if (Settings.EnableDebug) Console.WriteLine($"{command} store = {storeName}, data = {data}");
             if (string.IsNullOrEmpty(storeName)) throw new ResponseException(command.ToString(), "StoreName can't be null", data);
@@ -50,7 +62,7 @@ namespace BlazorIndexedDb.Commands
             {
                 try
                 {
-                    return await jsRuntime.InvokeAsync<List<ResponseJsDb>>($"MyDb.{command}", storeName, data);
+                    return await jsRuntime.InvokeAsync<List<ResponseJsDb>>($"MyDb.{command}", storeName, data, Setup.DBName, Setup.Version, Setup.ModelsAsJson);
                 }
                 catch (Exception ex)
                 {
@@ -63,14 +75,13 @@ namespace BlazorIndexedDb.Commands
         /// <summary>
         /// Get is we are connected to a indexed db
         /// </summary>
-        /// <param name="jsRuntime"></param>
         /// <returns></returns>
-        public static async ValueTask<string> DbConnected(this IJSRuntime jsRuntime)
+        public async ValueTask<string> DbConnected()
         {
             string message;
-            if (Settings.Initialized)
+            if (Setup.Initialized)
             {
-                message = await jsRuntime.InvokeAsync<string>("MyDb.Connected");
+                message = await jsRuntime.InvokeAsync<string>("MyDb.Connected", Setup.DBName, Setup.Version);
             }
             else
             {
