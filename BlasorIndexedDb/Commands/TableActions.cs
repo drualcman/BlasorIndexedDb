@@ -51,7 +51,7 @@ namespace BlazorIndexedDb.Commands
                 List<ResponseJsDb> result = new List<ResponseJsDb>();
                 if (Setup.Initialized)
                 {
-                    result.AddRange(await jsRuntime.InvokeAsync<List<ResponseJsDb>>($"MyDb.Clean", name, Setup.DBName, Setup.Version, Setup.Tables.GetModel(name)));
+                    result.AddRange(await jsRuntime.InvokeAsync<List<ResponseJsDb>>($"MyDb.Clean", name, Setup.DBName, Setup.Version, Setup.ModelsAsJson));
                     try
                     {
                     }
