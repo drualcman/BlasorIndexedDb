@@ -309,7 +309,7 @@ namespace BlazorIndexedDb.Helpers
                     }
                     else if (pName == typeof(string).Name)
                     {
-                        result.Append($"\"{property.GetValue(sender).ToString().Replace("\"", "\\\"").Replace(Environment.NewLine, "\\n")}\"");
+                        result.Append($"\"{property.GetValue(sender).ToString().Replace("\"", "\\\"").Replace("\t", "\\t").Replace("\r", "\\r")?.Replace("\n", "\\n").Replace(Environment.NewLine, "\\n")}\"");
                     }
                     else if (pName == typeof(Int16).Name ||
                         pName == typeof(Int32).Name ||
@@ -331,7 +331,7 @@ namespace BlazorIndexedDb.Helpers
                         }
                         catch
                         {
-                            result.Append("null");
+                            result.Append("0");
                         }
                     }
                     else
