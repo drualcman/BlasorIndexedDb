@@ -3,22 +3,20 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.6.29</Version>
+    <Version>1.6.30</Version>
     <Authors>Sergi Ortiz Gomez</Authors>
     <Company>DrUalcman</Company>
     <Description>Manage IndexedDb from Blazor WebAssembly applications. Create a StoreDbContext similar how is working in EF. Please report any bug or changes you need using our contact form in the web site. Thanks.</Description>
     <Copyright>Free</Copyright>
     <PackageLicenseFile>License.txt</PackageLicenseFile>
     <PackageTags>webassembly, blazor, indexedDb, interop, javascript, database</PackageTags>
-    <PackageReleaseNotes>Fixed a bug on JSON serialize about TAB and NEW LINE</PackageReleaseNotes>
+    <PackageReleaseNotes>Implement when change version update tables. For now data in tables will lost, programmer need to do some process to update before change the version.</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/drualcman/BlasorIndexedDb</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
     <PackageId>DrUalcman-BlazorIndexedDb</PackageId>
     <Product>BlazorIndexedDb</Product>
     <PackageProjectUrl>https://blazorindexdb.community-mall.com/</PackageProjectUrl>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-    <AssemblyVersion>1.6.29</AssemblyVersion>
-    <FileVersion>1.6.29</FileVersion>
     <AssemblyName>DrUalcman-BlazorIndexedDb</AssemblyName>
     <RootNamespace>BlazorIndexedDb</RootNamespace>
     <PackageReadmeFile>README.md</PackageReadmeFile>

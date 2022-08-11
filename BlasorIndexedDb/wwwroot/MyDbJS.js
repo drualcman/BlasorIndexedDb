@@ -48,6 +48,10 @@ class jsDB {
                                     keyPath = 'ssnId';
                                     increment = true;
                                 }
+                                //if table exist delete, data will lost
+                                if (db.objectStoreNames.contains(tabla.name)) {
+                                    db.deleteObjectStore(tabla.name); 
+                                }
                                 //add table
                                 let objectStore = db.createObjectStore(tabla.name, { keyPath: keyPath, autoIncrement: increment });
                                 for (let ci = 0; ci < c; ci++) {
@@ -445,13 +449,12 @@ class jsDB {
                                             if (!keyPath) {
                                                 keyPath = 'ssnId';
                                             }
-                                            let o = context.CheckModel(table, element);
-                                            let ssnId = o[keyPath];
+                                            let ssnId = obj[keyPath];
                                             if (ssnId) {
                                                 let request = store.get(ssnId);
                                                 //retrieve the actual data for the index about the element
                                                 request.onsuccess = function () {
-                                                    let dat = context.UpdateModel(request.result, o);
+                                                    let dat = context.UpdateModel(request.result, obj);
                                                     let objRequest = store.put(dat);
                                                     objRequest.onsuccess = () => {
                                                         transactionResult.push(context.SetResponse(true, `Success in updating record ${ssnId}`));
@@ -463,7 +466,7 @@ class jsDB {
                                                 }
                                             }
                                             else {
-                                                let data = context.MergeObjects(o, element);
+                                                let data = context.MergeObjects(obj, element);
                                                 store.put(data);
                                                 transaction.oncomplete = () => {
                                                     db.close();
