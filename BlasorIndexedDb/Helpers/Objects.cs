@@ -123,36 +123,39 @@ namespace BlazorIndexedDb.Helpers
                     PropertyOptions property = new PropertyOptions(properties[i]);
                     if (!property.ToIgnore)
                     {
-                        if (Settings.Tables.InTables<TModel>())
+                        if(!property.IsAutoIncrement)
                         {
-                            if (Settings.EnableDebug) Console.WriteLine("ToJson parse Property {0} not ignored", properties[i].Name);
-                            jsonString.Append($"\"{property.Name}\":");
-                            if (IsGenericList(properties[i]))
+                            if(Settings.Tables.InTables<TModel>())
                             {
-                                if (Settings.EnableDebug) Console.WriteLine("ToJson Property {0} IsGenericList = true", properties[i].Name);
-                                jsonString.Append(ToJson(properties[i].GetValue(sender)));
-                            }
-                            else
-                            {
-                                jsonString.Append(ValueToString(sender, properties[i], properties[i].PropertyType.Name));
-                            }
-                        }
-                        else
-                        {
-                            //because is other table check if have a relationship
-                            if (!string.IsNullOrEmpty(property.FieldName))
-                            {
-                                jsonString.Append($"\"{property.FieldName}\":");
-                                jsonString.Append(ValueToString(sender, property.StoreIndexName, properties[i]));
-                            }
-                            else
-                            {
-                                //is not other table parse the model directly
+                                if(Settings.EnableDebug) Console.WriteLine("ToJson parse Property {0} not ignored", properties[i].Name);
                                 jsonString.Append($"\"{property.Name}\":");
-                                jsonString.Append(ValueToString(sender, properties[i], properties[i].PropertyType.Name));
+                                if(IsGenericList(properties[i]))
+                                {
+                                    if(Settings.EnableDebug) Console.WriteLine("ToJson Property {0} IsGenericList = true", properties[i].Name);
+                                    jsonString.Append(ToJson(properties[i].GetValue(sender)));
+                                }
+                                else
+                                {
+                                    jsonString.Append(ValueToString(sender, properties[i], properties[i].PropertyType.Name));
+                                }
                             }
+                            else
+                            {
+                                //because is other table check if have a relationship
+                                if(!string.IsNullOrEmpty(property.FieldName))
+                                {
+                                    jsonString.Append($"\"{property.FieldName}\":");
+                                    jsonString.Append(ValueToString(sender, property.StoreIndexName, properties[i]));
+                                }
+                                else
+                                {
+                                    //is not other table parse the model directly
+                                    jsonString.Append($"\"{property.Name}\":");
+                                    jsonString.Append(ValueToString(sender, properties[i], properties[i].PropertyType.Name));
+                                }
+                            }
+                            jsonString.Append(",");
                         }
-                        jsonString.Append(",");
                     }
                     else
                         if (Settings.EnableDebug) Console.WriteLine("ToJson parse Property {0} ignored", properties[i].Name);
