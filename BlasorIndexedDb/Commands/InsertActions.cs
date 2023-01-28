@@ -40,8 +40,10 @@ namespace BlazorIndexedDb.Commands
         /// <returns></returns>
         public  async ValueTask<ResponseJsDb> DbInsert<TModel>([NotNull] TModel data)
         {
-            List<TModel> rows = new List<TModel>();
-            rows.Add(data);
+            List<TModel> rows = new List<TModel>
+            {
+                data
+            };
             List<ResponseJsDb> response = await DbInsert(rows);
             if (response.Count > 0) return response[0];
             else return new ResponseJsDb { Result = false, Message = "No results" };
