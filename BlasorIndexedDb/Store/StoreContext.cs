@@ -22,13 +22,7 @@ namespace BlazorIndexedDb.Store
         /// Constructor to get the connection
         /// </summary>
         /// <param name="js"></param>
-        public StoreContext(IJSRuntime js)
-        {
-            if (Settings.EnableDebug) Console.WriteLine($"StoreContext minimum constructor");
-            //GetTables();
-            Setup = new Settings();
-            Init(js);
-        }
+        public StoreContext(IJSRuntime js) : this(js, new()) { }
 
         /// <summary>
         /// Constructor to get the connection
@@ -37,7 +31,8 @@ namespace BlazorIndexedDb.Store
         /// <param name="settings"></param>
         public StoreContext(IJSRuntime js, Settings settings)
         {
-            if (Settings.EnableDebug) Console.WriteLine($"StoreContext constructor with settings");
+            if(Settings.EnableDebug)
+                Console.WriteLine($"StoreContext constructor with settings");
             Setup = settings;
             Init(js);
         }
@@ -48,13 +43,22 @@ namespace BlazorIndexedDb.Store
         /// <param name="js"></param>
         public async void Init(IJSRuntime js)
         {
-            if (Settings.EnableDebug) Console.WriteLine($"StoreContext Init => Is Initialized {Setup.Initialized}");
-            if (!Setup.Initialized)
+            if(Settings.EnableDebug)
+                Console.WriteLine($"StoreContext Init => Is Initialized {Setup.Initialized}");
+            if(!Setup.Initialized)
             {
-                JsReference = await js.InvokeAsync<IJSObjectReference>("import", "./_content/DrUalcman-BlazorIndexedDb/MyDbJS.js");                
-                Initalizing<TStore> initalizing = new Initalizing<TStore>(JsReference, Setup);
-                await initalizing.DbInit();
-                InitStores();
+                try
+                {
+                    JsReference = await js.InvokeAsync<IJSObjectReference>("import", "./_content/DrUalcman-BlazorIndexedDb/MyDbJS.js");
+                    Initalizing<TStore> initalizing = new Initalizing<TStore>(JsReference, Setup);
+                    await initalizing.DbInit();
+                    InitStores();
+                }
+                catch(Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                    throw;
+                }
             }
         }
 
@@ -65,7 +69,7 @@ namespace BlazorIndexedDb.Store
                    .Where(x => x.PropertyType.IsGenericType && x.PropertyType.GetGenericTypeDefinition().IsAssignableTo(typeof(StoreSet<>))).ToArray();
 
             int c = properties.Length;
-            for (int i = 0; i < c; i++)
+            for(int i = 0; i < c; i++)
             {
                 //instance the property with StoreSet type
                 properties[i].SetValue(this, Activator.CreateInstance(properties[i].PropertyType, JsReference, Setup));
