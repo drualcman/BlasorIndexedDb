@@ -10,7 +10,7 @@
     <Copyright>Free</Copyright>
     <PackageLicenseFile>License.txt</PackageLicenseFile>
     <PackageTags>webassembly, blazor, indexedDb, interop, javascript, database</PackageTags>
-    <PackageReleaseNotes>Implement when change version update tables. For now data in tables will lost, programmer need to do some process to update before change the version.</PackageReleaseNotes>
+    <PackageReleaseNotes>Fixed autoincremental when Add register into the store. Reported issue #1.</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/drualcman/BlasorIndexedDb</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
     <PackageId>DrUalcman-BlazorIndexedDb</PackageId>
