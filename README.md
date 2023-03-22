@@ -72,9 +72,14 @@ public class Program
             builder.RootComponents.Add<App>("#app");
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
             //INJECT THE DBContext
-            builder.Services.AddScope<DBContext>();
+            builder.AddBlazorIndexedDbContext<DBContext>();
 
-            await builder.Build().RunAsync();
+            var app = builder.Build();
+
+            //USE THE CONTEXT, if you are using more than one CONTEXT repeat per each context you are using
+            await app.UseBlazorIndexedDbContext<DBContext>();
+
+            await app.RunAsync();
         }
     }
 ```
