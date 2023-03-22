@@ -1,22 +1,17 @@
-﻿using BlazorIndexedDb.Configuration;
-using Microsoft.JSInterop;
-using System;
-using System.Linq;
-using System.Reflection;
-
-namespace BlazorIndexedDb.Store
+﻿namespace BlazorIndexedDb.Store
 {
     /// <summary>
     ///     A StoreContext instance represents a instance of a indexedDb into the browser
     ///     with the stores and can be used to query and save instances of your entities.
     /// </summary>
-    public abstract class StoreContext<TStore>
+    public abstract class StoreContext<TStore> : IAsyncDisposable, IDisposable where TStore : class
     {
         /// <summary>
         /// Manage the javascript file
         /// </summary>
         protected IJSObjectReference JsReference = null!;
         readonly Settings Setup;
+        readonly IJSRuntime JSRuntime;
 
         /// <summary>
         /// Constructor to get the connection
@@ -34,14 +29,14 @@ namespace BlazorIndexedDb.Store
             if(Settings.EnableDebug)
                 Console.WriteLine($"StoreContext constructor with settings");
             Setup = settings;
-            Init(js);
+            JSRuntime = js;
         }
 
         /// <summary>
         /// Initialize the connection with a indexedDb
         /// </summary>
         /// <param name="js"></param>
-        public async void Init(IJSRuntime js)
+        internal async Task Init()
         {
             if(Settings.EnableDebug)
                 Console.WriteLine($"StoreContext Init => Is Initialized {Setup.Initialized}");
@@ -49,14 +44,16 @@ namespace BlazorIndexedDb.Store
             {
                 try
                 {
-                    JsReference = await js.InvokeAsync<IJSObjectReference>("import", "./_content/DrUalcman-BlazorIndexedDb/MyDbJS.js");
+                    JsReference = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./_content/DrUalcman-BlazorIndexedDb/MyDbJS.js");
                     Initalizing<TStore> initalizing = new Initalizing<TStore>(JsReference, Setup);
                     await initalizing.DbInit();
                     InitStores();
+                    Setup.Initialized = true;
                 }
                 catch(Exception ex)
                 {
                     Console.WriteLine(ex.ToString());
+                    Setup.Initialized = false;
                     throw;
                 }
             }
@@ -74,6 +71,57 @@ namespace BlazorIndexedDb.Store
                 //instance the property with StoreSet type
                 properties[i].SetValue(this, Activator.CreateInstance(properties[i].PropertyType, JsReference, Setup));
             }
+        }
+
+        /// <summary>
+        ///       Implementation of IDisposable.Dispose()
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        ///  Implementation of IDisposable.Dispose()
+        /// </summary>
+        /// <param name="disposing"></param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if(disposing)
+            {
+                // Dispose of any managed resources
+            }
+        }
+
+        /// <summary>
+        ///  Implementation of IAsyncDisposable.DisposeAsync()
+        /// </summary>
+        /// <returns></returns>
+        public async ValueTask DisposeAsync()
+        {
+            await DisposeAsyncCore();
+            Dispose(false);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Implementation of IAsyncDisposable.DisposeAsync()
+        /// </summary>
+        /// <returns></returns>
+        protected virtual async ValueTask DisposeAsyncCore()
+        {
+            // Asynchronously dispose of any managed resources
+            if (JsReference is not null)
+                await JsReference.DisposeAsync();
+        }
+
+        /// <summary>
+        /// Destructor
+        /// </summary>
+        ~StoreContext()
+        {
+            Dispose(false);
         }
     }
 }
