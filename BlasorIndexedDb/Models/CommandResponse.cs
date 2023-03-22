@@ -1,9 +1,7 @@
-﻿using System.Collections.Generic;
-
-namespace BlazorIndexedDb.Models
+﻿namespace BlazorIndexedDb.Models
 {
     /// <summary>
     /// Return a result from the transaction
     /// </summary>
-    public record CommandResponse(bool Result, string Message, List<ResponseJsDb> Response);
+    public sealed record CommandResponse(bool Result, string Message, List<ResponseJsDb> Response);
 }

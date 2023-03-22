@@ -1,12 +1,4 @@
-﻿using BlazorIndexedDb.Configuration;
-using BlazorIndexedDb.Models;
-using Microsoft.JSInterop;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Threading.Tasks;
-
-namespace BlazorIndexedDb.Commands
+﻿namespace BlazorIndexedDb.Commands
 {
     /// <summary>
     /// Select commands
@@ -44,8 +36,10 @@ namespace BlazorIndexedDb.Commands
                     data = await jsRuntime.InvokeAsync<List<TModel>>("MyDb.Select", Setup.Tables.GetTable<TModel>(), Setup.DBName, Setup.Version, Setup.ModelsAsJson);
                 }
                 catch (Exception ex)
-                {
+                {                                                                                                     
+                    if (Settings.EnableDebug) Console.WriteLine($"SelectActions: {ex.Message}");
                     throw new ResponseException(nameof(DbSelect), Setup.Tables.GetTable<TModel>(), ex.Message, ex);
+                    //return null;
                 }
             }
             else
@@ -75,8 +69,10 @@ namespace BlazorIndexedDb.Commands
                     data = await jsRuntime.InvokeAsync<List<TModel>>("MyDb.SelectWhere", Setup.Tables.GetTable<TModel>(), column, value, Setup.DBName, Setup.Version, Setup.ModelsAsJson);
                 }
                 catch (Exception ex)
-                {
+                {                                                                                                   
+                    if (Settings.EnableDebug) Console.WriteLine($"SelectActions: {ex.Message}");
                     throw new ResponseException(nameof(DbSelect), Setup.Tables.GetTable<TModel>(), ex.Message, ex);
+                    //return null;
                 }
             }
             else
@@ -108,8 +104,9 @@ namespace BlazorIndexedDb.Commands
                     return data[0];
                 }
                 catch (Exception ex)
-                {
-                    throw new ResponseException(nameof(SingleRecord), Setup.Tables.GetTable<TModel>(), ex.Message, ex);
+                {                                                                                                       
+                    if (Settings.EnableDebug) Console.WriteLine($"SelectActions: {ex.Message}");
+                    return null;
                 }
             }
             else
@@ -136,8 +133,9 @@ namespace BlazorIndexedDb.Commands
                     return data[0];
                 }
                 catch (Exception ex)
-                {
-                    throw new ResponseException(nameof(SingleRecord), Setup.Tables.GetTable<TModel>(), ex.Message, ex);
+                {                   
+                    if (Settings.EnableDebug) Console.WriteLine($"SelectActions: {ex.Message}");
+                    return null;
                 }
             }
             else
@@ -165,8 +163,9 @@ namespace BlazorIndexedDb.Commands
                     return data[0];
                 }
                 catch (Exception ex)
-                {
-                    throw new ResponseException(nameof(SingleRecord), Setup.Tables.GetTable<TModel>(), ex.Message, ex);
+                {                                   
+                    if (Settings.EnableDebug) Console.WriteLine($"SelectActions: {ex.Message}");
+                    return null;
                 }
             }
             else
@@ -194,7 +193,8 @@ namespace BlazorIndexedDb.Commands
                 }
                 catch (Exception ex)
                 {
-                    throw new ResponseException(nameof(SingleRecord), Setup.Tables.GetTable<TModel>(), ex.Message, ex);
+                    if (Settings.EnableDebug) Console.WriteLine($"SelectActions: {ex.Message}");
+                    return null;
                 }
             }
             else
@@ -221,8 +221,9 @@ namespace BlazorIndexedDb.Commands
                     return data[0];
                 }
                 catch (Exception ex)
-                {
-                    throw new ResponseException(nameof(SingleRecord), Setup.Tables.GetTable<TModel>(), ex.Message, ex);
+                {                                                                                                       
+                    if (Settings.EnableDebug) Console.WriteLine($"SelectActions: {ex.Message}");
+                    return null;
                 }
             }
             else
@@ -249,8 +250,9 @@ namespace BlazorIndexedDb.Commands
                     return data[0];
                 }
                 catch (Exception ex)
-                {
-                    throw new ResponseException(nameof(SingleRecord), Setup.Tables.GetTable<TModel>(), ex.Message, ex);
+                {                                                                                                       
+                    if (Settings.EnableDebug) Console.WriteLine($"SelectActions: {ex.Message}");
+                    return null;
                 }
             }
             else
@@ -278,8 +280,9 @@ namespace BlazorIndexedDb.Commands
                     return data[0];
                 }
                 catch (Exception ex)
-                {
-                    throw new ResponseException(nameof(SingleRecord), Setup.Tables.GetTable<TModel>(), ex.Message, ex);
+                {                                                                                                       
+                    if (Settings.EnableDebug) Console.WriteLine($"SelectActions: {ex.Message}");
+                    return null;
                 }
             }
             else

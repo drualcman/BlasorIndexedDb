@@ -3,7 +3,7 @@
     /// <summary>
     /// Response object for the commands
     /// </summary>
-    public class ResponseJsDb
+    public sealed class ResponseJsDb
     {
         /// <summary>
         /// Transaction result

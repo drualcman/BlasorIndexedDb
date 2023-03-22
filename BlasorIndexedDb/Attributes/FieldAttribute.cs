@@ -1,11 +1,9 @@
-﻿using System;
-
-namespace BlazorIndexedDb.Attributes
+﻿namespace BlazorIndexedDb.Attributes
 {
     /// <summary>
     /// Custom Attribute to setup the model
     /// </summary>
-    public class FieldAttribute : Attribute
+    public sealed class FieldAttribute : Attribute
     {
         /// <summary>
         /// If the proerty is a keypath or requered

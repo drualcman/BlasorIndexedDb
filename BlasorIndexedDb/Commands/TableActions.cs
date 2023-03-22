@@ -1,17 +1,9 @@
-﻿using BlazorIndexedDb.Configuration;
-using BlazorIndexedDb.Models;
-using Microsoft.JSInterop;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Threading.Tasks;
-
-namespace BlazorIndexedDb.Commands
+﻿namespace BlazorIndexedDb.Commands
 {
     /// <summary>
     /// Manage tables
     /// </summary>
-    public class TableActions
+    internal sealed class TableActions
     {
         readonly IJSObjectReference jsRuntime;
         readonly Settings Setup;
@@ -21,7 +13,7 @@ namespace BlazorIndexedDb.Commands
         /// </summary>
         /// <param name="js"></param>
         /// <param name="setup"></param>
-        public TableActions(IJSObjectReference js, Settings setup)
+        internal TableActions(IJSObjectReference js, Settings setup)
         {
             jsRuntime = js;
             Setup = setup;
@@ -33,7 +25,7 @@ namespace BlazorIndexedDb.Commands
         /// <typeparam name="TModel">Table or store to use</typeparam>
         /// <exception cref="ResponseException"></exception>
         /// <returns></returns>
-        public  async ValueTask<ResponseJsDb> DbCleanTable<TModel>()
+        internal async ValueTask<ResponseJsDb> DbCleanTable<TModel>()
         {
             return await DbCleanTable(Setup.Tables.GetTable<TModel>());
         }
@@ -44,33 +36,33 @@ namespace BlazorIndexedDb.Commands
         /// <param name="name"></param>
         /// <exception cref="ResponseException"></exception>
         /// <returns></returns>
-        public async ValueTask<ResponseJsDb> DbCleanTable([NotNull] string name)
+        internal async ValueTask<ResponseJsDb> DbCleanTable([NotNull] string name)
         {
             try
             {
                 List<ResponseJsDb> result = new List<ResponseJsDb>();
-                if (Setup.Initialized)
+                if(Setup.Initialized)
                 {
                     result.AddRange(await jsRuntime.InvokeAsync<List<ResponseJsDb>>($"MyDb.Clean", name, Setup.DBName, Setup.Version, Setup.ModelsAsJson));
                     try
                     {
                     }
-                    catch (Exception ex)
+                    catch(Exception ex)
                     {
-                        if (Settings.EnableDebug) Console.WriteLine($"DbCleanTable: {name} Error: {ex}");
+                        if(Settings.EnableDebug) Console.WriteLine($"DbCleanTable: {name} Error: {ex}");
                         result = new List<ResponseJsDb>();
                         result.Add(new ResponseJsDb { Result = false, Message = ex.Message });
                     }
                 }
                 else
                 {
-                    if (Settings.EnableDebug) Console.WriteLine($"TableActions: IndexedDb not initialized yet!");
+                    if(Settings.EnableDebug) Console.WriteLine($"TableActions: IndexedDb not initialized yet!");
                     result = new List<ResponseJsDb>();
                     result.Add(new ResponseJsDb { Result = false, Message = $"IndexedDb not initialized yet!" });
                 }
                 return result[0];
             }
-            catch (Exception ex)
+            catch(Exception ex)
             {
                 throw new ResponseException(nameof(DbCleanTable), name, ex.Message, ex);
             }

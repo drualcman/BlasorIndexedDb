@@ -3,14 +3,14 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.6.31</Version>
+    <Version>1.6.32</Version>
     <Authors>Sergi Ortiz Gomez</Authors>
     <Company>DrUalcman</Company>
     <Description>Manage IndexedDb from Blazor WebAssembly applications. Create a StoreDbContext similar how is working in EF. Please report any bug or changes you need using our contact form in the web site. Thanks.</Description>
     <Copyright>Free</Copyright>
     <PackageLicenseFile>License.txt</PackageLicenseFile>
     <PackageTags>webassembly, blazor, indexedDb, interop, javascript, database</PackageTags>
-    <PackageReleaseNotes>Fixed autoincremental when Add register into the store. Reported issue #1.</PackageReleaseNotes>
+    <PackageReleaseNotes>Update nugets to last version from NET6</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/drualcman/BlasorIndexedDb</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
     <PackageId>DrUalcman-BlazorIndexedDb</PackageId>
@@ -38,7 +38,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.15" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.15" />
   </ItemGroup>
 
   <ItemGroup>

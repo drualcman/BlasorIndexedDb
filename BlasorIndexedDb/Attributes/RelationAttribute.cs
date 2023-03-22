@@ -1,12 +1,9 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
-
-namespace BlazorIndexedDb.Attributes
+﻿namespace BlazorIndexedDb.Attributes
 {
     /// <summary>
     /// Relationship between tables
     /// </summary>
-    public class RelationAttribute : Attribute
+    public sealed class RelationAttribute : Attribute
     {
         /// <summary>
         /// Property name from the Model will create a relationship. Default value Id

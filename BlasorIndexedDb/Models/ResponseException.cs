@@ -1,11 +1,9 @@
-﻿using System;
-
-namespace BlazorIndexedDb.Models
+﻿namespace BlazorIndexedDb.Models
 {
     /// <summary>
     /// Manage own exceptions
     /// </summary>
-    public class ResponseException : Exception
+    public sealed class ResponseException : Exception
     {
         /// <summary>
         /// Command throw the exception

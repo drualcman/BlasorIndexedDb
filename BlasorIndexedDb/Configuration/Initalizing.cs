@@ -1,25 +1,14 @@
-﻿using BlazorIndexedDb.Helpers;
-using BlazorIndexedDb.Store;
-using Microsoft.JSInterop;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace BlazorIndexedDb.Configuration
+﻿namespace BlazorIndexedDb.Configuration
 {
     /// <summary>
     /// Setup connection with the indexedDb in the browser
     /// </summary>
-    sealed class Initalizing<TStore>
+    internal sealed class Initalizing<TStore> where TStore : class
     {
         readonly IJSObjectReference JsReference;
         readonly Settings Setup;
 
-        public Initalizing(IJSObjectReference objRef, Settings setup)
+        internal Initalizing(IJSObjectReference objRef, Settings setup)
         {
             JsReference = objRef;
             Setup = setup;
@@ -29,8 +18,8 @@ namespace BlazorIndexedDb.Configuration
         /// Setup a indexedDb in a browser
         /// </summary>
         /// <returns></returns>
-        public async Task DbInit()
-        {               
+        internal async Task DbInit()
+        {
             if(string.IsNullOrEmpty(Setup.DBName))
             {
                 Setup.DBName = AppDomain.CurrentDomain.FriendlyName;
@@ -39,7 +28,7 @@ namespace BlazorIndexedDb.Configuration
             {
                 Setup.AssemblyName = AppDomain.CurrentDomain.FriendlyName;
             }
-            if (Setup.Version < 1) Setup.Version = 1;
+            if(Setup.Version < 1) Setup.Version = 1;
             await DbInit(Setup.DBName, Setup.Version);
         }
 
@@ -49,7 +38,7 @@ namespace BlazorIndexedDb.Configuration
         /// <param name="name">database name</param>
         /// <param name="version">database version</param>
         /// <returns></returns>
-        public async Task DbInit([NotNull] string name, int version)
+        internal async Task DbInit([NotNull] string name, int version)
         {
             if(version < 1) version = 1;
             if(string.IsNullOrEmpty(name))

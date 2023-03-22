@@ -1,12 +1,9 @@
-﻿using BlazorIndexedDb.Store;
-using System;
-
-namespace BlazorIndexedDb.Configuration
+﻿namespace BlazorIndexedDb.Configuration
 {
     /// <summary>
     /// Configuration class to setup a IndexedDb in a browser
     /// </summary>
-    public class Settings
+    public sealed class Settings
     {
         /// <summary>
         /// Save a copy of how is the tables definition in JSON to send to the Javasctipt to compare the models
@@ -32,16 +29,6 @@ namespace BlazorIndexedDb.Configuration
         public string AssemblyName { get; set; }
 
         private string entitiesNamespace_BK;
-
-        /// <summary>
-        /// Namespace where is located the entities if it's different from the assembly name
-        /// </summary>
-        [Obsolete("No need anymore")]
-        public string EntitiesNamespace
-        {
-            get { return string.IsNullOrEmpty(entitiesNamespace_BK) ? AssemblyName : entitiesNamespace_BK; }
-            set { entitiesNamespace_BK = value; }
-        }
 
         /// <summary>
         /// Default constructor get the AppDomain.CurrentDomain.FriendlyName like a DB name

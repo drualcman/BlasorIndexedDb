@@ -1,0 +1,16 @@
+global using BlazorIndexedDb.Configuration;
+global using BlazorIndexedDb.Models;
+global using Microsoft.JSInterop;
+global using System;
+global using System.Collections.Generic;
+global using System.Diagnostics.CodeAnalysis;
+global using System.Threading.Tasks;
+global using BlazorIndexedDb.ValueObjects;
+global using BlazorIndexedDb.Helpers;
+global using System.Reflection;
+global using BlazorIndexedDb.Store;
+global using System.Linq;
+global using System.Text;
+global using System.Dynamic;
+global using System.Data;
+global using BlazorIndexedDb.Commands;

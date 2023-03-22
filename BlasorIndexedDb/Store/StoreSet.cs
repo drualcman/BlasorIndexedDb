@@ -1,13 +1,4 @@
-﻿using BlazorIndexedDb.Commands;
-using BlazorIndexedDb.Configuration;
-using BlazorIndexedDb.Helpers;
-using BlazorIndexedDb.Models;
-using Microsoft.JSInterop;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
-namespace BlazorIndexedDb.Store
+﻿namespace BlazorIndexedDb.Store
 {
     /// <summary>
     /// Class represent
@@ -27,7 +18,7 @@ namespace BlazorIndexedDb.Store
         /// <param name="setup"></param>
         public StoreSet(IJSObjectReference js, Settings setup)
         {
-            if (Settings.EnableDebug) Console.WriteLine($"StoreSet constructor for : {Utils.GetGenericTypeName(this.GetType())}");
+            if(Settings.EnableDebug) Console.WriteLine($"StoreSet constructor for : {Utils.GetGenericTypeName(this.GetType())}");
             DeleteActions = new(js, setup);
             InsertActions = new(js, setup);
             UpdateActions = new(js, setup);
@@ -107,7 +98,7 @@ namespace BlazorIndexedDb.Store
         public async Task<CommandResponse> AddAsync(TModel toAdd, bool isOffline = false)
         {
             ResponseJsDb result;
-            if (isOffline)
+            if(isOffline)
                 result = await InsertActions.DbInserOffline(toAdd);
             else
                 result = await InsertActions.DbInsert(toAdd);
@@ -123,7 +114,7 @@ namespace BlazorIndexedDb.Store
         public async Task<CommandResponse> AddAsync(List<TModel> toAdd, bool isOffline = false)
         {
             List<ResponseJsDb> result;
-            if (isOffline)
+            if(isOffline)
                 result = await InsertActions.DbInserOffline(toAdd);
             else
                 result = await InsertActions.DbInsert(toAdd);
@@ -139,7 +130,7 @@ namespace BlazorIndexedDb.Store
         public async Task<CommandResponse> UpdateAsync(TModel toUpdate, bool isOffline = false)
         {
             ResponseJsDb result;
-            if (isOffline)
+            if(isOffline)
                 result = await UpdateActions.DbUpdateOffLine(toUpdate);
             else
                 result = await UpdateActions.DbUpdate(toUpdate);
@@ -155,7 +146,7 @@ namespace BlazorIndexedDb.Store
         public async Task<CommandResponse> UpdateAsync(List<TModel> toUpdate, bool isOffline = false)
         {
             List<ResponseJsDb> result;
-            if (isOffline)
+            if(isOffline)
                 result = await UpdateActions.DbUpdateOffLine(toUpdate);
             else
                 result = await UpdateActions.DbUpdate(toUpdate);

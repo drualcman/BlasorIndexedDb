@@ -55,26 +55,6 @@
             Setup default values
             </summary>
         </member>
-        <member name="T:BlazorIndexedDb.Commands.DbCommands">
-            <summary>
-            Database Commands to use
-            </summary>
-        </member>
-        <member name="F:BlazorIndexedDb.Commands.DbCommands.Insert">
-            <summary>
-            Insert array data
-            </summary>
-        </member>
-        <member name="F:BlazorIndexedDb.Commands.DbCommands.Update">
-            <summary>
-            Update array data
-            </summary>
-        </member>
-        <member name="F:BlazorIndexedDb.Commands.DbCommands.Delete">
-            <summary>
-            Delete single row from id send
-            </summary>
-        </member>
         <member name="T:BlazorIndexedDb.Commands.Commands">
             <summary>
             Other commands to execute
@@ -87,7 +67,7 @@
             <param name="js"></param>
             <param name="setup"></param>
         </member>
-        <member name="M:BlazorIndexedDb.Commands.Commands.DbCommand(BlazorIndexedDb.Commands.DbCommands,System.String,System.String)">
+        <member name="M:BlazorIndexedDb.Commands.Commands.DbCommand(BlazorIndexedDb.ValueObjects.DbCommands,System.String,System.String)">
             <summary>
             Execute a command directly sending a json string
             </summary>
@@ -419,11 +399,6 @@
             Assembly name to search the entities
             </summary>
         </member>
-        <member name="P:BlazorIndexedDb.Configuration.Settings.EntitiesNamespace">
-            <summary>
-            Namespace where is located the entities if it's different from the assembly name
-            </summary>
-        </member>
         <member name="M:BlazorIndexedDb.Configuration.Settings.#ctor">
             <summary>
             Default constructor get the AppDomain.CurrentDomain.FriendlyName like a DB name
@@ -680,11 +655,39 @@
             <param name="js"></param>
             <param name="settings"></param>
         </member>
-        <member name="M:BlazorIndexedDb.Store.StoreContext`1.Init(Microsoft.JSInterop.IJSRuntime)">
+        <member name="M:BlazorIndexedDb.Store.StoreContext`1.Init">
             <summary>
             Initialize the connection with a indexedDb
             </summary>
             <param name="js"></param>
+        </member>
+        <member name="M:BlazorIndexedDb.Store.StoreContext`1.Dispose">
+            <summary>
+                  Implementation of IDisposable.Dispose()
+            </summary>
+        </member>
+        <member name="M:BlazorIndexedDb.Store.StoreContext`1.Dispose(System.Boolean)">
+            <summary>
+             Implementation of IDisposable.Dispose()
+            </summary>
+            <param name="disposing"></param>
+        </member>
+        <member name="M:BlazorIndexedDb.Store.StoreContext`1.DisposeAsync">
+            <summary>
+             Implementation of IAsyncDisposable.DisposeAsync()
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Store.StoreContext`1.DisposeAsyncCore">
+            <summary>
+            Implementation of IAsyncDisposable.DisposeAsync()
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Store.StoreContext`1.Finalize">
+            <summary>
+            Destructor
+            </summary>
         </member>
         <member name="T:BlazorIndexedDb.Store.StoreNames">
             <summary>
@@ -695,6 +698,12 @@
             <summary>
             Create a instance and initialized private tabes list with TableWithModel class
             </summary>
+        </member>
+        <member name="M:BlazorIndexedDb.Store.StoreNames.#ctor(System.Collections.Generic.IEnumerable{BlazorIndexedDb.Store.StoreSetDefinition})">
+            <summary>
+            Create a instance with a list of tables
+            </summary>
+            <param name="tables"></param>
         </member>
         <member name="M:BlazorIndexedDb.Store.StoreNames.AddTable(BlazorIndexedDb.Store.StoreSetDefinition)">
             <summary>
@@ -895,6 +904,26 @@
         <member name="P:BlazorIndexedDb.Store.StoreSetDefinition.Model">
             <summary>
             StoreSet Model name
+            </summary>
+        </member>
+        <member name="T:BlazorIndexedDb.ValueObjects.DbCommands">
+            <summary>
+            Database Commands to use
+            </summary>
+        </member>
+        <member name="F:BlazorIndexedDb.ValueObjects.DbCommands.Insert">
+            <summary>
+            Insert array data
+            </summary>
+        </member>
+        <member name="F:BlazorIndexedDb.ValueObjects.DbCommands.Update">
+            <summary>
+            Update array data
+            </summary>
+        </member>
+        <member name="F:BlazorIndexedDb.ValueObjects.DbCommands.Delete">
+            <summary>
+            Delete single row from id send
             </summary>
         </member>
     </members>

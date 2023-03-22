@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-namespace BlazorIndexedDb.Store
+﻿namespace BlazorIndexedDb.Store
 {
     /// <summary>
     /// Encapsulate manage tables and model for the database
@@ -13,6 +10,12 @@ namespace BlazorIndexedDb.Store
         /// Create a instance and initialized private tabes list with TableWithModel class
         /// </summary>
         public StoreNames() => this.Tables = new List<StoreSetDefinition>();
+        /// <summary>
+        /// Create a instance with a list of tables
+        /// </summary>
+        /// <param name="tables"></param>
+        public StoreNames(IEnumerable<StoreSetDefinition> tables) => Tables = new(tables);
+
 
         /// <summary>
         /// Add new table with object definition

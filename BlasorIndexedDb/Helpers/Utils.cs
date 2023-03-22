@@ -1,19 +1,14 @@
-﻿using BlazorIndexedDb.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace BlazorIndexedDb.Helpers
+﻿namespace BlazorIndexedDb.Helpers
 {
     /// <summary>
     /// Internal utilities
     /// </summary>
-    class Utils
+    internal sealed class Utils
     {
-        public static CommandResponse CommandResponse(ResponseJsDb response) =>
+        internal static CommandResponse CommandResponse(ResponseJsDb response) =>
             new(response.Result, response.Message, new List<ResponseJsDb> { response });
 
-        public static CommandResponse CommandResponse(List<ResponseJsDb> response)
+        internal static CommandResponse CommandResponse(List<ResponseJsDb> response)
         {
             bool allGood;
             int c = response.Count;
@@ -22,7 +17,7 @@ namespace BlazorIndexedDb.Helpers
             {
                 allGood = response[i].Result;
                 i++;
-            } while (allGood && i < c);
+            } while(allGood && i < c);
 
             return new(allGood, allGood ? "All transactions finished with true" : "Some transaction can't be finished", response);
         }
@@ -32,9 +27,9 @@ namespace BlazorIndexedDb.Helpers
         /// </summary>
         /// <param name="t"></param>
         /// <returns></returns>
-        public static string GetGenericTypeName(Type t)
+        internal static string GetGenericTypeName(Type t)
         {
-            if (!t.IsGenericType)
+            if(!t.IsGenericType)
                 return t.FullName;
 
             string genericArgs = string.Join(".",
@@ -42,7 +37,7 @@ namespace BlazorIndexedDb.Helpers
                     .Select(ta => GetGenericTypeName(ta)).ToArray());
             string result;
             string[] nom = genericArgs.Split(".", StringSplitOptions.RemoveEmptyEntries);
-            if (nom.Length > 0) result = nom[nom.Length - 1];
+            if(nom.Length > 0) result = nom[nom.Length - 1];
             else result = genericArgs;
             return result;
         }
