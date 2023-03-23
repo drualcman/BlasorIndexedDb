@@ -156,12 +156,12 @@ class jsDB {
      */
     GetDefault(table) {
         const context = this;
-        const model = context.MODELS.find(el => el.name === table)
+        const model = context.MODELS.find(el => el.name === table);
         if (model) {
             let defaultObj = '{';       //to create a default json for the table
             //compare object receive with table definition
             //check primary key            
-            if (model.options && model.options.keyPath && model.options.autoIncrement == false) {
+            if (model.options && model.options.keyPath) {
                 //have a primary key required
                 defaultObj += '"' + model.options.keyPath + '": null,';
             }
@@ -651,7 +651,6 @@ let Conn = (function () {
          * @param {string} models models to use
          */
         Select: (table, database, version, models) => new Promise(function (ok, bad) {
-            db.SetDataBaseName(database, version, null);
             try {
                 db.SetDataBaseName(database, version, models);
                 db.Select(table).then(function (result) {
@@ -672,7 +671,6 @@ let Conn = (function () {
          * @param {string} models models to use
          */
         SelectId: (table, id, database, version, models) => new Promise(function (ok, bad) {
-            db.SetDataBaseName(database, version, null);
             try {
                 db.SetDataBaseName(database, version, models);
                 db.Select(table, id).then(function (result) {
@@ -694,7 +692,6 @@ let Conn = (function () {
          * @param {string} models models to use
          */
         SelectWhere: (table, column, value, database, version, models) => new Promise(function (ok, bad) {
-            db.SetDataBaseName(database, version, null);
             try {
                 db.SetDataBaseName(database, version, models);
                 db.Select(table, column, value).then(function (result) {
@@ -715,7 +712,6 @@ let Conn = (function () {
          * @param {string} models models to use
          */
         Insert: (table, data, database, version, models) => new Promise(function (ok, bad) {
-            db.SetDataBaseName(database, version, null);
             try {
                 db.SetDataBaseName(database, version, models);
                 db.Insert(table, JSON.parse(data)).then(function (result) {
@@ -736,7 +732,6 @@ let Conn = (function () {
          * @param {string} models models to use
          */
         Update: (table, data, database, version, models) => new Promise(function (ok, bad) {
-            db.SetDataBaseName(database, version, null);
             try {
                 db.SetDataBaseName(database, version, models);
                 db.Update(table, JSON.parse(data)).then(function (result) {
@@ -757,7 +752,6 @@ let Conn = (function () {
          * @param {string} models models to use
          */
         Delete: (table, id, database, version, models) => new Promise(function (ok, bad) {
-            db.SetDataBaseName(database, version, null);
             try {
                 db.SetDataBaseName(database, version, models);
                 db.Delete(table, id).then(function (result) {
@@ -777,7 +771,6 @@ let Conn = (function () {
          * @param {string} models models to use
          */
         Clean: (table, database, version, models) => new Promise(function (ok, bad) {
-            db.SetDataBaseName(database, version, null);
             try {
                 db.SetDataBaseName(database, version, models);
                 db.Clean(table).then(function (result) {
@@ -797,7 +790,6 @@ let Conn = (function () {
          * @param {string} models models to use
          */
         Drop: (table, database, version, models) => new Promise(function (ok, bad) {
-            db.SetDataBaseName(database, version, null);
             try {
                 db.SetDataBaseName(database, version, models);
                 db.Drop(table).then(function (result) {
@@ -818,7 +810,6 @@ let Conn = (function () {
          * @param {string} models models to use
          */
         HelperArrayBufferToBlob: (buffer, type, database, version, models) => new Promise(function (ok, bad) {
-            db.SetDataBaseName(database, version, null);
             try {
                 db.SetDataBaseName(database, version, models);
                 db.HelperArrayBufferToBlob(buffer, type).then(function (result) {
@@ -838,7 +829,6 @@ let Conn = (function () {
          * @param {string} models models to use
          */
         HelperBlobToArrayBuffer: (blob, database, version, models) => new Promise(function (ok, bad) {
-            db.SetDataBaseName(database, version, null);
             try {
                 db.SetDataBaseName(database, version, models);
                 db.HelperBlobToArrayBuffer(blob).then(function (result) {
