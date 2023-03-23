@@ -3,14 +3,14 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.6.32</Version>
+    <Version>1.6.33</Version>
     <Authors>Sergi Ortiz Gomez</Authors>
     <Company>DrUalcman</Company>
     <Description>Manage IndexedDb from Blazor WebAssembly applications. Create a StoreDbContext similar how is working in EF. Please report any bug or changes you need using our contact form in the web site. Thanks.</Description>
     <Copyright>Free</Copyright>
     <PackageLicenseFile>License.txt</PackageLicenseFile>
     <PackageTags>webassembly, blazor, indexedDb, interop, javascript, database</PackageTags>
-    <PackageReleaseNotes>Add extension methods to inject and use more easy the databse. Update nugets to last version from NET6. Fixed a bug in javascript when property is autoincremental always set a ssnId like property name and then model doesn't match. Fixed when is autoincremental the property is ignored in ToJson parser.</PackageReleaseNotes>
+    <PackageReleaseNotes>add new extension to add blazorindexeddbcontext from IServiceCollection and also set a value to add like scoped (default) or singleton</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/drualcman/BlasorIndexedDb</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
     <PackageId>DrUalcman-BlazorIndexedDb</PackageId>
