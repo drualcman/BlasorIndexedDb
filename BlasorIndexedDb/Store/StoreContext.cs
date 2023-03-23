@@ -35,8 +35,7 @@
         /// <summary>
         /// Initialize the connection with a indexedDb
         /// </summary>
-        /// <param name="js"></param>
-        internal async Task Init()
+        public async Task Init()
         {
             if(Settings.EnableDebug)
                 Console.WriteLine($"StoreContext Init => Is Initialized {Setup.Initialized}");

@@ -64,6 +64,7 @@ public class DBContext : StoreContext<DBContext>
 In Program.cs add the service for the DBContext
 
 ```
+using BlazorIndexedDb;
 public class Program
     {
         public static async Task Main(string[] args)

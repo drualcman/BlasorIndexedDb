@@ -14,3 +14,5 @@ global using System.Text;
 global using System.Dynamic;
 global using System.Data;
 global using BlazorIndexedDb.Commands;
+global using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+global using Microsoft.Extensions.DependencyInjection;
