@@ -80,7 +80,7 @@ class jsDB {
      */
     OpenDB() {
         try {
-            const dbconnect = window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB || window.OIndexedDB || window.msIndexedDB, IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction || window.OIDBTransaction || window.msIDBTransaction;
+            const dbconnect = window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB || window.OIndexedDB || window.msIndexedDB
             return dbconnect;
         } catch (error) {
             throw [this.SetResponse(false, error.message)];
@@ -230,7 +230,7 @@ class jsDB {
         const context = this;
         try {
             return new Promise(function (resolve, error) {
-                if (table == null) resolve([context.SetResponse(false, 'Not store name selected')]);
+                if (table == null) error([context.SetResponse(false, 'Not store name selected')]);
                 else {
                     const dbconnect = context.OpenDB().open(context.DB_NAME, context.DB_VERSION);
                     dbconnect.onsuccess = function () {
@@ -271,7 +271,7 @@ class jsDB {
     SelectId(table, id) {
         const context = this;
         return new Promise(function (resolve, error) {
-            if (table == null) resolve([context.SetResponse(false, 'Not store name selected')]);
+            if (table == null) error([context.SetResponse(false, 'Not store name selected')]);
             else {
                 const dbconnect = context.OpenDB().open(context.DB_NAME, context.DB_VERSION);
                 dbconnect.onsuccess = function () {
@@ -306,7 +306,7 @@ class jsDB {
     SelectWhere(table, column, value) {
         const context = this;
         return new Promise(function (resolve, error) {
-            if (table == null) resolve([context.SetResponse(false, 'Not store name selected')]);
+            if (table == null) error([context.SetResponse(false, 'Not store name selected')]);
             else {
                 const dbconnect = context.OpenDB().open(context.DB_NAME, context.DB_VERSION);
                 dbconnect.onsuccess = function () {
@@ -344,7 +344,7 @@ class jsDB {
         const context = this;
         let transactionResult = new Array();
         return new Promise(function (ok, bad) {
-            if (table == null) resolve([context.SetResponse(false, 'Not store name selected')]);
+            if (table == null) bad([context.SetResponse(false, 'Not store name selected')]);
             else {
                 try {
                     let result = new Promise(function (resolve, error) {
@@ -421,7 +421,7 @@ class jsDB {
         const context = this;
         let transactionResult = new Array();
         return new Promise(function (ok, bad) {
-            if (table == null) resolve([context.SetResponse(false, 'Not store name selected')]);
+            if (table == null) bad([context.SetResponse(false, 'Not store name selected')]);
             else {
                 try {
                     let result = new Promise(function (resolve, error) {
@@ -510,7 +510,7 @@ class jsDB {
     Delete(table, id) {
         const context = this;
         return new Promise(function (resolve, error) {
-            if (table == null) resolve([context.SetResponse(false, 'Not store name selected')]);
+            if (table == null) error([context.SetResponse(false, 'Not store name selected')]);
             else {
                 const dbconnect = context.OpenDB().open(context.DB_NAME, context.DB_VERSION);
                 dbconnect.onsuccess = function () {
@@ -544,7 +544,7 @@ class jsDB {
     Clean(table) {
         const context = this;
         return new Promise(function (resolve, error) {
-            if (table == null) resolve([context.SetResponse(false, 'Not store name selected')]);
+            if (table == null) error([context.SetResponse(false, 'Not store name selected')]);
             else {
                 const dbconnect = context.OpenDB().open(context.DB_NAME, context.DB_VERSION);
                 dbconnect.onsuccess = function () {
