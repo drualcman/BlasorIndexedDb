@@ -28,7 +28,7 @@ public static class DependencyContainer
     /// <returns></returns>
     public static WebAssemblyHostBuilder AddBlazorIndexedDbContext<TContext>(this WebAssemblyHostBuilder builder, bool isSingleton = false) where TContext : StoreContext<TContext>
     {                          
-        builder.Services.AddBlazorIndexedDbContext<TContext>();
+        builder.Services.AddBlazorIndexedDbContext<TContext>(isSingleton);
         return builder;
     }
 
