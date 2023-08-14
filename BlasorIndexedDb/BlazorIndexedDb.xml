@@ -431,6 +431,37 @@
             Know if the instance of a indexDb it's already initialized
             </summary>
         </member>
+        <member name="T:BlazorIndexedDb.DependencyContainer">
+            <summary>
+            Extension methods to add the dependencies
+            </summary>
+        </member>
+        <member name="M:BlazorIndexedDb.DependencyContainer.AddBlazorIndexedDbContext``1(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Boolean)">
+            <summary>
+            Add context sing IServiceCollection
+            </summary>
+            <typeparam name="TContext"></typeparam>
+            <param name="services"></param>
+            <param name="isSingleton">indicate teh server must be added like singleton. Default Scoped</param>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.DependencyContainer.AddBlazorIndexedDbContext``1(Microsoft.AspNetCore.Components.WebAssembly.Hosting.WebAssemblyHostBuilder,System.Boolean)">
+            <summary>
+            Add context using WebAssemblyHostBuilder
+            </summary>
+            <typeparam name="TContext"></typeparam>
+            <param name="builder"></param>    
+            <param name="isSingleton">indicate teh server must be added like singleton. Default Scoped</param>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.DependencyContainer.UseBlazorIndexedDbContext``1(Microsoft.AspNetCore.Components.WebAssembly.Hosting.WebAssemblyHost)">
+            <summary>
+            Set ready to use the context in WebAssembly applications
+            </summary>
+            <typeparam name="TContext"></typeparam>
+            <param name="app"></param>
+            <returns></returns>
+        </member>
         <member name="T:BlazorIndexedDb.Helpers.AddOflineProperty">
             <summary>
             Add offline property to the entities to control when the transaction can't be saved into a live db
@@ -637,11 +668,6 @@
                 with the stores and can be used to query and save instances of your entities.
             </summary>
         </member>
-        <member name="F:BlazorIndexedDb.Store.StoreContext`1.JsReference">
-            <summary>
-            Manage the javascript file
-            </summary>
-        </member>
         <member name="M:BlazorIndexedDb.Store.StoreContext`1.#ctor(Microsoft.JSInterop.IJSRuntime)">
             <summary>
             Constructor to get the connection
@@ -659,18 +685,6 @@
             <summary>
             Initialize the connection with a indexedDb
             </summary>
-            <param name="js"></param>
-        </member>
-        <member name="M:BlazorIndexedDb.Store.StoreContext`1.Dispose">
-            <summary>
-                  Implementation of IDisposable.Dispose()
-            </summary>
-        </member>
-        <member name="M:BlazorIndexedDb.Store.StoreContext`1.Dispose(System.Boolean)">
-            <summary>
-             Implementation of IDisposable.Dispose()
-            </summary>
-            <param name="disposing"></param>
         </member>
         <member name="M:BlazorIndexedDb.Store.StoreContext`1.DisposeAsync">
             <summary>
@@ -683,11 +697,6 @@
             Implementation of IAsyncDisposable.DisposeAsync()
             </summary>
             <returns></returns>
-        </member>
-        <member name="M:BlazorIndexedDb.Store.StoreContext`1.Finalize">
-            <summary>
-            Destructor
-            </summary>
         </member>
         <member name="T:BlazorIndexedDb.Store.StoreNames">
             <summary>
