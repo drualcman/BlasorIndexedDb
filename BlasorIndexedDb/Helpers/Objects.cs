@@ -74,7 +74,7 @@
             }
             jsonString.Remove(jsonString.Length - 1, 1);
             jsonString.Append("]");
-            if(Settings.EnableDebug) Console.WriteLine($"ToJason parse IEnumerable result {jsonString}");
+            if(Settings.EnableDebug) Console.WriteLine($"ToJson parse IEnumerable result {jsonString}");
             return jsonString.ToString();
         }
 
