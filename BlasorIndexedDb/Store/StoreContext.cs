@@ -1,17 +1,15 @@
-﻿namespace BlazorIndexedDb.Store
+﻿using Microsoft.JSInterop;
+
+namespace BlazorIndexedDb.Store
 {
     /// <summary>
     ///     A StoreContext instance represents a instance of a indexedDb into the browser
     ///     with the stores and can be used to query and save instances of your entities.
     /// </summary>
-    public abstract class StoreContext<TStore> : IAsyncDisposable, IDisposable where TStore : class
+    public abstract class StoreContext<TStore> : IAsyncDisposable where TStore : class
     {
-        /// <summary>
-        /// Manage the javascript file
-        /// </summary>
-        protected IJSObjectReference JsReference = null!;
         readonly Settings Setup;
-        readonly IJSRuntime JSRuntime;
+        readonly Lazy<Task<IJSObjectReference>> ModuleTask;
 
         /// <summary>
         /// Constructor to get the connection
@@ -29,8 +27,12 @@
             if(Settings.EnableDebug)
                 Console.WriteLine($"StoreContext constructor with settings");
             Setup = settings;
-            JSRuntime = js;
+            ModuleTask = new Lazy<Task<IJSObjectReference>>(() => GetJSObjectReference(js));
         }
+
+        private Task<IJSObjectReference> GetJSObjectReference(IJSRuntime jsRuntime) =>
+            jsRuntime.InvokeAsync<IJSObjectReference>(
+                "import", "./_content/DrUalcman-BlazorIndexedDb/MyDbJS.js").AsTask();
 
         /// <summary>
         /// Initialize the connection with a indexedDb
@@ -43,10 +45,10 @@
             {
                 try
                 {
-                    JsReference = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./_content/DrUalcman-BlazorIndexedDb/MyDbJS.js");
-                    Initalizing<TStore> initalizing = new Initalizing<TStore>(JsReference, Setup);
+                    IJSObjectReference jsReference = await ModuleTask.Value;
+                    Initalizing<TStore> initalizing = new Initalizing<TStore>(jsReference, Setup);
                     await initalizing.DbInit();
-                    InitStores();
+                    InitStores(jsReference);
                     Setup.Initialized = true;
                 }
                 catch(Exception ex)
@@ -58,7 +60,7 @@
             }
         }
 
-        void InitStores()
+        void InitStores(IJSObjectReference jsReference)
         {
             PropertyInfo[] properties = this.GetType()
                    .GetProperties(BindingFlags.Public | BindingFlags.Instance)
@@ -68,28 +70,7 @@
             for(int i = 0; i < c; i++)
             {
                 //instance the property with StoreSet type
-                properties[i].SetValue(this, Activator.CreateInstance(properties[i].PropertyType, JsReference, Setup));
-            }
-        }
-
-        /// <summary>
-        ///       Implementation of IDisposable.Dispose()
-        /// </summary>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        ///  Implementation of IDisposable.Dispose()
-        /// </summary>
-        /// <param name="disposing"></param>
-        protected virtual void Dispose(bool disposing)
-        {
-            if(disposing)
-            {
-                // Dispose of any managed resources
+                properties[i].SetValue(this, Activator.CreateInstance(properties[i].PropertyType, jsReference, Setup));
             }
         }
 
@@ -100,8 +81,6 @@
         public async ValueTask DisposeAsync()
         {
             await DisposeAsyncCore();
-            Dispose(false);
-            GC.SuppressFinalize(this);
         }
 
         /// <summary>
@@ -111,16 +90,11 @@
         protected virtual async ValueTask DisposeAsyncCore()
         {
             // Asynchronously dispose of any managed resources
-            if (JsReference is not null)
-                await JsReference.DisposeAsync();
-        }
-
-        /// <summary>
-        /// Destructor
-        /// </summary>
-        ~StoreContext()
-        {
-            Dispose(false);
+            if(ModuleTask.IsValueCreated)
+            {
+                IJSObjectReference module = await ModuleTask.Value;
+                await module.DisposeAsync();
+            }
         }
     }
 }
