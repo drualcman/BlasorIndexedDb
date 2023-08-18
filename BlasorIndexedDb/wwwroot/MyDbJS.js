@@ -354,18 +354,16 @@ class jsDB {
                                 array.push(data);
                                 data = array;
                             }
+                            let toAdd = new Array(); 
+                            let canContinues = true;
                             data.forEach(element => {
                                 const obj = context.CheckModel(table, element);
                                 if (obj === null) {
                                     transactionResult.push(context.SetResponse(false, "Model doesn't match"));
+                                    canContinues = false;
                                 }
                                 else {
-                                    let dbconnect = context.OpenDB().open(context.DB_NAME, context.DB_VERSION);
-                                    dbconnect.onsuccess = function () {
-                                        let db = this.result;
                                         try {
-                                            let transaction = db.transaction(table, 'readwrite');
-                                            let store = transaction.objectStore(table);
                                             let defaultModel = context.GetDefault(table);
                                             //get who is the keypath
                                             let model = context.MODELS.find(el => el.name === table);
@@ -374,24 +372,40 @@ class jsDB {
                                             if (o[keyPath] != null && model.options.autoIncrement) {
                                                 delete o[keyPath];
                                             }
-                                            store.add(o);
-                                            transaction.onerror = ev => {
-                                                db.close();
-                                                transactionResult.push(context.SetResponse(false, ev.target.error.message));
-                                                console.warn(ev.target.error.message);
-                                            };
-                                            transaction.oncomplete = () => {
-                                                db.close();
-                                                transactionResult.push(context.SetResponse(true, 'Insert done!'));
-                                            };
+                                            toAdd.push(o);
                                         } catch (e) {
-                                            db.close();
                                             transactionResult.push(context.SetResponse(false, e.message));
                                             console.warn(e.message);
                                         }
-                                    };
                                 }
                             });
+                            if (canContinues) {                               
+                                let dbconnect = context.OpenDB().open(context.DB_NAME, context.DB_VERSION);
+                                dbconnect.onsuccess = function () {
+                                    let db = this.result;
+                                    try {
+                                        let transaction = db.transaction(table, 'readwrite');
+                                        let store = transaction.objectStore(table);
+                                        let rows = toAdd.length;
+                                        for (var r = 0; r < rows; r++) {
+                                            store.add(toAdd[r]);
+                                        }
+                                        transaction.onerror = ev => {
+                                            db.close();
+                                            transactionResult.push(context.SetResponse(false, ev.target.error.message));
+                                            console.warn(ev.target.error.message);
+                                        };
+                                        transaction.oncomplete = () => {
+                                            db.close();
+                                            transactionResult.push(context.SetResponse(true, 'Insert done!'));
+                                        };
+                                    } catch (e) {
+                                        db.close();
+                                        transactionResult.push(context.SetResponse(false, e.message));
+                                        console.warn(e.message);
+                                    }
+                                };
+                            }
                             resolve(data.length);
                         } catch (e) {
                             error([context.SetResponse(false, e.message)]);
@@ -431,61 +445,58 @@ class jsDB {
                                 array.push(data);
                                 data = array;
                             }
-                            data.forEach(element => {
-                                let obj = context.CheckModel(table, element);
-                                if (obj === null) {
-                                    transactionResult.push(context.SetResponse(false, "Model doesn't match"));
-                                }
-                                else {
-                                    let dbconnect = context.OpenDB().open(context.DB_NAME, context.DB_VERSION);
-                                    dbconnect.onsuccess = function () {
-                                        let db = this.result;
+
+                            let dbconnect = context.OpenDB().open(context.DB_NAME, context.DB_VERSION);
+                            dbconnect.onsuccess = function () {
+                                let toAdd = new Array();
+                                let canContinues = false;
+
+                                let transaction = db.transaction(table, 'readwrite');
+                                let store = transaction.objectStore(table);
+                                data.forEach(element => {
+                                    const obj = context.CheckModel(table, element);
+                                    if (obj === null) {
+                                        transactionResult.push(context.SetResponse(false, "Model doesn't match"));
+                                        canContinues = false;
+                                    }
+                                    else {
                                         try {
-                                            let transaction = db.transaction(table, 'readwrite');
-                                            let store = transaction.objectStore(table);
-                                            //get the keypath to retrieve the actual data must be updated
+                                            //get who is the keypath
                                             let model = context.MODELS.find(el => el.name === table);
                                             let keyPath = model.options.keyPath;
                                             if (!keyPath) {
                                                 keyPath = 'ssnId';
                                             }
                                             let ssnId = obj[keyPath];
+                                            let dat = null;
+                                            let objRequest;
                                             if (ssnId) {
                                                 let request = store.get(ssnId);
                                                 //retrieve the actual data for the index about the element
                                                 request.onsuccess = function () {
-                                                    let dat = context.UpdateModel(request.result, obj);
-                                                    let objRequest = store.put(dat);
-                                                    objRequest.onsuccess = () => {
-                                                        transactionResult.push(context.SetResponse(true, `Success in updating record ${ssnId}`));
-                                                    };
-                                                    objRequest.onerror = ev => {
-                                                        transactionResult.push(context.SetResponse(false, `Error in updating record ${ssnId}`));
-                                                        console.warn(ev.target.error.message);
-                                                    };
+                                                    dat = context.UpdateModel(request.result, obj);
+                                                    objRequest = store.put(dat);                                                    
                                                 }
                                             }
                                             else {
-                                                let data = context.MergeObjects(obj, element);
-                                                store.put(data);
-                                                transaction.oncomplete = () => {
-                                                    db.close();
-                                                    transactionResult.push(context.SetResponse(true, 'Insert done!'));
-                                                };
-                                                transaction.onerror = ev => {
-                                                    db.close();
-                                                    transactionResult.push(context.SetResponse(false, ev.target.error.message));
-                                                    console.warn(ev.target.error.message);
-                                                };
+                                                dat = context.MergeObjects(obj, element);
+                                                objRequest = store.put(dat);
                                             }
+                                            objRequest.onsuccess = () => {
+                                                transactionResult.push(context.SetResponse(true, `Success in updating record ${ssnId}`));
+                                            };
+                                            objRequest.onerror = ev => {
+                                                transactionResult.push(context.SetResponse(false, `Error in updating record ${ssnId}`));
+                                                console.warn(ev.target.error.message);
+                                            };
+
                                         } catch (e) {
-                                            db.close();
                                             transactionResult.push(context.SetResponse(false, e.message));
                                             console.warn(e.message);
                                         }
-                                    };
-                                }
-                            });
+                                    }
+                                });                               
+                            }
                             resolve(data.length);
                         } catch (e) {
                             error([context.SetResponse(false, e.message)]);
