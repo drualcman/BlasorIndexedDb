@@ -10,7 +10,7 @@
     <Copyright>Free</Copyright>
     <PackageLicenseFile>License.txt</PackageLicenseFile>
     <PackageTags>webassembly, blazor, indexedDb, interop, javascript, database</PackageTags>
-    <PackageReleaseNotes>add new extension to add blazorindexeddbcontext from IServiceCollection and also set a value to add like scoped (default) or singleton</PackageReleaseNotes>
+    <PackageReleaseNotes>Fixed crush browser if add big data. Avoid possible cache issue with update nuget about Javascrip file dependencies.</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/drualcman/BlasorIndexedDb</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
     <PackageId>DrUalcman-BlazorIndexedDb</PackageId>
