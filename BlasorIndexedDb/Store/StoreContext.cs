@@ -30,7 +30,7 @@
 
         private Task<IJSObjectReference> GetJSObjectReference(IJSRuntime jsRuntime) =>
             jsRuntime.InvokeAsync<IJSObjectReference>(
-                "import", $"./_content/DrUalcman-BlazorIndexedDb/MyDbJS.js?v={DateTime.Now.Ticks}").AsTask();
+                "import", $"./_content/DrUalcman-BlazorIndexedDb/MyDbJS.js?v={DateTime.Today.Year}{DateTime.Today.Month}{DateTime.Today.Day}").AsTask();
 
         /// <summary>
         /// Initialize the connection with a indexedDb
