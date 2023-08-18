@@ -110,14 +110,26 @@
         /// </summary>
         /// <param name="toAdd"></param>
         /// <param name="isOffline"></param>
+        /// <param name="limitRowTansaction"></param>
         /// <returns></returns>
-        public async Task<CommandResponse> AddAsync(List<TModel> toAdd, bool isOffline = false)
+        public async Task<CommandResponse> AddAsync(List<TModel> toAdd, bool isOffline = false, int limitRowTansaction = 500)
         {
-            List<ResponseJsDb> result;
-            if(isOffline)
-                result = await InsertActions.DbInserOffline(toAdd);
-            else
-                result = await InsertActions.DbInsert(toAdd);
+            List<ResponseJsDb> result = default;
+
+            List<List<TModel>> rowsList = Split(toAdd, limitRowTansaction);
+            List<Task> tasks = new List<Task>();
+            foreach(var rows in rowsList)
+            {
+                tasks.Add(Task.Run(async () =>
+                {
+                    if(isOffline)
+                        result = await InsertActions.DbInserOffline(rows);
+                    else
+                        result = await InsertActions.DbInsert(rows);
+                }));
+            }
+            await Task.WhenAll(tasks);
+
             return Utils.CommandResponse(result);
         }
 
@@ -142,14 +154,25 @@
         /// </summary>
         /// <param name="toUpdate"></param>
         /// <param name="isOffline"></param>
+        /// <param name="limitRowTansaction"></param>
         /// <returns></returns>
-        public async Task<CommandResponse> UpdateAsync(List<TModel> toUpdate, bool isOffline = false)
+        public async Task<CommandResponse> UpdateAsync(List<TModel> toUpdate, bool isOffline = false, int limitRowTansaction = 500)
         {
-            List<ResponseJsDb> result;
-            if(isOffline)
-                result = await UpdateActions.DbUpdateOffLine(toUpdate);
-            else
-                result = await UpdateActions.DbUpdate(toUpdate);
+            List<ResponseJsDb> result = default;
+
+            List<List<TModel>> rowsList = Split(toUpdate, limitRowTansaction);
+            List<Task> tasks = new List<Task>();
+            foreach(var rows in rowsList)
+            {
+                tasks.Add(Task.Run(async () =>
+                {
+                    if(isOffline)
+                        result = await UpdateActions.DbUpdateOffLine(rows);
+                    else
+                        result = await UpdateActions.DbUpdate(rows);
+                }));
+            }
+            await Task.WhenAll(tasks);
             return Utils.CommandResponse(result);
         }
 
@@ -199,6 +222,26 @@
         /// <returns></returns>
         public async Task<CommandResponse> DeleteAsync(DateTime id)
             => Utils.CommandResponse(await DeleteActions.DbDelete<TModel>(id));
+
+        private List<List<TModel>> Split<TModel>(List<TModel> original, int sizeList)
+        {
+            List<List<TModel>> Result = new List<List<TModel>>();
+            int Index = 0;
+            if(original is not null)
+            {
+                while(Index < original.Count)
+                {
+                    List<TModel> List = original.GetRange(Index, Math.Min(sizeList, original.Count - Index));
+                    Result.Add(List);
+                    Index += sizeList;
+                }
+            }
+            else
+            {
+                Result.Add(new List<TModel>());
+            }
+            return Result;
+        }
 
     }
 }

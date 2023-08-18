@@ -835,12 +835,13 @@
             <param name="isOffline"></param>
             <returns></returns>
         </member>
-        <member name="M:BlazorIndexedDb.Store.StoreSet`1.AddAsync(System.Collections.Generic.List{`0},System.Boolean)">
+        <member name="M:BlazorIndexedDb.Store.StoreSet`1.AddAsync(System.Collections.Generic.List{`0},System.Boolean,System.Int32)">
             <summary>
             Add record in a table store
             </summary>
             <param name="toAdd"></param>
             <param name="isOffline"></param>
+            <param name="limitRowTansaction"></param>
             <returns></returns>
         </member>
         <member name="M:BlazorIndexedDb.Store.StoreSet`1.UpdateAsync(`0,System.Boolean)">
@@ -851,12 +852,13 @@
             <param name="isOffline"></param>
             <returns></returns>
         </member>
-        <member name="M:BlazorIndexedDb.Store.StoreSet`1.UpdateAsync(System.Collections.Generic.List{`0},System.Boolean)">
+        <member name="M:BlazorIndexedDb.Store.StoreSet`1.UpdateAsync(System.Collections.Generic.List{`0},System.Boolean,System.Int32)">
             <summary>
             Update record in a table store
             </summary>
             <param name="toUpdate"></param>
             <param name="isOffline"></param>
+            <param name="limitRowTansaction"></param>
             <returns></returns>
         </member>
         <member name="M:BlazorIndexedDb.Store.StoreSet`1.CleanAsync">
