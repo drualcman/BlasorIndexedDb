@@ -1,6 +1,4 @@
-﻿using Microsoft.JSInterop;
-
-namespace BlazorIndexedDb.Store
+﻿namespace BlazorIndexedDb.Store
 {
     /// <summary>
     ///     A StoreContext instance represents a instance of a indexedDb into the browser
@@ -32,7 +30,7 @@ namespace BlazorIndexedDb.Store
 
         private Task<IJSObjectReference> GetJSObjectReference(IJSRuntime jsRuntime) =>
             jsRuntime.InvokeAsync<IJSObjectReference>(
-                "import", "./_content/DrUalcman-BlazorIndexedDb/MyDbJS.js").AsTask();
+                "import", $"./_content/DrUalcman-BlazorIndexedDb/MyDbJS.js?v={DateTime.Now.Ticks}").AsTask();
 
         /// <summary>
         /// Initialize the connection with a indexedDb
