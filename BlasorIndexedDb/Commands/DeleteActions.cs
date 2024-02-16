@@ -5,18 +5,17 @@
     /// </summary>
     internal sealed class DeleteActions
     {
-        readonly IJSObjectReference jsRuntime;
+        readonly IJSRuntime JS;
         readonly Settings Setup;
-
 
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="js"></param>
         /// <param name="setup"></param>
-        internal DeleteActions(IJSObjectReference js, Settings setup)
+        internal DeleteActions(IJSRuntime js, Settings setup)
         {
-            jsRuntime = js;
+            JS = js;
             Setup = setup;
         }
 
@@ -33,27 +32,19 @@
             try
             {
                 List<ResponseJsDb> result = new List<ResponseJsDb>();
-                if(Setup.Initialized)
-                {
-                    result.AddRange(await jsRuntime.InvokeAsync<List<ResponseJsDb>>($"MyDb.Delete", Setup.Tables.GetTable<TModel>(), id, Setup.DBName, Setup.Version, Setup.ModelsAsJson));
-                }
-                else
-                {
-                    if(Settings.EnableDebug) Console.WriteLine($"DeleteActions: IndexedDb not initialized yet!");
-                    result = new List<ResponseJsDb>();
-                    result.Add(new ResponseJsDb { Result = false, Message = $"IndexedDb not initialized yet!" });
-                }
-                if(result.Count > 0) return result[0];
+                IJSObjectReference jsRuntime = await InitializeDatabase.GetIJSObjectReference(JS);
+                result.AddRange(await jsRuntime.InvokeAsync<List<ResponseJsDb>>($"MyDb.Delete", Setup.Tables.GetTable<TModel>(), id, Setup.DBName, Setup.Version, Setup.ModelsAsJson));
+                if (result.Count > 0) return result[0];
                 else return new ResponseJsDb { Result = false, Message = "No results" };
             }
-            catch(ResponseException ex)
+            catch (ResponseException ex)
             {
-                if(Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
+                if (Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
                 throw;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                if(Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
+                if (Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
                 throw new ResponseException(nameof(DbDelete), typeof(TModel).Name, ex.Message, ex);
             }
 
@@ -71,29 +62,20 @@
             try
             {
                 List<ResponseJsDb> result = new List<ResponseJsDb>();
-
-                if(Setup.Initialized)
-                {
-                    result.AddRange(await jsRuntime.InvokeAsync<List<ResponseJsDb>>($"MyDb.Delete", Setup.Tables.GetTable<TModel>(), id, Setup.DBName, Setup.Version, Setup.ModelsAsJson));
-                }
-                else
-                {
-                    if(Settings.EnableDebug) Console.WriteLine($"DeleteActions: IndexedDb not initialized yet!");
-                    result = new List<ResponseJsDb>();
-                    result.Add(new ResponseJsDb { Result = false, Message = $"IndexedDb not initialized yet!" });
-                }
-                if(result.Count > 0) return result[0];
+                IJSObjectReference jsRuntime = await InitializeDatabase.GetIJSObjectReference(JS);
+                result.AddRange(await jsRuntime.InvokeAsync<List<ResponseJsDb>>($"MyDb.Delete", Setup.Tables.GetTable<TModel>(), id, Setup.DBName, Setup.Version, Setup.ModelsAsJson));
+                if (result.Count > 0) return result[0];
                 else return new ResponseJsDb { Result = false, Message = "No results" };
 
             }
-            catch(ResponseException ex)
+            catch (ResponseException ex)
             {
-                if(Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
+                if (Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
                 throw;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                if(Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
+                if (Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
                 throw new ResponseException(nameof(DbDelete), typeof(TModel).Name, ex.Message, ex);
             }
 
@@ -112,28 +94,19 @@
             try
             {
                 List<ResponseJsDb> result = new List<ResponseJsDb>();
-
-                if(Setup.Initialized)
-                {
-                    result.AddRange(await jsRuntime.InvokeAsync<List<ResponseJsDb>>($"MyDb.Delete", Setup.Tables.GetTable<TModel>(), id, Setup.DBName, Setup.Version, Setup.ModelsAsJson));
-                }
-                else
-                {
-                    if(Settings.EnableDebug) Console.WriteLine($"DeleteActions: IndexedDb not initialized yet!");
-                    result = new List<ResponseJsDb>();
-                    result.Add(new ResponseJsDb { Result = false, Message = $"IndexedDb not initialized yet!" });
-                }
-                if(result.Count > 0) return result[0];
+                IJSObjectReference jsRuntime = await InitializeDatabase.GetIJSObjectReference(JS);
+                result.AddRange(await jsRuntime.InvokeAsync<List<ResponseJsDb>>($"MyDb.Delete", Setup.Tables.GetTable<TModel>(), id, Setup.DBName, Setup.Version, Setup.ModelsAsJson));
+                if (result.Count > 0) return result[0];
                 else return new ResponseJsDb { Result = false, Message = "No results" };
             }
-            catch(ResponseException ex)
+            catch (ResponseException ex)
             {
-                if(Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
+                if (Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
                 throw;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                if(Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
+                if (Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
                 throw new ResponseException(nameof(DbDelete), typeof(TModel).Name, ex.Message, ex);
             }
 
@@ -152,28 +125,19 @@
             try
             {
                 List<ResponseJsDb> result = new List<ResponseJsDb>();
-
-                if(Setup.Initialized)
-                {
-                    result.AddRange(await jsRuntime.InvokeAsync<List<ResponseJsDb>>($"MyDb.Delete", Setup.Tables.GetTable<TModel>(), id, Setup.DBName, Setup.Version, Setup.ModelsAsJson));
-                }
-                else
-                {
-                    if(Settings.EnableDebug) Console.WriteLine($"DeleteActions: IndexedDb not initialized yet!");
-                    result = new List<ResponseJsDb>();
-                    result.Add(new ResponseJsDb { Result = false, Message = $"IndexedDb not initialized yet!" });
-                }
-                if(result.Count > 0) return result[0];
+                IJSObjectReference jsRuntime = await InitializeDatabase.GetIJSObjectReference(JS);
+                result.AddRange(await jsRuntime.InvokeAsync<List<ResponseJsDb>>($"MyDb.Delete", Setup.Tables.GetTable<TModel>(), id, Setup.DBName, Setup.Version, Setup.ModelsAsJson));
+                if (result.Count > 0) return result[0];
                 else return new ResponseJsDb { Result = false, Message = "No results" };
             }
-            catch(ResponseException ex)
+            catch (ResponseException ex)
             {
-                if(Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
+                if (Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
                 throw;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                if(Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
+                if (Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
                 throw new ResponseException(nameof(DbDelete), typeof(TModel).Name, ex.Message, ex);
             }
 
@@ -191,27 +155,19 @@
             try
             {
                 List<ResponseJsDb> result = new List<ResponseJsDb>();
-                if(Setup.Initialized)
-                {
-                    result.AddRange(await jsRuntime.InvokeAsync<List<ResponseJsDb>>($"MyDb.Delete", Setup.Tables.GetTable<TModel>(), id, Setup.DBName, Setup.Version, Setup.ModelsAsJson));
-                }
-                else
-                {
-                    if(Settings.EnableDebug) Console.WriteLine($"DeleteActions: IndexedDb not initialized yet!");
-                    result = new List<ResponseJsDb>();
-                    result.Add(new ResponseJsDb { Result = false, Message = $"IndexedDb not initialized yet!" });
-                }
-                if(result.Count > 0) return result[0];
+                IJSObjectReference jsRuntime = await InitializeDatabase.GetIJSObjectReference(JS);
+                result.AddRange(await jsRuntime.InvokeAsync<List<ResponseJsDb>>($"MyDb.Delete", Setup.Tables.GetTable<TModel>(), id, Setup.DBName, Setup.Version, Setup.ModelsAsJson));
+                if (result.Count > 0) return result[0];
                 else return new ResponseJsDb { Result = false, Message = "No results" };
             }
-            catch(ResponseException ex)
+            catch (ResponseException ex)
             {
-                if(Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
+                if (Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
                 throw;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                if(Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
+                if (Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
                 throw new ResponseException(nameof(DbDelete), typeof(TModel).Name, ex.Message, ex);
             }
 

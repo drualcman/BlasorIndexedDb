@@ -50,19 +50,7 @@
         /// Get is we are connected to a indexed db
         /// </summary>
         /// <returns></returns>
-        internal async ValueTask<string> DbConnected()
-        {
-            string message;
-            if(Setup.Initialized)
-            {
-                message = await jsRuntime.InvokeAsync<string>("MyDb.Connected", Setup.DBName, Setup.Version);
-            }
-            else
-            {
-                message = $"Commands: IndexedDb not initialized yet!";
-                if(Settings.EnableDebug) Console.WriteLine(message);
-            }
-            return message;
-        }
+        internal async ValueTask<string> DbConnected() =>
+            await jsRuntime.InvokeAsync<string>("MyDb.Connected", Setup.DBName, Setup.Version);
     }
 }

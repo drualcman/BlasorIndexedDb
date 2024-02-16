@@ -3,7 +3,7 @@
     /// <summary>
     /// Encapsulate manage tables and model for the database
     /// </summary>
-    public class StoreNames
+    internal class StoreNames
     {
         readonly List<StoreSetDefinition> Tables;
         /// <summary>

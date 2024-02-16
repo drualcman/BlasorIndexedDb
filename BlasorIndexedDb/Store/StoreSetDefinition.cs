@@ -3,7 +3,7 @@
     /// <summary>
     /// Define Tables and model name
     /// </summary>
-    public class StoreSetDefinition
+    internal class StoreSetDefinition
     {
         /// <summary>
         /// StoreSet Name

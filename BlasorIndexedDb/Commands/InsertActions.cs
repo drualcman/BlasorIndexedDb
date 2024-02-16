@@ -6,7 +6,7 @@
     internal sealed class InsertActions
     {
         readonly Settings Setup;
-        readonly Commands Commands;
+        readonly IJSRuntime JS;
         readonly ObjectConverter ObjectConverter;
 
         /// <summary>
@@ -14,10 +14,10 @@
         /// </summary>
         /// <param name="js"></param>
         /// <param name="setup"></param>
-        internal InsertActions(IJSObjectReference js, Settings setup)
+        internal InsertActions(IJSRuntime js, Settings setup)
         {
             Setup = setup;
-            Commands = new Commands(js, setup);
+            JS = js;
             ObjectConverter = new ObjectConverter(setup);
         }
 
@@ -35,7 +35,7 @@
                 data
             };
             List<ResponseJsDb> response = await DbInsert(rows);
-            if(response.Count > 0) return response[0];
+            if (response.Count > 0) return response[0];
             else return new ResponseJsDb { Result = false, Message = "No results" };
         }
 
@@ -50,87 +50,75 @@
         {
             try
             {
+                InitializeDatabase initializeDatabase = new InitializeDatabase(JS);
+                IJSObjectReference js = await initializeDatabase.GetJsReference();
+                Commands Commands = new Commands(js, Setup);
                 List<ResponseJsDb> result = new List<ResponseJsDb>();
-                if(Setup.Initialized)
+                int c = rows.Count;
+                if (c > 0)
                 {
-                    int c = rows.Count;
-                    if(c > 0)
+                    List<ResponseJsDb> response = await Commands.DbCommand(DbCommands.Insert, Setup.Tables.GetTable<TModel>(), await ObjectConverter.ToJsonAsync(rows));
+                    if (Settings.EnableDebug) Console.WriteLine($"Insert response is null {response == null}");
+                    bool allGood = false;
+                    int i = 0;
+                    if (response != null)
                     {
-                        List<ResponseJsDb> response = await Commands.DbCommand(DbCommands.Insert, Setup.Tables.GetTable<TModel>(), await ObjectConverter.ToJsonAsync(rows));
-                        if(Settings.EnableDebug) Console.WriteLine($"Insert response is null {response == null}");
-                        bool allGood = false;
-                        int i = 0;
-                        if(response != null)
+                        result.AddRange(response);
+                        c = result.Count;
+                        while (c > 0 && !allGood && i < c)
                         {
-                            result.AddRange(response);
-                            c = result.Count;
-                            while(c > 0 && !allGood && i < c)
-                            {
-                                allGood = result[i].Result;
-                                i++;
-                            }
-                        }
-                        if(allGood)
-                        {
-                            //need check the object received and do the action into the other tables if have
-                            c = rows.Count;
-                            for(i = 0; i < c; i++)
-                            {
-                                Type t = rows[i].GetType();
-
-                                //read all properties
-                                PropertyInfo[] properties = ObjectConverter.GetProperties(t);
-                                int p = properties.Length;
-                                for(int a = 0; a < p; a++)
-                                {
-                                    if(Setup.Tables.InTables(t.Name))
-                                    {
-                                        if(ObjectConverter.IsGenericList(properties[a].GetValue(rows[i])))
-                                        {
-                                            Console.WriteLine("esto es una lista que tendremos que recorrer");
-                                        }
-                                        else
-                                        {
-                                            if(Settings.EnableDebug) Console.WriteLine($"Add to the store {properties[a].PropertyType.Name} the value from the property {properties[a].Name}");
-                                            //is single object add the data to the corresponding store
-                                            result.AddRange(await Commands.DbCommand(DbCommands.Insert, properties[a].PropertyType.Name, await ObjectConverter.ToJsonAsync(properties[a].GetValue(rows[i]))));
-                                        }
-                                    }
-                                }
-
-                            }
+                            allGood = result[i].Result;
+                            i++;
                         }
                     }
-                    else
+                    if (allGood)
                     {
-                        if(Settings.EnableDebug) Console.WriteLine($"DbInsert No need insert into {Setup.Tables.GetTable<TModel>()}");
-                        result = new List<ResponseJsDb>{
-                            new ResponseJsDb { Result = true, Message = $"No need insert into {Setup.Tables.GetTable<TModel>()}!" }
-                        };
+                        //need check the object received and do the action into the other tables if have
+                        c = rows.Count;
+                        for (i = 0; i < c; i++)
+                        {
+                            Type t = rows[i].GetType();
+
+                            //read all properties
+                            PropertyInfo[] properties = ObjectConverter.GetProperties(t);
+                            int p = properties.Length;
+                            for (int a = 0; a < p; a++)
+                            {
+                                if (Setup.Tables.InTables(t.Name))
+                                {
+                                    if (ObjectConverter.IsGenericList(properties[a].GetValue(rows[i])))
+                                    {
+                                        Console.WriteLine("esto es una lista que tendremos que recorrer");
+                                    }
+                                    else
+                                    {
+                                        if (Settings.EnableDebug) Console.WriteLine($"Add to the store {properties[a].PropertyType.Name} the value from the property {properties[a].Name}");
+                                        //is single object add the data to the corresponding store
+                                        result.AddRange(await Commands.DbCommand(DbCommands.Insert, properties[a].PropertyType.Name, await ObjectConverter.ToJsonAsync(properties[a].GetValue(rows[i]))));
+                                    }
+                                }
+                            }
+
+                        }
                     }
                 }
                 else
                 {
-                    if(Settings.EnableDebug) Console.WriteLine($"InsertActions: IndexedDb not initialized yet!");
-                    result = new List<ResponseJsDb>()
-                    {
-                        new ResponseJsDb()
-                        {
-                             Message = $"IndexedDb not initialized yet!",
-                             Result = false
-                        }
-                    };
+                    if (Settings.EnableDebug) Console.WriteLine($"DbInsert No need insert into {Setup.Tables.GetTable<TModel>()}");
+                        result = new List<ResponseJsDb>{
+                            new ResponseJsDb { Result = true, Message = $"No need insert into {Setup.Tables.GetTable<TModel>()}!" }
+                        };
                 }
                 return result;
             }
-            catch(ResponseException ex)
+            catch (ResponseException ex)
             {
-                if(Settings.EnableDebug) Console.WriteLine($"DbInsert Model: {Setup.Tables.GetTable<TModel>()} ResponseException: {ex.Message}");
+                if (Settings.EnableDebug) Console.WriteLine($"DbInsert Model: {Setup.Tables.GetTable<TModel>()} ResponseException: {ex.Message}");
                 throw;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                if(Settings.EnableDebug) Console.WriteLine($"DbInsert Model: {Setup.Tables.GetTable<TModel>()} Exception: {ex.Message}");
+                if (Settings.EnableDebug) Console.WriteLine($"DbInsert Model: {Setup.Tables.GetTable<TModel>()} Exception: {ex.Message}");
                 throw new ResponseException(nameof(DbInsert), typeof(TModel).Name, ex.Message, ex);
             }
 
@@ -147,7 +135,7 @@
             List<TModel> rows = new List<TModel>();
             rows.Add(data);
             List<ResponseJsDb> response = await DbInserOffline(rows);
-            if(response.Count > 0) return response[0];
+            if (response.Count > 0) return response[0];
             else return new ResponseJsDb { Result = false, Message = "No results" };
         }
 
@@ -163,15 +151,15 @@
             try
             {
                 List<dynamic> expanded = await AddOflineProperty.AddOfflineAsync(rows);
-                if(Settings.EnableDebug) Console.WriteLine($"DbInserOffline in model: {Setup.Tables.GetTable<TModel>()}");
+                if (Settings.EnableDebug) Console.WriteLine($"DbInserOffline in model: {Setup.Tables.GetTable<TModel>()}");
                 return await DbInsert(expanded);
             }
-            catch(ResponseException ex)
+            catch (ResponseException ex)
             {
-                if(Settings.EnableDebug) Console.WriteLine($"DbInsert Model: {Setup.Tables.GetTable<TModel>()} Error: {ex.Message}");
+                if (Settings.EnableDebug) Console.WriteLine($"DbInsert Model: {Setup.Tables.GetTable<TModel>()} Error: {ex.Message}");
                 throw;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw new ResponseException(nameof(DbInserOffline), Setup.Tables.GetTable<TModel>(), ex.Message, ex);
             }

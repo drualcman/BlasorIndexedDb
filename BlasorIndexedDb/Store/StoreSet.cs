@@ -16,14 +16,36 @@
         /// </summary>
         /// <param name="js"></param>
         /// <param name="setup"></param>
-        public StoreSet(IJSObjectReference js, Settings setup)
+        public StoreSet(IJSRuntime js, Settings setup)
         {
-            if(Settings.EnableDebug) Console.WriteLine($"StoreSet constructor for : {Utils.GetGenericTypeName(this.GetType())}");
+            if(Settings.EnableDebug) Console.WriteLine($"StoreSet constructor for: {Utils.GetGenericTypeName(this.GetType())}");
             DeleteActions = new(js, setup);
             InsertActions = new(js, setup);
             UpdateActions = new(js, setup);
             SelectActions = new(js, setup);
             TableActions = new(js, setup);
+        }
+
+        /// <summary>
+        /// Get a list with the content about the store model
+        /// </summary>       
+        /// <param name="query">Query</param>
+        /// <returns></returns>
+        public async Task<List<TModel>> SelectAsync(Func<TModel, bool> query)
+        {
+            List<TModel> response = await SelectActions.DbSelect<TModel>();
+            return response.Where(query).ToList();
+        }
+
+        /// <summary>
+        /// Get a single record from store model
+        /// </summary>
+        /// <param name="query">Query</param>
+        /// <returns></returns>
+        public async Task<TModel> GetAsync(Func<TModel, bool> query)
+        {
+            IEnumerable<TModel> response = await SelectAsync(query);
+            return response.FirstOrDefault(query);
         }
 
         /// <summary>
@@ -38,7 +60,7 @@
         /// </summary>
         /// <param name="id">primary key id to search</param>
         /// <returns></returns>
-        public async Task<TModel> SelectAsync(object id) =>
+        public async Task<TModel> GetAsync(object id) =>
             await SelectActions.SingleRecord<TModel>(id);
 
         /// <summary>
@@ -46,7 +68,7 @@
         /// </summary>
         /// <param name="id">primary key id to search</param>
         /// <returns></returns>
-        public async Task<TModel> SelectAsync(int id) =>
+        public async Task<TModel> GetAsync(int id) =>
             await SelectActions.SingleRecord<TModel>(id);
 
         /// <summary>
@@ -54,7 +76,7 @@
         /// </summary>
         /// <param name="id">primary key id to search</param>
         /// <returns></returns>
-        public async Task<TModel> SelectAsync(double id) =>
+        public async Task<TModel> GetAsync(double id) =>
             await SelectActions.SingleRecord<TModel>(id);
 
         /// <summary>
@@ -62,7 +84,7 @@
         /// </summary>
         /// <param name="id">primary key id to search</param>
         /// <returns></returns>
-        public async Task<TModel> SelectAsync(decimal id) =>
+        public async Task<TModel> GetAsync(decimal id) =>
             await SelectActions.SingleRecord<TModel>(id);
 
         /// <summary>
@@ -70,7 +92,7 @@
         /// </summary>
         /// <param name="id">primary key id to search</param>
         /// <returns></returns>
-        public async Task<TModel> SelectAsync(long id) =>
+        public async Task<TModel> GetAsync(long id) =>
             await SelectActions.SingleRecord<TModel>(id);
 
         /// <summary>
@@ -78,7 +100,7 @@
         /// </summary>
         /// <param name="id">primary key id to search</param>
         /// <returns></returns>
-        public async Task<TModel> SelectAsync(string id) =>
+        public async Task<TModel> GetAsync(string id) =>
             await SelectActions.SingleRecord<TModel>(id);
 
         /// <summary>
@@ -86,7 +108,7 @@
         /// </summary>
         /// <param name="id">primary key id to search</param>
         /// <returns></returns>
-        public async Task<TModel> SelectAsync(DateTime id) =>
+        public async Task<TModel> GetAsync(DateTime id) =>
             await SelectActions.SingleRecord<TModel>(id);
 
         /// <summary>

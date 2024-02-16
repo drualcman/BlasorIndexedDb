@@ -5,7 +5,7 @@
     /// </summary>
     public class SelectActions
     {
-        readonly IJSObjectReference jsRuntime;
+        readonly IJSRuntime JS;
         readonly Settings Setup;
 
         /// <summary>
@@ -13,9 +13,9 @@
         /// </summary>
         /// <param name="js"></param>
         /// <param name="setup"></param>
-        public SelectActions(IJSObjectReference js, Settings setup)
+        public SelectActions(IJSRuntime js, Settings setup)
         {
-            jsRuntime = js;
+            JS = js;
             Setup = setup;
         }
 
@@ -29,24 +29,19 @@
         public async ValueTask<List<TModel>> DbSelect<TModel>()
         {
             List<TModel> data;
-            if (Setup.Initialized)
+
+            try
             {
-                try
-                {
-                    data = await jsRuntime.InvokeAsync<List<TModel>>("MyDb.Select", Setup.Tables.GetTable<TModel>(), Setup.DBName, Setup.Version, Setup.ModelsAsJson);
-                }
-                catch (Exception ex)
-                {                                                                                                     
-                    if (Settings.EnableDebug) Console.WriteLine($"SelectActions: {ex.Message}");
-                    throw new ResponseException(nameof(DbSelect), Setup.Tables.GetTable<TModel>(), ex.Message, ex);
-                    //return null;
-                }
+                IJSObjectReference jsRuntime = await InitializeDatabase.GetIJSObjectReference(JS);
+                data = await jsRuntime.InvokeAsync<List<TModel>>("MyDb.Select", Setup.Tables.GetTable<TModel>(), Setup.DBName, Setup.Version, Setup.ModelsAsJson);
             }
-            else
+            catch (Exception ex)
             {
-                if (Settings.EnableDebug) Console.WriteLine($"SelectActions: IndexedDb not initialized yet!");
-                data = new List<TModel>();
+                if (Settings.EnableDebug) Console.WriteLine($"SelectActions: {ex.Message}");
+                throw new ResponseException(nameof(DbSelect), Setup.Tables.GetTable<TModel>(), ex.Message, ex);
+                //return null;
             }
+
             return data;
 
         }
@@ -62,24 +57,19 @@
         public async ValueTask<List<TModel>> DbSelect<TModel>([NotNull] string column, [NotNull] object value)
         {
             List<TModel> data;
-            if (Setup.Initialized)
+
+            try
             {
-                try
-                {
-                    data = await jsRuntime.InvokeAsync<List<TModel>>("MyDb.SelectWhere", Setup.Tables.GetTable<TModel>(), column, value, Setup.DBName, Setup.Version, Setup.ModelsAsJson);
-                }
-                catch (Exception ex)
-                {                                                                                                   
-                    if (Settings.EnableDebug) Console.WriteLine($"SelectActions: {ex.Message}");
-                    throw new ResponseException(nameof(DbSelect), Setup.Tables.GetTable<TModel>(), ex.Message, ex);
-                    //return null;
-                }
+                IJSObjectReference jsRuntime = await InitializeDatabase.GetIJSObjectReference(JS);
+                data = await jsRuntime.InvokeAsync<List<TModel>>("MyDb.SelectWhere", Setup.Tables.GetTable<TModel>(), column, value, Setup.DBName, Setup.Version, Setup.ModelsAsJson);
             }
-            else
+            catch (Exception ex)
             {
-                if (Settings.EnableDebug) Console.WriteLine($"SelectActions: IndexedDb not initialized yet!");
-                data = new List<TModel>();
+                if (Settings.EnableDebug) Console.WriteLine($"SelectActions: {ex.Message}");
+                throw new ResponseException(nameof(DbSelect), Setup.Tables.GetTable<TModel>(), ex.Message, ex);
+                //return null;
             }
+
             return data;
 
         }
@@ -96,198 +86,15 @@
         /// <returns></returns>
         public async ValueTask<TModel> SingleRecord<TModel>([NotNull] object id) where TModel : class
         {
-            if (Setup.Initialized)
+            try
             {
-                try
-                {
-                    List<TModel> data = await jsRuntime.InvokeAsync<List<TModel>>("MyDb.SelectId", Setup.Tables.GetTable<TModel>(), id, Setup.DBName, Setup.Version, Setup.ModelsAsJson);
-                    return data[0];
-                }
-                catch (Exception ex)
-                {                                                                                                       
-                    if (Settings.EnableDebug) Console.WriteLine($"SelectActions: {ex.Message}");
-                    return null;
-                }
+                IJSObjectReference jsRuntime = await InitializeDatabase.GetIJSObjectReference(JS);
+                List<TModel> data = await jsRuntime.InvokeAsync<List<TModel>>("MyDb.SelectId", Setup.Tables.GetTable<TModel>(), id, Setup.DBName, Setup.Version, Setup.ModelsAsJson);
+                return data[0];
             }
-            else
+            catch (Exception ex)
             {
-                if (Settings.EnableDebug) Console.WriteLine($"SelectActions: IndexedDb not initialized yet!");
-                return null;
-            }
-        }
-
-        /// <summary>
-        /// Get a single record from store model
-        /// </summary>
-        /// <typeparam name="TModel">Table or store to use</typeparam>
-        /// <param name="id">column to compare</param>
-        /// <exception cref="ResponseException"></exception>
-        /// <returns></returns>
-        public async ValueTask<TModel> SingleRecord<TModel>([NotNull] int id) where TModel : class
-        {
-            if (Setup.Initialized)
-            {
-                try
-                {
-                    List<TModel> data = await jsRuntime.InvokeAsync<List<TModel>>("MyDb.SelectId", Setup.Tables.GetTable<TModel>(), id, Setup.DBName, Setup.Version, Setup.ModelsAsJson);
-                    return data[0];
-                }
-                catch (Exception ex)
-                {                   
-                    if (Settings.EnableDebug) Console.WriteLine($"SelectActions: {ex.Message}");
-                    return null;
-                }
-            }
-            else
-            {
-                if (Settings.EnableDebug) Console.WriteLine($"SelectActions: IndexedDb not initialized yet!");
-                return null;
-            }
-        }
-
-
-        /// <summary>
-        /// Get a single record from store model
-        /// </summary>
-        /// <typeparam name="TModel">Table or store to use</typeparam>
-        /// <param name="id">column to compare</param>
-        /// <exception cref="ResponseException"></exception>
-        /// <returns></returns>
-        public  async ValueTask<TModel> SingleRecord<TModel>([NotNull] double id) where TModel : class
-        {
-            if (Setup.Initialized)
-            {
-                try
-                {
-                    List<TModel> data = await jsRuntime.InvokeAsync<List<TModel>>("MyDb.SelectId", Setup.Tables.GetTable<TModel>(), id, Setup.DBName, Setup.Version, Setup.ModelsAsJson);
-                    return data[0];
-                }
-                catch (Exception ex)
-                {                                   
-                    if (Settings.EnableDebug) Console.WriteLine($"SelectActions: {ex.Message}");
-                    return null;
-                }
-            }
-            else
-            {
-                if (Settings.EnableDebug) Console.WriteLine($"SelectActions: IndexedDb not initialized yet!");
-                return null;
-            }
-        }
-
-        /// <summary>
-        /// Get a single record from store model
-        /// </summary>
-        /// <typeparam name="TModel">Table or store to use</typeparam>
-        /// <param name="id">column to compare</param>
-        /// <exception cref="ResponseException"></exception>
-        /// <returns></returns>
-        public  async ValueTask<TModel> SingleRecord<TModel>([NotNull] decimal id) where TModel : class
-        {
-            if (Setup.Initialized)
-            {
-                try
-                {
-                    List<TModel> data = await jsRuntime.InvokeAsync<List<TModel>>("MyDb.SelectId", Setup.Tables.GetTable<TModel>(), id, Setup.DBName, Setup.Version, Setup.ModelsAsJson);
-                    return data[0];
-                }
-                catch (Exception ex)
-                {
-                    if (Settings.EnableDebug) Console.WriteLine($"SelectActions: {ex.Message}");
-                    return null;
-                }
-            }
-            else
-            {
-                if (Settings.EnableDebug) Console.WriteLine($"SelectActions: IndexedDb not initialized yet!");
-                return null;
-            }
-        }
-
-        /// <summary>
-        /// Get a single record from store model
-        /// </summary>
-        /// <typeparam name="TModel">Table or store to use</typeparam>
-        /// <param name="id">column to compare</param>
-        /// <exception cref="ResponseException"></exception>
-        /// <returns></returns>
-        public async ValueTask<TModel> SingleRecord<TModel>([NotNull] long id) where TModel : class
-        {
-            if (Setup.Initialized)
-            {
-                try
-                {
-                    List<TModel> data = await jsRuntime.InvokeAsync<List<TModel>>("MyDb.SelectId", Setup.Tables.GetTable<TModel>(), id, Setup.DBName, Setup.Version, Setup.ModelsAsJson);
-                    return data[0];
-                }
-                catch (Exception ex)
-                {                                                                                                       
-                    if (Settings.EnableDebug) Console.WriteLine($"SelectActions: {ex.Message}");
-                    return null;
-                }
-            }
-            else
-            {
-                if (Settings.EnableDebug) Console.WriteLine($"SelectActions: IndexedDb not initialized yet!");
-                return null;
-            }
-        }
-
-        /// <summary>
-        /// Get a single record from store model
-        /// </summary>
-        /// <typeparam name="TModel">Table or store to use</typeparam>
-        /// <param name="id">column to compare</param>
-        /// <exception cref="ResponseException"></exception>
-        /// <returns></returns>
-        public async ValueTask<TModel> SingleRecord<TModel>([NotNull] string id) where TModel : class
-        {
-            if (Setup.Initialized)
-            {
-                try
-                {
-                    List<TModel> data = await jsRuntime.InvokeAsync<List<TModel>>("MyDb.SelectId", Setup.Tables.GetTable<TModel>(), id, Setup.DBName, Setup.Version, Setup.ModelsAsJson);
-                    return data[0];
-                }
-                catch (Exception ex)
-                {                                                                                                       
-                    if (Settings.EnableDebug) Console.WriteLine($"SelectActions: {ex.Message}");
-                    return null;
-                }
-            }
-            else
-            {
-                if (Settings.EnableDebug) Console.WriteLine($"SelectActions: IndexedDb not initialized yet!");
-                return null;
-            }
-        }
-
-
-        /// <summary>
-        /// Get a single record from store model
-        /// </summary>
-        /// <typeparam name="TModel">Table or store to use</typeparam>
-        /// <param name="id">column to compare</param>
-        /// <exception cref="ResponseException"></exception>
-        /// <returns></returns>
-        public async ValueTask<TModel> SingleRecord<TModel>([NotNull] DateTime id) where TModel : class
-        {
-            if (Setup.Initialized)
-            {
-                try
-                {
-                    List<TModel> data = await jsRuntime.InvokeAsync<List<TModel>>("MyDb.SelectId", Setup.Tables.GetTable<TModel>(), id, Setup.DBName, Setup.Version, Setup.ModelsAsJson);
-                    return data[0];
-                }
-                catch (Exception ex)
-                {                                                                                                       
-                    if (Settings.EnableDebug) Console.WriteLine($"SelectActions: {ex.Message}");
-                    return null;
-                }
-            }
-            else
-            {
-                if (Settings.EnableDebug) Console.WriteLine($"SelectActions: IndexedDb not initialized yet!");
+                if (Settings.EnableDebug) Console.WriteLine($"SelectActions: {ex.Message}");
                 return null;
             }
         }

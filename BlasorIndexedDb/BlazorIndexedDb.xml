@@ -88,7 +88,7 @@
             Delete commands
             </summary>
         </member>
-        <member name="M:BlazorIndexedDb.Commands.DeleteActions.#ctor(Microsoft.JSInterop.IJSObjectReference,BlazorIndexedDb.Configuration.Settings)">
+        <member name="M:BlazorIndexedDb.Commands.DeleteActions.#ctor(Microsoft.JSInterop.IJSRuntime,BlazorIndexedDb.Configuration.Settings)">
             <summary>
             Constructor
             </summary>
@@ -145,7 +145,7 @@
             Insert commands
             </summary>
         </member>
-        <member name="M:BlazorIndexedDb.Commands.InsertActions.#ctor(Microsoft.JSInterop.IJSObjectReference,BlazorIndexedDb.Configuration.Settings)">
+        <member name="M:BlazorIndexedDb.Commands.InsertActions.#ctor(Microsoft.JSInterop.IJSRuntime,BlazorIndexedDb.Configuration.Settings)">
             <summary>
             Constructor
             </summary>
@@ -192,7 +192,7 @@
             Select commands
             </summary>
         </member>
-        <member name="M:BlazorIndexedDb.Commands.SelectActions.#ctor(Microsoft.JSInterop.IJSObjectReference,BlazorIndexedDb.Configuration.Settings)">
+        <member name="M:BlazorIndexedDb.Commands.SelectActions.#ctor(Microsoft.JSInterop.IJSRuntime,BlazorIndexedDb.Configuration.Settings)">
             <summary>
             Constructor
             </summary>
@@ -226,66 +226,12 @@
             <exception cref="T:BlazorIndexedDb.Models.ResponseException"></exception>
             <returns></returns>
         </member>
-        <member name="M:BlazorIndexedDb.Commands.SelectActions.SingleRecord``1(System.Int32)">
-            <summary>
-            Get a single record from store model
-            </summary>
-            <typeparam name="TModel">Table or store to use</typeparam>
-            <param name="id">column to compare</param>
-            <exception cref="T:BlazorIndexedDb.Models.ResponseException"></exception>
-            <returns></returns>
-        </member>
-        <member name="M:BlazorIndexedDb.Commands.SelectActions.SingleRecord``1(System.Double)">
-            <summary>
-            Get a single record from store model
-            </summary>
-            <typeparam name="TModel">Table or store to use</typeparam>
-            <param name="id">column to compare</param>
-            <exception cref="T:BlazorIndexedDb.Models.ResponseException"></exception>
-            <returns></returns>
-        </member>
-        <member name="M:BlazorIndexedDb.Commands.SelectActions.SingleRecord``1(System.Decimal)">
-            <summary>
-            Get a single record from store model
-            </summary>
-            <typeparam name="TModel">Table or store to use</typeparam>
-            <param name="id">column to compare</param>
-            <exception cref="T:BlazorIndexedDb.Models.ResponseException"></exception>
-            <returns></returns>
-        </member>
-        <member name="M:BlazorIndexedDb.Commands.SelectActions.SingleRecord``1(System.Int64)">
-            <summary>
-            Get a single record from store model
-            </summary>
-            <typeparam name="TModel">Table or store to use</typeparam>
-            <param name="id">column to compare</param>
-            <exception cref="T:BlazorIndexedDb.Models.ResponseException"></exception>
-            <returns></returns>
-        </member>
-        <member name="M:BlazorIndexedDb.Commands.SelectActions.SingleRecord``1(System.String)">
-            <summary>
-            Get a single record from store model
-            </summary>
-            <typeparam name="TModel">Table or store to use</typeparam>
-            <param name="id">column to compare</param>
-            <exception cref="T:BlazorIndexedDb.Models.ResponseException"></exception>
-            <returns></returns>
-        </member>
-        <member name="M:BlazorIndexedDb.Commands.SelectActions.SingleRecord``1(System.DateTime)">
-            <summary>
-            Get a single record from store model
-            </summary>
-            <typeparam name="TModel">Table or store to use</typeparam>
-            <param name="id">column to compare</param>
-            <exception cref="T:BlazorIndexedDb.Models.ResponseException"></exception>
-            <returns></returns>
-        </member>
         <member name="T:BlazorIndexedDb.Commands.TableActions">
             <summary>
             Manage tables
             </summary>
         </member>
-        <member name="M:BlazorIndexedDb.Commands.TableActions.#ctor(Microsoft.JSInterop.IJSObjectReference,BlazorIndexedDb.Configuration.Settings)">
+        <member name="M:BlazorIndexedDb.Commands.TableActions.#ctor(Microsoft.JSInterop.IJSRuntime,BlazorIndexedDb.Configuration.Settings)">
             <summary>
             Constructor
             </summary>
@@ -313,7 +259,7 @@
             Update commands
             </summary>
         </member>
-        <member name="M:BlazorIndexedDb.Commands.UpdateActions.#ctor(Microsoft.JSInterop.IJSObjectReference,BlazorIndexedDb.Configuration.Settings)">
+        <member name="M:BlazorIndexedDb.Commands.UpdateActions.#ctor(Microsoft.JSInterop.IJSRuntime,BlazorIndexedDb.Configuration.Settings)">
             <summary>
             Constructor
             </summary>
@@ -374,12 +320,17 @@
             <param name="version">database version</param>
             <returns></returns>
         </member>
+        <member name="M:BlazorIndexedDb.Configuration.InitializeDatabase.GetJsReference">
+            <summary>
+            Initialize the connection with a indexedDb
+            </summary>
+        </member>
         <member name="T:BlazorIndexedDb.Configuration.Settings">
             <summary>
             Configuration class to setup a IndexedDb in a browser
             </summary>
         </member>
-        <member name="P:BlazorIndexedDb.Configuration.Settings.ModelsAsJson">
+        <member name="P:BlazorIndexedDb.Configuration.Settings.DataBaseModelAsJson">
             <summary>
             Save a copy of how is the tables definition in JSON to send to the Javasctipt to compare the models
             </summary>
@@ -419,16 +370,6 @@
         <member name="P:BlazorIndexedDb.Configuration.Settings.Tables">
             <summary>
             Names about the models to use
-            </summary>
-        </member>
-        <member name="P:BlazorIndexedDb.Configuration.Settings.Initialized">
-            <summary>
-            Know if the instance of a indexDb it's already initialized
-            </summary>
-        </member>
-        <member name="P:BlazorIndexedDb.Configuration.Settings.Initiallezed">
-            <summary>
-            Know if the instance of a indexDb it's already initialized
             </summary>
         </member>
         <member name="T:BlazorIndexedDb.DependencyContainer">
@@ -686,18 +627,6 @@
             Initialize the connection with a indexedDb
             </summary>
         </member>
-        <member name="M:BlazorIndexedDb.Store.StoreContext`1.DisposeAsync">
-            <summary>
-             Implementation of IAsyncDisposable.DisposeAsync()
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:BlazorIndexedDb.Store.StoreContext`1.DisposeAsyncCore">
-            <summary>
-            Implementation of IAsyncDisposable.DisposeAsync()
-            </summary>
-            <returns></returns>
-        </member>
         <member name="T:BlazorIndexedDb.Store.StoreNames">
             <summary>
             Encapsulate manage tables and model for the database
@@ -765,12 +694,26 @@
             Class represent
             </summary>
         </member>
-        <member name="M:BlazorIndexedDb.Store.StoreSet`1.#ctor(Microsoft.JSInterop.IJSObjectReference,BlazorIndexedDb.Configuration.Settings)">
+        <member name="M:BlazorIndexedDb.Store.StoreSet`1.#ctor(Microsoft.JSInterop.IJSRuntime,BlazorIndexedDb.Configuration.Settings)">
             <summary>
             Constructor to get the connection
             </summary>
             <param name="js"></param>
             <param name="setup"></param>
+        </member>
+        <member name="M:BlazorIndexedDb.Store.StoreSet`1.SelectAsync(System.Func{`0,System.Boolean})">
+            <summary>
+            Get a list with the content about the store model
+            </summary>       
+            <param name="query">Query</param>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Store.StoreSet`1.GetAsync(System.Func{`0,System.Boolean})">
+            <summary>
+            Get a single record from store model
+            </summary>
+            <param name="query">Query</param>
+            <returns></returns>
         </member>
         <member name="M:BlazorIndexedDb.Store.StoreSet`1.SelectAsync">
             <summary>
@@ -778,49 +721,49 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:BlazorIndexedDb.Store.StoreSet`1.SelectAsync(System.Object)">
+        <member name="M:BlazorIndexedDb.Store.StoreSet`1.GetAsync(System.Object)">
             <summary>
             Get a single record from store model
             </summary>
             <param name="id">primary key id to search</param>
             <returns></returns>
         </member>
-        <member name="M:BlazorIndexedDb.Store.StoreSet`1.SelectAsync(System.Int32)">
+        <member name="M:BlazorIndexedDb.Store.StoreSet`1.GetAsync(System.Int32)">
             <summary>
             Get a single record from store model
             </summary>
             <param name="id">primary key id to search</param>
             <returns></returns>
         </member>
-        <member name="M:BlazorIndexedDb.Store.StoreSet`1.SelectAsync(System.Double)">
+        <member name="M:BlazorIndexedDb.Store.StoreSet`1.GetAsync(System.Double)">
             <summary>
             Get a single record from store model
             </summary>
             <param name="id">primary key id to search</param>
             <returns></returns>
         </member>
-        <member name="M:BlazorIndexedDb.Store.StoreSet`1.SelectAsync(System.Decimal)">
+        <member name="M:BlazorIndexedDb.Store.StoreSet`1.GetAsync(System.Decimal)">
             <summary>
             Get a single record from store model
             </summary>
             <param name="id">primary key id to search</param>
             <returns></returns>
         </member>
-        <member name="M:BlazorIndexedDb.Store.StoreSet`1.SelectAsync(System.Int64)">
+        <member name="M:BlazorIndexedDb.Store.StoreSet`1.GetAsync(System.Int64)">
             <summary>
             Get a single record from store model
             </summary>
             <param name="id">primary key id to search</param>
             <returns></returns>
         </member>
-        <member name="M:BlazorIndexedDb.Store.StoreSet`1.SelectAsync(System.String)">
+        <member name="M:BlazorIndexedDb.Store.StoreSet`1.GetAsync(System.String)">
             <summary>
             Get a single record from store model
             </summary>
             <param name="id">primary key id to search</param>
             <returns></returns>
         </member>
-        <member name="M:BlazorIndexedDb.Store.StoreSet`1.SelectAsync(System.DateTime)">
+        <member name="M:BlazorIndexedDb.Store.StoreSet`1.GetAsync(System.DateTime)">
             <summary>
             Get a single record from store model
             </summary>
