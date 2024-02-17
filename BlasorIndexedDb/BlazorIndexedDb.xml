@@ -721,6 +721,55 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:BlazorIndexedDb.Store.StoreSet`1.SelectAsync(System.Object)">
+            <summary>
+            Get a single record from store model
+            </summary>
+            <param name="id">primary key id to search</param>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Store.StoreSet`1.SelectAsync(System.Int32)">
+            <summary>
+            Get a single record from store model
+            </summary>
+            <param name="id">primary key id to search</param>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Store.StoreSet`1.SelectAsync(System.Double)">
+            <summary>
+            Get a single record from store model
+            </summary>
+            <param name="id">primary key id to search</param>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Store.StoreSet`1.SelectAsync(System.Decimal)">
+            <summary>
+            Get a single record from store model
+            </summary>
+            <param name="id">primary key id to search</param>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Store.StoreSet`1.SelectAsync(System.Int64)">
+            <summary>
+            Get a single record from store model
+            </summary>
+            <param name="id">primary key id to search</param>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Store.StoreSet`1.SelectAsync(System.String)">
+            <summary>
+            Get a single record from store model
+            </summary>
+            <param name="id">primary key id to search</param>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Store.StoreSet`1.SelectAsync(System.DateTime)">
+            <summary>
+            Get a single record from store model
+            </summary>
+            <param name="id">primary key id to search</param>
+            <returns></returns>
+        </member>
         <member name="M:BlazorIndexedDb.Store.StoreSet`1.GetAsync(System.Object)">
             <summary>
             Get a single record from store model
