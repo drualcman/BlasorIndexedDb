@@ -2,7 +2,7 @@
 internal class InitializeDatabase
 {
     readonly Lazy<Task<IJSObjectReference>> ModuleTask;
-    private static bool IsInitilized;
+    private static List<string> DatabaseModels = new List<string>();
 
     public InitializeDatabase(IJSRuntime js)
     {
@@ -21,27 +21,33 @@ internal class InitializeDatabase
     internal async Task<IJSObjectReference> GetJsReference() 
     {
         if (Settings.EnableDebug)
-            Console.WriteLine($"InitializeDatabase GetJsReference => Is Initialized {IsInitilized}");
+            Console.WriteLine($"InitializeDatabase GetJsReference => Is Initialized {IsInitilized(Settings.DataBaseModelAsJson)}");
         IJSObjectReference jsReference = await ModuleTask.Value;
-        if (!IsInitilized)
+        if (!IsInitilized(Settings.DataBaseModelAsJson))
         {
             try
             {
                 await jsReference.InvokeVoidAsync("MyDb.Init", Settings.DataBaseModelAsJson);
-                IsInitilized = true;
+                DatabaseModels.Add(Settings.DataBaseModelAsJson);
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
-                IsInitilized = false;
                 throw;
             }
         }
         return jsReference;
     }
 
+    bool IsInitilized(string model) 
+    {
+        if(DatabaseModels.Contains(model)) return true;
+        else return false;
+    }
+
     internal static async Task<IJSObjectReference> GetIJSObjectReference(IJSRuntime js)
     {
+        if (Settings.EnableDebug) Console.WriteLine($"InitializeDatabase.GetIJSObjectReference");
         InitializeDatabase initializeDatabase = new InitializeDatabase(js);
         return await initializeDatabase.GetJsReference();
     }
