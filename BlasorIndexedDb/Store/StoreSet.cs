@@ -60,6 +60,69 @@
         /// </summary>
         /// <param name="id">primary key id to search</param>
         /// <returns></returns>
+        [Obsolete("Please use GetAcync")]
+        public async Task<TModel> SelectAsync(object id) =>
+            await SelectActions.SingleRecord<TModel>(id);
+
+        /// <summary>
+        /// Get a single record from store model
+        /// </summary>
+        /// <param name="id">primary key id to search</param>
+        /// <returns></returns>   
+        [Obsolete("Please use GetAcync")]
+        public async Task<TModel> SelectAsync(int id) =>
+            await SelectActions.SingleRecord<TModel>(id);
+
+        /// <summary>
+        /// Get a single record from store model
+        /// </summary>
+        /// <param name="id">primary key id to search</param>
+        /// <returns></returns>  
+        [Obsolete("Please use GetAcync")]
+        public async Task<TModel> SelectAsync(double id) =>
+            await SelectActions.SingleRecord<TModel>(id);
+
+        /// <summary>
+        /// Get a single record from store model
+        /// </summary>
+        /// <param name="id">primary key id to search</param>
+        /// <returns></returns> 
+        [Obsolete("Please use GetAcync")]
+        public async Task<TModel> SelectAsync(decimal id) =>
+            await SelectActions.SingleRecord<TModel>(id);
+
+        /// <summary>
+        /// Get a single record from store model
+        /// </summary>
+        /// <param name="id">primary key id to search</param>
+        /// <returns></returns> 
+        [Obsolete("Please use GetAcync")]
+        public async Task<TModel> SelectAsync(long id) =>
+            await SelectActions.SingleRecord<TModel>(id);
+
+        /// <summary>
+        /// Get a single record from store model
+        /// </summary>
+        /// <param name="id">primary key id to search</param>
+        /// <returns></returns>  
+        [Obsolete("Please use GetAcync")]
+        public async Task<TModel> SelectAsync(string id) =>
+            await SelectActions.SingleRecord<TModel>(id);
+
+        /// <summary>
+        /// Get a single record from store model
+        /// </summary>
+        /// <param name="id">primary key id to search</param>
+        /// <returns></returns>   
+        [Obsolete("Please use GetAcync")]
+        public async Task<TModel> SelectAsync(DateTime id) =>
+            await SelectActions.SingleRecord<TModel>(id);
+        
+        /// <summary>
+        /// Get a single record from store model
+        /// </summary>
+        /// <param name="id">primary key id to search</param>
+        /// <returns></returns>
         public async Task<TModel> GetAsync(object id) =>
             await SelectActions.SingleRecord<TModel>(id);
 
