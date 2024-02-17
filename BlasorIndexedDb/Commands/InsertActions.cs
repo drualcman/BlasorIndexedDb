@@ -58,7 +58,7 @@
                 if (c > 0)
                 {
                     List<ResponseJsDb> response = await Commands.DbCommand(DbCommands.Insert, Setup.Tables.GetTable<TModel>(), await ObjectConverter.ToJsonAsync(rows));
-                    if (Settings.EnableDebug) Console.WriteLine($"Insert response is null {response == null}");
+                    if (Settings.EnableDebug) Console.WriteLine($"{Setup.DBName} => Insert response is null {response == null}");
                     bool allGood = false;
                     int i = 0;
                     if (response != null)
@@ -88,11 +88,11 @@
                                 {
                                     if (ObjectConverter.IsGenericList(properties[a].GetValue(rows[i])))
                                     {
-                                        Console.WriteLine("esto es una lista que tendremos que recorrer");
+                                        Console.WriteLine($"{Setup.DBName} => esto es una lista que tendremos que recorrer");
                                     }
                                     else
                                     {
-                                        if (Settings.EnableDebug) Console.WriteLine($"Add to the store {properties[a].PropertyType.Name} the value from the property {properties[a].Name}");
+                                        if (Settings.EnableDebug) Console.WriteLine($"{Setup.DBName} => Add to the store {properties[a].PropertyType.Name} the value from the property {properties[a].Name}");
                                         //is single object add the data to the corresponding store
                                         result.AddRange(await Commands.DbCommand(DbCommands.Insert, properties[a].PropertyType.Name, await ObjectConverter.ToJsonAsync(properties[a].GetValue(rows[i]))));
                                     }
@@ -104,21 +104,21 @@
                 }
                 else
                 {
-                    if (Settings.EnableDebug) Console.WriteLine($"DbInsert No need insert into {Setup.Tables.GetTable<TModel>()}");
+                    if (Settings.EnableDebug) Console.WriteLine($"{Setup.DBName} => DbInsert No need insert into {Setup.Tables.GetTable<TModel>()}");
                         result = new List<ResponseJsDb>{
-                            new ResponseJsDb { Result = true, Message = $"No need insert into {Setup.Tables.GetTable<TModel>()}!" }
+                            new ResponseJsDb { Result = true, Message = $"{Setup.DBName} => No need insert into {Setup.Tables.GetTable<TModel>()}!" }
                         };
                 }
                 return result;
             }
             catch (ResponseException ex)
             {
-                if (Settings.EnableDebug) Console.WriteLine($"DbInsert Model: {Setup.Tables.GetTable<TModel>()} ResponseException: {ex.Message}");
+                if (Settings.EnableDebug) Console.WriteLine($"{Setup.DBName} => DbInsert Model: {Setup.Tables.GetTable<TModel>()} ResponseException: {ex.Message}");
                 throw;
             }
             catch (Exception ex)
             {
-                if (Settings.EnableDebug) Console.WriteLine($"DbInsert Model: {Setup.Tables.GetTable<TModel>()} Exception: {ex.Message}");
+                if (Settings.EnableDebug) Console.WriteLine($"{Setup.DBName} => DbInsert Model: {Setup.Tables.GetTable<TModel>()} Exception: {ex.Message}");
                 throw new ResponseException(nameof(DbInsert), typeof(TModel).Name, ex.Message, ex);
             }
 
@@ -151,12 +151,12 @@
             try
             {
                 List<dynamic> expanded = await AddOflineProperty.AddOfflineAsync(rows);
-                if (Settings.EnableDebug) Console.WriteLine($"DbInserOffline in model: {Setup.Tables.GetTable<TModel>()}");
+                if (Settings.EnableDebug) Console.WriteLine($"{Setup.DBName} => DbInserOffline in model: {Setup.Tables.GetTable<TModel>()}");
                 return await DbInsert(expanded);
             }
             catch (ResponseException ex)
             {
-                if (Settings.EnableDebug) Console.WriteLine($"DbInsert Model: {Setup.Tables.GetTable<TModel>()} Error: {ex.Message}");
+                if (Settings.EnableDebug) Console.WriteLine($"{Setup.DBName} => DbInsert Model: {Setup.Tables.GetTable<TModel>()} Error: {ex.Message}");
                 throw;
             }
             catch (Exception ex)

@@ -22,7 +22,7 @@
         public StoreContext(IJSRuntime js, Settings settings)
         {
             if(Settings.EnableDebug)
-                Console.WriteLine($"StoreContext constructor with settings");
+                Console.WriteLine($"{settings.DBName} => StoreContext constructor with settings");
             Setup = settings;
             Initalizing<TStore> initalizing = new Initalizing<TStore>(Setup);
             initalizing.DbInit();

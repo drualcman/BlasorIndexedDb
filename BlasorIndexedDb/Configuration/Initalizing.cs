@@ -45,7 +45,7 @@
             }
             Setup.DBName = name;
             Setup.Version = version;
-            if (Settings.EnableDebug) Console.WriteLine($"DbInit initializing...");
+            if (Settings.EnableDebug) Console.WriteLine($"{Setup.DBName} => DbInit initializing...");
 
             string model = $@"{{
                                 ""name"": ""{name}"",
@@ -68,7 +68,7 @@
                 bool haveTables = false;
                 foreach (PropertyInfo item in storeSets)
                 {
-                    if (Settings.EnableDebug) Console.WriteLine($"table name {item.Name}");
+                    if (Settings.EnableDebug) Console.WriteLine($"{Setup.DBName} => table name {item.Name}");
                     string tableName = item.Name;
                     Setup.Tables.AddTable(tableName, item.PropertyType.GetGenericArguments()[0].Name);
                     StringBuilder tableModels = new StringBuilder();
@@ -199,17 +199,17 @@
                 }
                 else
                 {
-                    if (Settings.EnableDebug) Console.WriteLine("No tables in a DB Model = {0}", model);
+                    if (Settings.EnableDebug) Console.WriteLine("{0} => No tables in a DB Model = {1}", Setup.DBName, model);
                 }
             }
             catch (Exception ex)
             {
-                if (Settings.EnableDebug) Console.WriteLine("DbInit exception {0}", ex.Message);
+                if (Settings.EnableDebug) Console.WriteLine("{0} => DbInit exception {1}", Setup.DBName, ex.Message);
             }
             finally
             {
                 if (Settings.EnableDebug)
-                    Console.WriteLine("DbInit DB Model = {0}", model);
+                    Console.WriteLine("{0} => DbInit DB Model = {1}", Setup.DBName, model);
             }
 
         }

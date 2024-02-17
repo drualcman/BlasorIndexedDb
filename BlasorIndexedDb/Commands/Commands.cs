@@ -29,7 +29,7 @@
         /// <returns></returns>
         internal async ValueTask<List<ResponseJsDb>> DbCommand(DbCommands command, string storeName, string data)
         {
-            if(Settings.EnableDebug) Console.WriteLine($"{command} store = {storeName}, data = {data}");
+            if(Settings.EnableDebug) Console.WriteLine($"{Setup.DBName} => {command} store = {storeName}, data = {data}");
             if(string.IsNullOrEmpty(storeName)) throw new ResponseException(command.ToString(), "StoreName can't be null", data);
             else if(string.IsNullOrEmpty(data)) throw new ResponseException(command.ToString(), storeName, "Data can't be null");
             else
@@ -40,7 +40,7 @@
                 }
                 catch(Exception ex)
                 {
-                    if(Settings.EnableDebug) Console.WriteLine($"Exception: {ex.Message}");
+                    if(Settings.EnableDebug) Console.WriteLine($"{Setup.DBName} => Exception: {ex}");
                     throw new ResponseException(command.ToString(), storeName, data, ex);
                 }
             }

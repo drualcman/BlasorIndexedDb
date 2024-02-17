@@ -37,7 +37,7 @@
             }
             catch (Exception ex)
             {
-                if (Settings.EnableDebug) Console.WriteLine($"SelectActions: {ex.Message}");
+                if (Settings.EnableDebug) Console.WriteLine($"{Setup.DBName} => SelectActions exception: {ex}");
                 throw new ResponseException(nameof(DbSelect), Setup.Tables.GetTable<TModel>(), ex.Message, ex);
                 //return null;
             }
@@ -65,7 +65,7 @@
             }
             catch (Exception ex)
             {
-                if (Settings.EnableDebug) Console.WriteLine($"SelectActions: {ex.Message}");
+                if (Settings.EnableDebug) Console.WriteLine($"{Setup.DBName} => SelectActions exception: {ex}");
                 throw new ResponseException(nameof(DbSelect), Setup.Tables.GetTable<TModel>(), ex.Message, ex);
                 //return null;
             }
@@ -90,11 +90,14 @@
             {
                 IJSObjectReference jsRuntime = await InitializeDatabase.GetIJSObjectReference(JS);
                 List<TModel> data = await jsRuntime.InvokeAsync<List<TModel>>("MyDb.SelectId", Setup.Tables.GetTable<TModel>(), id, Setup.DBName, Setup.Version, Setup.ModelsAsJson);
-                return data[0];
+                if (data is not null && data.Any())
+                    return data[0];
+                else
+                    return null;
             }
             catch (Exception ex)
             {
-                if (Settings.EnableDebug) Console.WriteLine($"SelectActions: {ex.Message}");
+                if (Settings.EnableDebug) Console.WriteLine($"{Setup.DBName} => SelectActions exception: {ex}");
                 return null;
             }
         }

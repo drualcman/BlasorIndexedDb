@@ -49,7 +49,7 @@
                 }
                 catch (Exception ex)
                 {
-                    if (Settings.EnableDebug) Console.WriteLine($"DbCleanTable: {name} Error: {ex}");
+                    if (Settings.EnableDebug) Console.WriteLine($"{Setup.DBName} => DbCleanTable: {name} Error: {ex}");
                     result = new List<ResponseJsDb>();
                     result.Add(new ResponseJsDb { Result = false, Message = ex.Message });
                 }

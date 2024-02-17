@@ -29,6 +29,7 @@
         /// <returns></returns>
         internal async ValueTask<ResponseJsDb> DbDelete<TModel>([NotNull] int id)
         {
+            if (Settings.EnableDebug) Console.WriteLine($"{Setup.DBName} => DbDelete Model: {Setup.Tables.GetTable<TModel>()}.");
             try
             {
                 List<ResponseJsDb> result = new List<ResponseJsDb>();
@@ -39,12 +40,12 @@
             }
             catch (ResponseException ex)
             {
-                if (Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
+                if (Settings.EnableDebug) Console.WriteLine($"{Setup.DBName} => DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
                 throw;
             }
             catch (Exception ex)
             {
-                if (Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
+                if (Settings.EnableDebug) Console.WriteLine($"{Setup.DBName} => DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
                 throw new ResponseException(nameof(DbDelete), typeof(TModel).Name, ex.Message, ex);
             }
 
@@ -70,12 +71,12 @@
             }
             catch (ResponseException ex)
             {
-                if (Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
+                if (Settings.EnableDebug) Console.WriteLine($"{Setup.DBName} => DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
                 throw;
             }
             catch (Exception ex)
             {
-                if (Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
+                if (Settings.EnableDebug) Console.WriteLine($"{Setup.DBName} => DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
                 throw new ResponseException(nameof(DbDelete), typeof(TModel).Name, ex.Message, ex);
             }
 
@@ -101,12 +102,12 @@
             }
             catch (ResponseException ex)
             {
-                if (Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
+                if (Settings.EnableDebug) Console.WriteLine($"{Setup.DBName} => DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
                 throw;
             }
             catch (Exception ex)
             {
-                if (Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
+                if (Settings.EnableDebug) Console.WriteLine($"{Setup.DBName} => DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
                 throw new ResponseException(nameof(DbDelete), typeof(TModel).Name, ex.Message, ex);
             }
 
@@ -132,12 +133,12 @@
             }
             catch (ResponseException ex)
             {
-                if (Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
+                if (Settings.EnableDebug) Console.WriteLine($"{Setup.DBName} => DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
                 throw;
             }
             catch (Exception ex)
             {
-                if (Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
+                if (Settings.EnableDebug) Console.WriteLine($"{Setup.DBName} => DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
                 throw new ResponseException(nameof(DbDelete), typeof(TModel).Name, ex.Message, ex);
             }
 
@@ -162,12 +163,12 @@
             }
             catch (ResponseException ex)
             {
-                if (Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
+                if (Settings.EnableDebug) Console.WriteLine($"{Setup.DBName} => DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
                 throw;
             }
             catch (Exception ex)
             {
-                if (Settings.EnableDebug) Console.WriteLine($"DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
+                if (Settings.EnableDebug) Console.WriteLine($"{Setup.DBName} => DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
                 throw new ResponseException(nameof(DbDelete), typeof(TModel).Name, ex.Message, ex);
             }
 
