@@ -15,7 +15,7 @@
         /// <summary>
         /// Database name
         /// </summary>
-        internal string DBName
+        public string DBName
         {
             get { return DbName_BK; }
             set { DbName_BK = string.IsNullOrEmpty(value) ? AppDomain.CurrentDomain.FriendlyName : value; }
@@ -23,7 +23,7 @@
         /// <summary>
         /// Version of the database
         /// </summary>
-        internal int Version { get; set; }
+        public int Version { get; set; }
         /// <summary>
         /// Assembly name to search the entities
         /// </summary>
