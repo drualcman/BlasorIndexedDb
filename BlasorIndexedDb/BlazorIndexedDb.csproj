@@ -1,56 +1,60 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.6.33</Version>
-    <Authors>Sergi Ortiz Gomez</Authors>
-    <Company>DrUalcman</Company>
-    <Description>Manage IndexedDb from Blazor WebAssembly applications. Create a StoreDbContext similar how is working in EF. Please report any bug or changes you need using our contact form in the web site. Thanks.</Description>
-    <Copyright>Free</Copyright>
-    <PackageLicenseFile>License.txt</PackageLicenseFile>
-    <PackageTags>webassembly, blazor, indexedDb, interop, javascript, database</PackageTags>
-    <PackageReleaseNotes>Fixed crush browser if add big data. Avoid possible cache issue with update nuget about Javascrip file dependencies.</PackageReleaseNotes>
-    <RepositoryUrl>https://github.com/drualcman/BlasorIndexedDb</RepositoryUrl>
-    <RepositoryType>Git</RepositoryType>
-    <PackageId>DrUalcman-BlazorIndexedDb</PackageId>
-    <Product>BlazorIndexedDb</Product>
-    <PackageProjectUrl>https://blazorindexdb.community-mall.com/</PackageProjectUrl>
-    <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-    <AssemblyName>DrUalcman-BlazorIndexedDb</AssemblyName>
-    <RootNamespace>BlazorIndexedDb</RootNamespace>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
-    <AnalysisLevel>6.0</AnalysisLevel>
-    <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
-    <ErrorReport>send</ErrorReport>
-    <GenerateDocumentationFile>True</GenerateDocumentationFile>
-    <Nullable>disable</Nullable>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<Version>1.6.35</Version>
+		<Authors>Sergi Ortiz Gomez</Authors>
+		<Company>DrUalcman</Company>
+		<Description>Manage IndexedDb from Blazor WebAssembly applications. Create a StoreDbContext similar how is working in EF. Please report any bug or changes you need using our contact form in the web site. Thanks.</Description>
+		<Copyright>Free</Copyright>
+		<PackageLicenseFile>License.txt</PackageLicenseFile>
+		<PackageTags>webassembly, blazor, indexedDb, interop, javascript, database</PackageTags>
+		<PackageReleaseNotes>Add function delegate in select and get to search from any property in the model. Improvements how to load javascript file. Depreciated UseBlazorIndexedDbContext because is not longer in use with new Javascript management. Update nugets to last version and target all supported NET Frameworks.</PackageReleaseNotes>
+		<RepositoryUrl>https://github.com/drualcman/BlasorIndexedDb</RepositoryUrl>
+		<RepositoryType>Git</RepositoryType>
+		<PackageId>DrUalcman-BlazorIndexedDb</PackageId>
+		<Product>BlazorIndexedDb</Product>
+		<PackageProjectUrl>https://blazorindexdb.community-mall.com/</PackageProjectUrl>
+		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+		<AssemblyName>DrUalcman-BlazorIndexedDb</AssemblyName>
+		<RootNamespace>BlazorIndexedDb</RootNamespace>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<AnalysisLevel>6.0</AnalysisLevel>
+		<EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
+		<ErrorReport>send</ErrorReport>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+		<Nullable>disable</Nullable>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>C:\DrUalcman\BlasorIndexedDb\BlasorIndexedDb\BlazorIndexedDb.xml</DocumentationFile>
-    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<DocumentationFile>C:\DrUalcman\BlasorIndexedDb\BlasorIndexedDb\BlazorIndexedDb.xml</DocumentationFile>
+		<GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+	</PropertyGroup>
 
-  
-  <ItemGroup>
-    <SupportedPlatform Include="browser" />
-  </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.15" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.15" />
-  </ItemGroup>
+	<ItemGroup>
+		<SupportedPlatform Include="browser" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <None Include="..\README.md">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
-    <None Include="License.txt">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.27" Condition="'$(TargetFramework)' == 'net6.0'" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.27" Condition="'$(TargetFramework)' == 'net6.0'"/>
+		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.16" Condition="'$(TargetFramework)' == 'net7.0'" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="7.0.16" Condition="'$(TargetFramework)' == 'net7.0'"/>
+		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.2" Condition="'$(TargetFramework)' == 'net8.0'" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.2" Condition="'$(TargetFramework)' == 'net8.0'"/>
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="..\README.md">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+		<None Include="License.txt">
+			<Pack>True</Pack>
+			<PackagePath></PackagePath>
+		</None>
+	</ItemGroup>
 
 </Project>

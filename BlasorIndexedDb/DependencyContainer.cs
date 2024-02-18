@@ -38,6 +38,7 @@ public static class DependencyContainer
     /// <typeparam name="TContext"></typeparam>
     /// <param name="app"></param>
     /// <returns></returns>
+    [Obsolete("Not longer in use.")]
     public static async Task<WebAssemblyHost> UseBlazorIndexedDbContext<TContext>(this WebAssemblyHost app) where TContext : StoreContext<TContext>
     {
         StoreContext<TContext> context = app.Services.GetRequiredService<TContext>();

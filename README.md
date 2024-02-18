@@ -72,14 +72,10 @@ public class Program
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
             builder.RootComponents.Add<App>("#app");
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
-            //INJECT THE DBContext
+            //INJECT THE DBContext or use your implementation
             builder.AddBlazorIndexedDbContext<DBContext>();
 
             var app = builder.Build();
-
-            //USE THE CONTEXT, if you are using more than one CONTEXT repeat per each context you are using
-            await app.UseBlazorIndexedDbContext<DBContext>();
-
             await app.RunAsync();
         }
     }
