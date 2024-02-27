@@ -3,10 +3,12 @@ class jsDB {
     DB_VERSION = 1;        //db version
     MODELS;                //Table model definitions
     constructor(dbModel) {
+        console.info('Database jsDB constructor');
         if (!this.OpenDB()) {
             throw "IndexedDB not compatible!"
         }
         else {
+            console.info(`Database creating: ${dbModel.name}`);
             if (dbModel.name) {
                 this.DB_NAME = dbModel.name;
                 this.DB_VERSION = dbModel.version;
@@ -65,8 +67,8 @@ class jsDB {
                     else throw "No tables defined.";
                 };
                 dbconnect.onerror = e => {
-                    console.warn(e.target.error.message);
-                    throw e.target.error.message;
+                    console.warn(`${this.DB_NAME} => Connection Error: ${e.target.error.message}`);
+                    throw [this.SetResponse(false, `${this.DB_NAME} => Connection Error: ${e.target.error.message}`)];
                 }
                 dbconnect.onsuccess = () => {
                     return;
@@ -83,7 +85,7 @@ class jsDB {
             const dbconnect = window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB || window.OIndexedDB || window.msIndexedDB
             return dbconnect;
         } catch (error) {
-            throw [this.SetResponse(false, error.message)];
+            throw [this.SetResponse(false, `Not suported indexedDb ${error.message}`)];
         }
     }
     /**
@@ -95,7 +97,7 @@ class jsDB {
         return { Result: r, Message: m };
     }
     /**
-     * Return true or false if the key exist into the object send
+     * Return true or false if the key exist info the object send
      * @param {object} obj 
      * @param {string} val 
      */
@@ -114,7 +116,7 @@ class jsDB {
     /**
      * Merge all properties from 2 objects. Can't have object inside object.
      * @param {object} obj1 object model with the fields
-     * @param {object} obj2 object with the data to add into the model
+     * @param {object} obj2 object with the data to add info the model
      */
     MergeObjects(obj1, obj2) {
         var obj3 = {};
@@ -241,8 +243,8 @@ class jsDB {
                             const request = store.getAll();
                             request.onerror = ev => {
                                 db.close();
-                                resolve([context.SetResponse(false, ev.target.error.message)]);
-                                console.warn(ev.target.error.message);
+                                resolve([context.SetResponse(false, `${table}: ${ev.target.error.message}`)]);
+                                console.warn(`${table}: ${ev.target.error.message}`);
                             };
                             request.onsuccess = ev => {
                                 db.close();
@@ -250,12 +252,12 @@ class jsDB {
                             };
                         } catch (e) {
                             db.close();
-                            error([context.SetResponse(false, e.message)]);
-                            console.warn(e.message);
+                            error([context.SetResponse(false, `${table}: ${e.message}`)]);
+                            console.warn(`${table}: ${e.message}`);
                         }
                     }
                     dbconnect.onerror = function (e) {
-                        console.warn(e.message);
+                        console.warn(`${table}: ${e.message}`);
                     }
                 }
             });
@@ -282,8 +284,8 @@ class jsDB {
                         const request = store.getAll(id);
                         request.onerror = ev => {
                             db.close();
-                            resolve([context.SetResponse(false, ev.target.error.message)]);
-                            console.warn(ev.target.error.message);
+                            resolve([context.SetResponse(false, `${table}.${id}: ${ev.target.error.message}`)]);
+                            console.warn(`${table},${id}: ${ev.target.error.message}`);
                         };
                         request.onsuccess = () => {
                             db.close();
@@ -291,7 +293,7 @@ class jsDB {
                         }
                     } catch (e) {
                         db.close();
-                        error([context.SetResponse(false, e.message)]);
+                        error([context.SetResponse(false, `${table}.${id}: ${e.message}`)]);
                     }
                 }
             }
@@ -318,8 +320,8 @@ class jsDB {
                         const request = index.getAll(value);
                         request.onerror = ev => {
                             db.close();
-                            resolve([context.SetResponse(false, ev.target.error.message)]);
-                            console.warn(ev.target.error.message);
+                            resolve([context.SetResponse(false, `${table}.${column}.${value}: ${ev.target.error.message}`)]);
+                            console.warn(`${table}.${column}.${value}: ${ev.target.error.message}`);
                         };
                         request.onsuccess = () => {
                             db.close();
@@ -327,8 +329,8 @@ class jsDB {
                         }
                     } catch (e) {
                         db.close();
-                        error([context.SetResponse(false, e.message)]);
-                        console.warn(e.message);
+                        error([context.SetResponse(false, `${table}.${column}.${value}: ${e.message}`)]);
+                        console.warn(`${table}.${column}.${value}: ${e.message}`);
                     }
                 }
             }
@@ -336,7 +338,7 @@ class jsDB {
 
     }
     /**
-     * Insert data into a table. Alway return a JSON response
+     * Insert data info a table. Alway return a JSON response
      * @param {string} table table name
      * @param {JSON} data data with the model format to insert
      */
@@ -374,8 +376,8 @@ class jsDB {
                                             }
                                             toAdd.push(o);
                                         } catch (e) {
-                                            transactionResult.push(context.SetResponse(false, e.message));
-                                            console.warn(e.message);
+                                            transactionResult.push(context.SetResponse(false, `Insert => ${table}: ${e.message}`));
+                                            console.warn(`Insert => ${table}: ${e.message}`);
                                         }
                                 }
                             });
@@ -401,14 +403,14 @@ class jsDB {
                                         };
                                     } catch (e) {
                                         db.close();
-                                        transactionResult.push(context.SetResponse(false, e.message));
-                                        console.warn(e.message);
+                                        transactionResult.push(context.SetResponse(false, `Insert => ${table}: ${e.message}`));
+                                        console.warn(`Insert => ${table}: ${e.message}`);
                                     }
                                 };
                             }
                             resolve(data.length);
                         } catch (e) {
-                            error([context.SetResponse(false, e.message)]);
+                            error([context.SetResponse(false, `Insert => ${table}: ${e.message}`)]);
                         }
                     });
 
@@ -418,15 +420,15 @@ class jsDB {
                         }, rows * 50);
                     }, bad);
                 } catch (e) {
-                    bad([context.SetResponse(false, e.message)]);
+                    bad([context.SetResponse(false, `Insert => ${table}: ${e.message}`)]);
                 }
             }
         });
 
     }
     /**
-     * Update data into the table. The data always must be content all the columns, 
-     * if not the function retrieve the actual data to keep always same data into a table. 
+     * Update data info the table. The data always must be content all the columns, 
+     * if not the function retrieve the actual data to keep always same data info a table. 
      * Alway return a JSON response
      * @param {string} table table name
      * @param {JSON} data data with the model format to update
@@ -491,15 +493,15 @@ class jsDB {
                                             };
 
                                         } catch (e) {
-                                            transactionResult.push(context.SetResponse(false, e.message));
-                                            console.warn(e.message);
+                                            transactionResult.push(context.SetResponse(false, `Update => ${table}: ${e.message}`));
+                                            console.warn(`Update => ${table}: ${e.message}`);
                                         }
                                     }
                                 });                               
                             }
                             resolve(data.length);
                         } catch (e) {
-                            error([context.SetResponse(false, e.message)]);
+                            error([context.SetResponse(false, `Update => ${table}: ${e.message}`)]);
                         }
                     });
                     result.then(function (rows) {
@@ -508,7 +510,7 @@ class jsDB {
                         }, rows * 50);
                     }, bad);
                 } catch (e) {
-                    bad([context.SetResponse(false, e.message)]);
+                    bad([context.SetResponse(false, `Update => ${table}: ${e.message}`)]);
                 }
             }
         });
@@ -541,8 +543,8 @@ class jsDB {
                         };
                     } catch (e) {
                         db.close();
-                        error([context.SetResponse(false, e.message)]);
-                        console.warn(e);
+                        error([context.SetResponse(false, `Delete => ${table}: ${e.message}`)]);
+                        console.warn(`Delete => ${table}: ${e.message}`);
                     }
                 };
             }
@@ -566,16 +568,16 @@ class jsDB {
                         store.clear();
                         transaction.oncomplete = () => {
                             db.close();
-                            resolve([context.SetResponse(true, `Table ${table} is empty`)]);
+                            resolve([context.SetResponse(true, `Table ${table} are empty`)]);
                         };
                         transaction.onerror = ev => {
                             db.close();
-                            resolve([context.SetResponse(false, ev.target.error.message)]);
+                            resolve([context.SetResponse(false, `Clean => ${table}: ${ev.target.error.message}`)]);
                             console.warn(ev.target.error.message);
                         };
                     } catch (e) {
                         db.close();
-                        error([context.SetResponse(false, e.message)]);
+                        error([context.SetResponse(false, `Clean => ${table}: ${e.message}`)]);
                         console.warn(e);
                     }
                 };
@@ -583,39 +585,34 @@ class jsDB {
         });
     }
     /**
-     * Drop a table. Alway return a JSON response
+     * Drop a database.
      * @param {string} table table name
      */
-    Drop(table) {
-        return this.Clean(table);
-        // const context = this;
-        // return new Promise(function (resolve, error) {
-        //     const dbconnect = context.OpenDB().open(context.DB_NAME, context.DB_VERSION + 1);
-        //     dbconnect.onupgradeneeded = ev => {
-        //         var db = dbconnect.result;
-        //         db.deleteObjectStore(table);          
-        //         db.close();
-        //     };
-        //     dbconnect.onsuccess = function () {     
-        //         const dbconnectw = context.OpenDB().open(context.DB_NAME, context.DB_VERSION);    
-        //         dbconnectw.onupgradeneeded = ev => {
-        //             var db = dbconnectw.result;         
-        //             db.close();
-        //         };      
-        //         dbconnectw.onsuccess = function () {   
-        //             resolve([context.SetResponse(true, 'Drop done!')]);
-        //         };
-        //         dbconnectw.onerror = function (ev) {               
-        //             resolve([context.SetResponse(false, ev.target.error.message)]);
-        //         };
-        //     };
-        //     dbconnect.onerror = function (ev) {               
-        //         error([context.SetResponse(false, ev.target.error.message)]);
-        //     };
-        // });
+    Drop(database) {
+        const context = this;
+        return new Promise(function (resolve, error) {
+            if (database == null) error(context.SetResponse(false, 'Not database name selected'));
+            else {
+                const dbconnect = context.OpenDB();
+                const request = dbconnect.deleteDatabase(database);
+
+                request.onsuccess = function (event) {
+                    resolve(context.SetResponse(true, `Database ${database} are drop`));
+                };
+
+                request.onerror = function (event) {
+                    error(context.SetResponse(false, `Drop => ${database}: ${event.target.error}`));
+                    console.warn(`Drop => ${database}: ${event.target.error}`);
+                };
+
+                request.onblocked = function (event) {
+                    error(context.SetResponse(false, `Databse ${database} blocked. ${event.target.error}`));
+                };
+            }
+        });
     }
     /**
-     * To store files into a db for compatibility with most of the browsers
+     * To store files info a db for compatibility with most of the browsers
      * @param {bytes} buffer file buffer
      * @param {string} type file type
      */
@@ -645,7 +642,15 @@ let Conn = (function () {
          * Initializing instance of a DB with a models send
          * @param {any} dbModel
         */
-        Init: (dbModel) => db = new jsDB(JSON.parse(dbModel)),
+        Init: (dbModel) => new Promise(function (ok, bad) {
+            try {
+                db = new jsDB(JSON.parse(dbModel));                
+                ok(db.DB_NAME);
+            } catch (e) {
+                console.warn(`Init failed: ${e.message}`);
+                bad(`Init: ${e.message}`);
+            }
+        }),
         Connected: (database, version) => new Promise(function (ok, bad) {
             db.SetDataBaseName(database, version, null);
             try {
@@ -715,7 +720,7 @@ let Conn = (function () {
             }
         }),
         /**
-         * Insert data into a table. Alway return a JSON response
+         * Insert data info a table. Alway return a JSON response
          * @param {string} table table name
          * @param {JSON} data data with the models format to insert
          * @param {string} database database name
@@ -735,7 +740,7 @@ let Conn = (function () {
             }
         }),
         /**
-         * Update data into the table. The data always must be content all the columns, if not the function retrieve the actual data to keep always same data into a table. Alway return a JSON response
+         * Update data info the table. The data always must be content all the columns, if not the function retrieve the actual data to keep always same data info a table. Alway return a JSON response
          * @param {string} table table name
          * @param {JSON} data data with the models format to update
          * @param {string} database database name
@@ -800,10 +805,9 @@ let Conn = (function () {
          * @param {string} version database version
          * @param {string} models models to use
          */
-        Drop: (table, database, version, models) => new Promise(function (ok, bad) {
+        Drop: (database) => new Promise(function (ok, bad) {
             try {
-                db.SetDataBaseName(database, version, models);
-                db.Drop(table).then(function (result) {
+                db.Drop(database).then(function (result) {
                     ok(result);
                 }).catch(function (error) {
                     bad(error);
@@ -813,7 +817,7 @@ let Conn = (function () {
             }
         }),
         /**
-         * To store files into a db for compatibility with most of the browsers
+         * To store files info a db for compatibility with most of the browsers
          * @param {bytes} buffer file buffer
          * @param {string} type file type
          * @param {string} database database name
