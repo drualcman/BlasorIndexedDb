@@ -2,81 +2,89 @@ class jsDB {
     DB_NAME = 'MyDB';      //db name
     DB_VERSION = 1;        //db version
     MODELS;                //Table model definitions
-    constructor(dbModel) {
-        console.info('Database jsDB constructor');
-        if (!this.OpenDB()) {
-            throw "IndexedDB not compatible!"
-        }
-        else {
-            console.info(`Database creating: ${dbModel.name}`);
-            if (dbModel.name) {
-                this.DB_NAME = dbModel.name;
-                this.DB_VERSION = dbModel.version;
-                this.MODELS = dbModel.tables;
-                const dbconnect = this.OpenDB().open(dbModel.name, dbModel.version);
-                dbconnect.onblocked = ev => {
-                    // If some other tab is loaded with the database, then it needs to be closed
-                    // before we can proceed.
-                    alert("Please close all other tabs with this site open!");
-                };
-                dbconnect.onupgradeneeded = ev => {
-                    //create database with the model send
-                    const db = ev.target.result;
-                    const tables = dbModel.tables;
-                    const t = tables.length;
-                    //get tables
-                    if (t > 0) {
-                        for (let ti = 0; ti < t; ti++) {
-                            let tabla = tables[ti];
-                            let columns = tabla.columns;
-                            let c = columns.length;
-                            //get columns
-                            if (c > 0) {
-                                let options = tabla.options;
-                                let keyPath;
-                                let increment;
-                                if (options) {
-                                    if (options.keyPath) {
-                                        keyPath = options.keyPath;
-                                        if (options.autoIncrement) increment = options.autoIncrement;
-                                        else increment = false;
+
+    constructor() {
+        console.info('Database jsDB instance created!');
+    }
+
+    Initialize(dbModel) {
+        return new Promise((resolve, reject) => {
+            if (!this.OpenDB()) {
+                reject([this.SetResponse(false, `${this.DB_NAME} => IndexedDB not compatible!`)]);
+            }
+            else {
+                if (dbModel.name) {
+                    this.DB_NAME = dbModel.name;
+                    this.DB_VERSION = dbModel.version;
+                    this.MODELS = dbModel.tables; 
+                    const dbconnect = this.OpenDB().open(this.DB_NAME, this.DB_VERSION);
+                    dbconnect.onblocked = ev => {
+                        // If some other tab is loaded with the database, then it needs to be closed
+                        // before we can proceed.
+                        alert("Please close all other tabs with this site open!");
+                        reject([this.SetResponse(false, `${this.DB_NAME} => OnBlocked Error: Please close all other tabs with this site open!`)]);
+                        this.close();
+                    };
+                    dbconnect.onupgradeneeded = ev => {
+                        //create database with the model send
+                        const db = ev.target.result;
+                        const t = this.MODELS.length;
+                        //get tables
+                        if (t > 0) {
+                            for (let ti = 0; ti < t; ti++) {
+                                let tabla = this.MODELS[ti];
+                                let columns = tabla.columns;
+                                let c = columns.length;
+                                //get columns
+                                if (c > 0) {
+                                    let options = tabla.options;
+                                    let keyPath;
+                                    let increment;
+                                    if (options) {
+                                        if (options.keyPath) {
+                                            keyPath = options.keyPath;
+                                            if (options.autoIncrement) increment = options.autoIncrement;
+                                            else increment = false;
+                                        }
+                                        else {
+                                            keyPath = 'ssnId';
+                                            increment = true;
+                                        }
                                     }
                                     else {
                                         keyPath = 'ssnId';
                                         increment = true;
                                     }
-                                }
-                                else {
-                                    keyPath = 'ssnId';
-                                    increment = true;
-                                }
-                                //if table exist delete, data will lost
-                                if (db.objectStoreNames.contains(tabla.name)) {
-                                    db.deleteObjectStore(tabla.name); 
-                                }
-                                //add table
-                                let objectStore = db.createObjectStore(tabla.name, { keyPath: keyPath, autoIncrement: increment });
-                                for (let ci = 0; ci < c; ci++) {
-                                    //add columns
-                                    let column = columns[ci];
-                                    objectStore.createIndex(column.name, column.name, { keyPath: column.keyPath, autoIncrement: column.autoIncrement, unique: column.unique });
+                                    //if table exist delete, data will lost
+                                    if (db.objectStoreNames.contains(tabla.name)) {
+                                        db.deleteObjectStore(tabla.name);
+                                    }
+                                    //add table
+                                    let objectStore = db.createObjectStore(tabla.name, { keyPath: keyPath, autoIncrement: increment });
+                                    for (let ci = 0; ci < c; ci++) {
+                                        //add columns
+                                        let column = columns[ci];
+                                        objectStore.createIndex(column.name, column.name, { keyPath: column.keyPath, autoIncrement: column.autoIncrement, unique: column.unique });
+                                    }
                                 }
                             }
                         }
+                        else reject([this.SetResponse(false, `${this.DB_NAME} => OnUpgrade Error: No tables defined.`)]);
+                    };
+                    dbconnect.onerror = e => {
+                        console.warn(`${this.DB_NAME} => Connection Error: ${e.target.error.message}`);
+                        reject([this.SetResponse(false, `${this.DB_NAME} => Connection Error: ${e.target.error.message}`)]);
                     }
-                    else throw "No tables defined.";
-                };
-                dbconnect.onerror = e => {
-                    console.warn(`${this.DB_NAME} => Connection Error: ${e.target.error.message}`);
-                    throw [this.SetResponse(false, `${this.DB_NAME} => Connection Error: ${e.target.error.message}`)];
+                    dbconnect.onsuccess = () => {
+                        resolve();
+                        return;
+                    }
                 }
-                dbconnect.onsuccess = () => {
-                    return;
-                }
+                else reject([this.SetResponse(false, `${this.DB_NAME} => Error: Please provide db model {name: 'MyDB', version: 1, tables: [{name: 'Table1', options: {keyPath : 'Id', autoIncrement: true/false}, columns: [{name: 'ColumnName', keyPath: true/false, autoIncrement: true/false, unique: true/false }]}]}`)]);
             }
-            else throw "Please provide db model {name: 'MyDB', version: 1, tables: [{name: 'Table1', options: {keyPath : 'Id', autoIncrement: true/false}, columns: [{name: 'ColumnName', keyPath: true/false, autoIncrement: true/false, unique: true/false }]}]}"
-        }
+        });
     }
+
     /**
      * Open a indexedDb with all the compatibilities from the browsers
      */
@@ -244,19 +252,23 @@ class jsDB {
                             request.onerror = ev => {
                                 db.close();
                                 resolve([context.SetResponse(false, `${table}: ${ev.target.error.message}`)]);
+                                this.close();
                                 console.warn(`${table}: ${ev.target.error.message}`);
                             };
                             request.onsuccess = ev => {
                                 db.close();
                                 resolve(request.result);
+                                this.close();
                             };
                         } catch (e) {
                             db.close();
                             error([context.SetResponse(false, `${table}: ${e.message}`)]);
+                            this.close();
                             console.warn(`${table}: ${e.message}`);
                         }
                     }
                     dbconnect.onerror = function (e) {
+                        this.close();
                         console.warn(`${table}: ${e.message}`);
                     }
                 }
@@ -285,15 +297,18 @@ class jsDB {
                         request.onerror = ev => {
                             db.close();
                             resolve([context.SetResponse(false, `${table}.${id}: ${ev.target.error.message}`)]);
+                            this.close();
                             console.warn(`${table},${id}: ${ev.target.error.message}`);
                         };
                         request.onsuccess = () => {
                             db.close();
                             resolve(request.result);
+                            this.close();
                         }
                     } catch (e) {
                         db.close();
                         error([context.SetResponse(false, `${table}.${id}: ${e.message}`)]);
+                        this.close();
                     }
                 }
             }
@@ -321,15 +336,18 @@ class jsDB {
                         request.onerror = ev => {
                             db.close();
                             resolve([context.SetResponse(false, `${table}.${column}.${value}: ${ev.target.error.message}`)]);
+                            this.close();
                             console.warn(`${table}.${column}.${value}: ${ev.target.error.message}`);
                         };
                         request.onsuccess = () => {
                             db.close();
                             resolve(request.result);
+                            this.close();
                         }
                     } catch (e) {
                         db.close();
                         error([context.SetResponse(false, `${table}.${column}.${value}: ${e.message}`)]);
+                        this.close();
                         console.warn(`${table}.${column}.${value}: ${e.message}`);
                     }
                 }
@@ -395,15 +413,18 @@ class jsDB {
                                         transaction.onerror = ev => {
                                             db.close();
                                             transactionResult.push(context.SetResponse(false, ev.target.error.message));
+                                            this.close();
                                             console.warn(ev.target.error.message);
                                         };
                                         transaction.oncomplete = () => {
                                             db.close();
                                             transactionResult.push(context.SetResponse(true, 'Insert done!'));
+                                            this.close();
                                         };
                                     } catch (e) {
                                         db.close();
                                         transactionResult.push(context.SetResponse(false, `Insert => ${table}: ${e.message}`));
+                                        this.close();
                                         console.warn(`Insert => ${table}: ${e.message}`);
                                     }
                                 };
@@ -447,9 +468,9 @@ class jsDB {
                                 array.push(data);
                                 data = array;
                             }
-
                             let dbconnect = context.OpenDB().open(context.DB_NAME, context.DB_VERSION);
                             dbconnect.onsuccess = function () {
+                                let db = this.result;
                                 let toAdd = new Array();
                                 let canContinues = false;
 
@@ -477,31 +498,39 @@ class jsDB {
                                                 //retrieve the actual data for the index about the element
                                                 request.onsuccess = function () {
                                                     dat = context.UpdateModel(request.result, obj);
-                                                    objRequest = store.put(dat);                                                    
+                                                    objRequest = store.put(dat);
+                                                    objRequest.onsuccess = () => {
+                                                        transactionResult.push(context.SetResponse(true, `Success in updating record ${ssnId}`));
+                                                    };
+                                                    objRequest.onerror = ev => {
+                                                        transactionResult.push(context.SetResponse(false, `Error in updating record ${ssnId}`));
+                                                        console.warn(ev.target.error.message);
+                                                    };
                                                 }
                                             }
                                             else {
                                                 dat = context.MergeObjects(obj, element);
                                                 objRequest = store.put(dat);
+                                                objRequest.onsuccess = () => {
+                                                    transactionResult.push(context.SetResponse(true, `Success in updating record ${ssnId}`));
+                                                };
+                                                objRequest.onerror = ev => {
+                                                    transactionResult.push(context.SetResponse(false, `Error in updating record ${ssnId}`));
+                                                    console.warn(ev.target.error.message);
+                                                };
                                             }
-                                            objRequest.onsuccess = () => {
-                                                transactionResult.push(context.SetResponse(true, `Success in updating record ${ssnId}`));
-                                            };
-                                            objRequest.onerror = ev => {
-                                                transactionResult.push(context.SetResponse(false, `Error in updating record ${ssnId}`));
-                                                console.warn(ev.target.error.message);
-                                            };
 
                                         } catch (e) {
-                                            transactionResult.push(context.SetResponse(false, `Update => ${table}: ${e.message}`));
-                                            console.warn(`Update => ${table}: ${e.message}`);
+                                            transactionResult.push(context.SetResponse(false, `Update => ${table}: ${e.message} | 2`));
+                                            console.warn(`Update => ${table}: ${e.message} | 2`);
                                         }
                                     }
-                                });                               
+                                });
                             }
                             resolve(data.length);
                         } catch (e) {
-                            error([context.SetResponse(false, `Update => ${table}: ${e.message}`)]);
+                            error([context.SetResponse(false, `Update => ${table}: ${e.message} | 1`)]);
+                            console.warn(`Update => ${table}: ${e.message} | 1`);
                         }
                     });
                     result.then(function (rows) {
@@ -535,15 +564,18 @@ class jsDB {
                         transaction.onerror = ev => {
                             db.close();
                             resolve([context.SetResponse(false, ev.target.error.message)]);
+                            this.close();
                             console.warn(ev.target.error.message);
                         };
                         transaction.oncomplete = r => {
                             db.close();
                             resolve([context.SetResponse(true, 'Delete done!')]);
+                            this.close();
                         };
                     } catch (e) {
                         db.close();
                         error([context.SetResponse(false, `Delete => ${table}: ${e.message}`)]);
+                        this.close();
                         console.warn(`Delete => ${table}: ${e.message}`);
                     }
                 };
@@ -569,15 +601,18 @@ class jsDB {
                         transaction.oncomplete = () => {
                             db.close();
                             resolve([context.SetResponse(true, `Table ${table} are empty`)]);
+                            this.close();
                         };
                         transaction.onerror = ev => {
                             db.close();
                             resolve([context.SetResponse(false, `Clean => ${table}: ${ev.target.error.message}`)]);
+                            this.close();
                             console.warn(ev.target.error.message);
                         };
                     } catch (e) {
                         db.close();
                         error([context.SetResponse(false, `Clean => ${table}: ${e.message}`)]);
+                        this.close();
                         console.warn(e);
                     }
                 };
@@ -644,8 +679,13 @@ let Conn = (function () {
         */
         Init: (dbModel) => new Promise(function (ok, bad) {
             try {
-                db = new jsDB(JSON.parse(dbModel));                
-                ok(db.DB_NAME);
+                db = new jsDB();
+                db.Initialize(JSON.parse(dbModel)).then(() => {
+                    ok(db.DB_NAME);
+                }).catch(e => {
+                    console.warn(`Init failed: ${e.message}`);
+                    bad(`Init: ${e.message}`);
+                });
             } catch (e) {
                 console.warn(`Init failed: ${e.message}`);
                 bad(`Init: ${e.message}`);
@@ -807,9 +847,12 @@ let Conn = (function () {
          */
         Drop: (database) => new Promise(function (ok, bad) {
             try {
+                console.log(1);
                 db.Drop(database).then(function (result) {
+                    console.log(2);
                     ok(result);
                 }).catch(function (error) {
+                    console.log(3);
                     bad(error);
                 });
             } catch (e) {

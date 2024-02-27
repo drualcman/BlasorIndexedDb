@@ -634,6 +634,11 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:BlazorIndexedDb.Store.StoreContext`1.UpVersion">
+            <summary>
+            Increment version number
+            </summary>
+        </member>
         <member name="M:BlazorIndexedDb.Store.StoreContext`1.Init">
             <summary>
             Initialize the connection with a indexedDb

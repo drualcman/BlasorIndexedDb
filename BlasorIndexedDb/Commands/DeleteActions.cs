@@ -182,18 +182,19 @@
         {
             try
             {
-                List<ResponseJsDb> result = new List<ResponseJsDb>();
                 IJSObjectReference jsRuntime = await InitializeDatabase.GetIJSObjectReference(JS, Setup);
-                return await jsRuntime.InvokeAsync<ResponseJsDb>("MyDb.Drop", Setup.DBName);
+                ResponseJsDb response = await jsRuntime.InvokeAsync<ResponseJsDb>("MyDb.Drop", Setup.DBName); 
+                if (Settings.EnableDebug) Console.WriteLine($"DropDatabase: {Setup.DBName} => result {response.Result} with message: {response.Message}");
+                return response;
             }
             catch (ResponseException ex)
             {
-                if (Settings.EnableDebug) Console.WriteLine($"Can't drop databse: {Setup.DBName} => Error: {ex}");
+                if (Settings.EnableDebug) Console.WriteLine($"Can't drop database: {Setup.DBName} => Error: {ex}");
                 throw;
             }
             catch (Exception ex)
             {
-                if (Settings.EnableDebug) Console.WriteLine($"Can't drop databse: {Setup.DBName} => Error: {ex}");
+                if (Settings.EnableDebug) Console.WriteLine($"Can't drop database: {Setup.DBName} => Error: {ex}");
                 throw new ResponseException(nameof(DbDelete), Setup.DBName, ex.Message, ex);
             }
 

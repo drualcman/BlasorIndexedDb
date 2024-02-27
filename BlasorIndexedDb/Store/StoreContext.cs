@@ -29,6 +29,7 @@
             Js = js;
             DeleteActions = new(Js, Setup);
             Init();
+            InitStores();
         }
 
         /// <summary>
@@ -45,7 +46,6 @@
             return response;
         }
 
-
         /// <summary>
         /// Initialize the connection with a indexedDb
         /// </summary>
@@ -53,7 +53,6 @@
         {
             Initalizing<TStore> initalizing = new Initalizing<TStore>(Setup);
             initalizing.DbInit();
-            InitStores();
             return Task.CompletedTask;
         }
 
