@@ -32,7 +32,7 @@
 
             try
             {
-                IJSObjectReference jsRuntime = await InitializeDatabase.GetIJSObjectReference(JS);
+                IJSObjectReference jsRuntime = await InitializeDatabase.GetIJSObjectReference(JS, Setup);
                 data = await jsRuntime.InvokeAsync<List<TModel>>("MyDb.Select", Setup.Tables.GetTable<TModel>(), Setup.DBName, Setup.Version, Setup.ModelsAsJson);
             }
             catch (Exception ex)
@@ -60,7 +60,7 @@
 
             try
             {
-                IJSObjectReference jsRuntime = await InitializeDatabase.GetIJSObjectReference(JS);
+                IJSObjectReference jsRuntime = await InitializeDatabase.GetIJSObjectReference(JS, Setup);
                 data = await jsRuntime.InvokeAsync<List<TModel>>("MyDb.SelectWhere", Setup.Tables.GetTable<TModel>(), column, value, Setup.DBName, Setup.Version, Setup.ModelsAsJson);
             }
             catch (Exception ex)
@@ -88,7 +88,7 @@
         {
             try
             {
-                IJSObjectReference jsRuntime = await InitializeDatabase.GetIJSObjectReference(JS);
+                IJSObjectReference jsRuntime = await InitializeDatabase.GetIJSObjectReference(JS, Setup);
                 List<TModel> data = await jsRuntime.InvokeAsync<List<TModel>>("MyDb.SelectId", Setup.Tables.GetTable<TModel>(), id, Setup.DBName, Setup.Version, Setup.ModelsAsJson);
                 if (data is not null && data.Any())
                     return data[0];

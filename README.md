@@ -18,6 +18,7 @@ Set PrimaKey in the model. Using convention if have property Id or TableNameId o
 CRUD from StoreSet
 Select all or one by PrimaryKey or property from StoreSet
 Clean all data in a storeSet
+Drop Database
 
 # How to use
 BlazorIndexedDb requires an instance IJSRuntime, should normally already be registered.
@@ -133,6 +134,19 @@ In the component need to use a IndexDb inject DBContext
                 Console.WriteLine(item.Message);
                 Console.WriteLine(item.Result);
             }
+        }
+
+        void Drop()
+        {
+            CommandResponse response = await DB.DropDatabaseAsync();
+            Console.WriteLine(response.Message);
+            Console.WriteLine(response.Result);
+        }
+
+        void Init()
+        {
+            //if you delete a db and want to initialize again
+            await DB.Init();
         }
 ```
 

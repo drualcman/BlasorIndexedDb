@@ -42,7 +42,7 @@
             {
                 List<ResponseJsDb> result = new List<ResponseJsDb>();
 
-                IJSObjectReference jsRuntime = await InitializeDatabase.GetIJSObjectReference(JS);
+                IJSObjectReference jsRuntime = await InitializeDatabase.GetIJSObjectReference(JS, Setup);
                 result.AddRange(await jsRuntime.InvokeAsync<List<ResponseJsDb>>($"MyDb.Clean", name, Setup.DBName, Setup.Version, Setup.ModelsAsJson));
                 try
                 {

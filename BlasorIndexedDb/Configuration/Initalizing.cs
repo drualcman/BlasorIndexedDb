@@ -195,7 +195,6 @@
                     tableJsonArray = tableJsonArray.Remove(tableJsonArray.Length - 1, 1);     //remove last ,
                     Setup.ModelsAsJson = $"[{tableJsonArray}]";
                     model = model.Replace("[]", $"[{tableJsonArray}]");                  //replace with tables array
-                    Settings.DataBaseModelAsJson = model;
                 }
                 else
                 {

@@ -33,7 +33,7 @@
             try
             {
                 List<ResponseJsDb> result = new List<ResponseJsDb>();
-                IJSObjectReference jsRuntime = await InitializeDatabase.GetIJSObjectReference(JS);
+                IJSObjectReference jsRuntime = await InitializeDatabase.GetIJSObjectReference(JS, Setup);
                 result.AddRange(await jsRuntime.InvokeAsync<List<ResponseJsDb>>($"MyDb.Delete", Setup.Tables.GetTable<TModel>(), id, Setup.DBName, Setup.Version, Setup.ModelsAsJson));
                 if (result.Count > 0) return result[0];
                 else return new ResponseJsDb { Result = false, Message = "No results" };
@@ -63,7 +63,7 @@
             try
             {
                 List<ResponseJsDb> result = new List<ResponseJsDb>();
-                IJSObjectReference jsRuntime = await InitializeDatabase.GetIJSObjectReference(JS);
+                IJSObjectReference jsRuntime = await InitializeDatabase.GetIJSObjectReference(JS, Setup);
                 result.AddRange(await jsRuntime.InvokeAsync<List<ResponseJsDb>>($"MyDb.Delete", Setup.Tables.GetTable<TModel>(), id, Setup.DBName, Setup.Version, Setup.ModelsAsJson));
                 if (result.Count > 0) return result[0];
                 else return new ResponseJsDb { Result = false, Message = "No results" };
@@ -95,7 +95,7 @@
             try
             {
                 List<ResponseJsDb> result = new List<ResponseJsDb>();
-                IJSObjectReference jsRuntime = await InitializeDatabase.GetIJSObjectReference(JS);
+                IJSObjectReference jsRuntime = await InitializeDatabase.GetIJSObjectReference(JS, Setup);
                 result.AddRange(await jsRuntime.InvokeAsync<List<ResponseJsDb>>($"MyDb.Delete", Setup.Tables.GetTable<TModel>(), id, Setup.DBName, Setup.Version, Setup.ModelsAsJson));
                 if (result.Count > 0) return result[0];
                 else return new ResponseJsDb { Result = false, Message = "No results" };
@@ -126,7 +126,7 @@
             try
             {
                 List<ResponseJsDb> result = new List<ResponseJsDb>();
-                IJSObjectReference jsRuntime = await InitializeDatabase.GetIJSObjectReference(JS);
+                IJSObjectReference jsRuntime = await InitializeDatabase.GetIJSObjectReference(JS, Setup);
                 result.AddRange(await jsRuntime.InvokeAsync<List<ResponseJsDb>>($"MyDb.Delete", Setup.Tables.GetTable<TModel>(), id, Setup.DBName, Setup.Version, Setup.ModelsAsJson));
                 if (result.Count > 0) return result[0];
                 else return new ResponseJsDb { Result = false, Message = "No results" };
@@ -156,7 +156,7 @@
             try
             {
                 List<ResponseJsDb> result = new List<ResponseJsDb>();
-                IJSObjectReference jsRuntime = await InitializeDatabase.GetIJSObjectReference(JS);
+                IJSObjectReference jsRuntime = await InitializeDatabase.GetIJSObjectReference(JS, Setup);
                 result.AddRange(await jsRuntime.InvokeAsync<List<ResponseJsDb>>($"MyDb.Delete", Setup.Tables.GetTable<TModel>(), id, Setup.DBName, Setup.Version, Setup.ModelsAsJson));
                 if (result.Count > 0) return result[0];
                 else return new ResponseJsDb { Result = false, Message = "No results" };
@@ -173,5 +173,31 @@
             }
 
         }
+
+        /// <summary>
+        /// Remove the database from indexed db
+        /// </summary>
+        /// <returns></returns>
+        internal async ValueTask<ResponseJsDb> DropDatabase()
+        {
+            try
+            {
+                List<ResponseJsDb> result = new List<ResponseJsDb>();
+                IJSObjectReference jsRuntime = await InitializeDatabase.GetIJSObjectReference(JS, Setup);
+                return await jsRuntime.InvokeAsync<ResponseJsDb>("MyDb.Drop", Setup.DBName);
+            }
+            catch (ResponseException ex)
+            {
+                if (Settings.EnableDebug) Console.WriteLine($"Can't drop databse: {Setup.DBName} => Error: {ex}");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                if (Settings.EnableDebug) Console.WriteLine($"Can't drop databse: {Setup.DBName} => Error: {ex}");
+                throw new ResponseException(nameof(DbDelete), Setup.DBName, ex.Message, ex);
+            }
+
+        }
+
     }
 }

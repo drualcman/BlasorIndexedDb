@@ -7,6 +7,8 @@
     public abstract class StoreContext<TStore> where TStore : class
     {
         readonly Settings Setup;
+        readonly DeleteActions DeleteActions;
+        readonly IJSRuntime Js;
 
         /// <summary>
         /// Constructor to get the connection
@@ -23,22 +25,39 @@
         {
             if(Settings.EnableDebug)
                 Console.WriteLine($"{settings.DBName} => StoreContext constructor with settings");
-            Setup = settings;
-            Initalizing<TStore> initalizing = new Initalizing<TStore>(Setup);
-            initalizing.DbInit();
-            InitStores(js);
+            Setup = settings;   
+            Js = js;
+            DeleteActions = new(Js, Setup);
+            Init();
         }
+
+        /// <summary>
+        /// Delete database from <inheritdocDb/>
+        /// </summary>
+        /// <returns></returns>
+        public async Task<CommandResponse> DropDatabaseAsync()
+        {
+            CommandResponse response = Utils.CommandResponse(await DeleteActions.DropDatabase());
+            if (response.Result)
+            {
+                InitializeDatabase.DropDatabase(Setup.DBName);
+            }
+            return response;
+        }
+
 
         /// <summary>
         /// Initialize the connection with a indexedDb
         /// </summary>
-        [Obsolete("Not longer in use. Simple return a task completed")]
-        public Task Init() 
-        {               
+        public Task Init()
+        {
+            Initalizing<TStore> initalizing = new Initalizing<TStore>(Setup);
+            initalizing.DbInit();
+            InitStores();
             return Task.CompletedTask;
         }
 
-        void InitStores(IJSRuntime jsReference)
+        void InitStores()
         {
             PropertyInfo[] properties = this.GetType()
                    .GetProperties(BindingFlags.Public | BindingFlags.Instance)
@@ -48,7 +67,7 @@
             for (int i = 0; i < c; i++)
             {
                 //instance the property with StoreSet type
-                properties[i].SetValue(this, Activator.CreateInstance(properties[i].PropertyType, jsReference, Setup));
+                properties[i].SetValue(this, Activator.CreateInstance(properties[i].PropertyType, Js, Setup));
             }
         }
     }

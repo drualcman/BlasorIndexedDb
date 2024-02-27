@@ -2,13 +2,15 @@
 internal class InitializeDatabase
 {
     readonly Lazy<Task<IJSObjectReference>> ModuleTask;
+    readonly Settings Setup;
     private static List<string> DatabaseModels = new List<string>();
 
-    public InitializeDatabase(IJSRuntime js)
+    private InitializeDatabase(IJSRuntime js, Settings setup)
     {
         if (Settings.EnableDebug)
             Console.WriteLine($"InitializeDatabase constructor");
         ModuleTask = new Lazy<Task<IJSObjectReference>>(() => GetJSObjectReference(js));
+        Setup = setup;
     }
 
     private Task<IJSObjectReference> GetJSObjectReference(IJSRuntime jsRuntime) =>
@@ -21,14 +23,15 @@ internal class InitializeDatabase
     internal async Task<IJSObjectReference> GetJsReference() 
     {
         if (Settings.EnableDebug)
-            Console.WriteLine($"InitializeDatabase GetJsReference => Is Initialized {IsInitilized(Settings.DataBaseModelAsJson)}");
+            Console.WriteLine($"InitializeDatabase GetJsReference => Is Initialized {IsInitilized(Setup.DBName)}");
         IJSObjectReference jsReference = await ModuleTask.Value;
-        if (!IsInitilized(Settings.DataBaseModelAsJson))
+        if (!IsInitilized(Setup.DBName))
         {
             try
             {
-                await jsReference.InvokeVoidAsync("MyDb.Init", Settings.DataBaseModelAsJson);
-                DatabaseModels.Add(Settings.DataBaseModelAsJson);
+                string dbName = await jsReference.InvokeAsync<string>("MyDb.Init", Setup.DBName);
+                Console.WriteLine($"Database Initialized >= {dbName}");
+                DatabaseModels.Add(Setup.DBName);
             }
             catch (Exception ex)
             {
@@ -39,16 +42,19 @@ internal class InitializeDatabase
         return jsReference;
     }
 
-    bool IsInitilized(string model) 
+    bool IsInitilized(string dbName) 
     {
-        if(DatabaseModels.Contains(model)) return true;
+        if(DatabaseModels.Contains(dbName)) return true;
         else return false;
     }
 
-    internal static async Task<IJSObjectReference> GetIJSObjectReference(IJSRuntime js)
+    internal static async Task<IJSObjectReference> GetIJSObjectReference(IJSRuntime js, Settings setup)
     {
         if (Settings.EnableDebug) Console.WriteLine($"InitializeDatabase.GetIJSObjectReference");
-        InitializeDatabase initializeDatabase = new InitializeDatabase(js);
+        InitializeDatabase initializeDatabase = new InitializeDatabase(js, setup);
         return await initializeDatabase.GetJsReference();
     }
+
+    public static void DropDatabase(string model) =>
+        DatabaseModels.Remove(model);
 }

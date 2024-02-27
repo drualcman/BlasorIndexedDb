@@ -8,7 +8,6 @@
         /// <summary>
         /// Save a copy of how is the tables definition in JSON to send to the Javasctipt to compare the models
         /// </summary>
-        internal static string DataBaseModelAsJson { get; set; }
         internal string ModelsAsJson { get; set; }
 
         private string DbName_BK;

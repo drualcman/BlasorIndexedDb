@@ -50,7 +50,7 @@
             {
                 List<ResponseJsDb> result = new List<ResponseJsDb>();
 
-                IJSObjectReference jsRuntime = await InitializeDatabase.GetIJSObjectReference(JS);
+                IJSObjectReference jsRuntime = await InitializeDatabase.GetIJSObjectReference(JS, Setup);
                 Commands Commands = new Commands(jsRuntime, Setup);
                 int c = rows.Count;
                 if (c > 0)

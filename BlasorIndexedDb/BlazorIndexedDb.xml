@@ -140,6 +140,12 @@
             <exception cref="T:BlazorIndexedDb.Models.ResponseException"></exception>
             <returns></returns>
         </member>
+        <member name="M:BlazorIndexedDb.Commands.DeleteActions.DropDatabase">
+            <summary>
+            Remove the database from indexed db
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:BlazorIndexedDb.Commands.InsertActions">
             <summary>
             Insert commands
@@ -621,6 +627,12 @@
             </summary>
             <param name="js"></param>
             <param name="settings"></param>
+        </member>
+        <member name="M:BlazorIndexedDb.Store.StoreContext`1.DropDatabaseAsync">
+            <summary>
+            Delete database from <inheritdocDb/>
+            </summary>
+            <returns></returns>
         </member>
         <member name="M:BlazorIndexedDb.Store.StoreContext`1.Init">
             <summary>

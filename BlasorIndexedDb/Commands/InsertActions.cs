@@ -50,8 +50,7 @@
         {
             try
             {
-                InitializeDatabase initializeDatabase = new InitializeDatabase(JS);
-                IJSObjectReference js = await initializeDatabase.GetJsReference();
+                IJSObjectReference js = await InitializeDatabase.GetIJSObjectReference(JS, Setup);
                 Commands Commands = new Commands(js, Setup);
                 List<ResponseJsDb> result = new List<ResponseJsDb>();
                 int c = rows.Count;
