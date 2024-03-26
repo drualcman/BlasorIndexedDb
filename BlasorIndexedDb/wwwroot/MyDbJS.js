@@ -252,18 +252,15 @@ class jsDB {
                             request.onerror = ev => {
                                 db.close();
                                 resolve([context.SetResponse(false, `${table}: ${ev.target.error.message}`)]);
-                                this.close();
                                 console.warn(`${table}: ${ev.target.error.message}`);
                             };
                             request.onsuccess = ev => {
                                 db.close();
                                 resolve(request.result);
-                                this.close();
                             };
                         } catch (e) {
                             db.close();
                             error([context.SetResponse(false, `${table}: ${e.message}`)]);
-                            this.close();
                             console.warn(`${table}: ${e.message}`);
                         }
                     }
@@ -297,18 +294,15 @@ class jsDB {
                         request.onerror = ev => {
                             db.close();
                             resolve([context.SetResponse(false, `${table}.${id}: ${ev.target.error.message}`)]);
-                            this.close();
                             console.warn(`${table},${id}: ${ev.target.error.message}`);
                         };
                         request.onsuccess = () => {
                             db.close();
                             resolve(request.result);
-                            this.close();
                         }
                     } catch (e) {
                         db.close();
                         error([context.SetResponse(false, `${table}.${id}: ${e.message}`)]);
-                        this.close();
                     }
                 }
             }
@@ -336,18 +330,15 @@ class jsDB {
                         request.onerror = ev => {
                             db.close();
                             resolve([context.SetResponse(false, `${table}.${column}.${value}: ${ev.target.error.message}`)]);
-                            this.close();
                             console.warn(`${table}.${column}.${value}: ${ev.target.error.message}`);
                         };
                         request.onsuccess = () => {
                             db.close();
                             resolve(request.result);
-                            this.close();
                         }
                     } catch (e) {
                         db.close();
                         error([context.SetResponse(false, `${table}.${column}.${value}: ${e.message}`)]);
-                        this.close();
                         console.warn(`${table}.${column}.${value}: ${e.message}`);
                     }
                 }
@@ -413,18 +404,15 @@ class jsDB {
                                         transaction.onerror = ev => {
                                             db.close();
                                             transactionResult.push(context.SetResponse(false, ev.target.error.message));
-                                            this.close();
                                             console.warn(ev.target.error.message);
                                         };
                                         transaction.oncomplete = () => {
                                             db.close();
                                             transactionResult.push(context.SetResponse(true, 'Insert done!'));
-                                            this.close();
                                         };
                                     } catch (e) {
                                         db.close();
                                         transactionResult.push(context.SetResponse(false, `Insert => ${table}: ${e.message}`));
-                                        this.close();
                                         console.warn(`Insert => ${table}: ${e.message}`);
                                     }
                                 };
@@ -564,18 +552,15 @@ class jsDB {
                         transaction.onerror = ev => {
                             db.close();
                             resolve([context.SetResponse(false, ev.target.error.message)]);
-                            this.close();
                             console.warn(ev.target.error.message);
                         };
                         transaction.oncomplete = r => {
                             db.close();
                             resolve([context.SetResponse(true, 'Delete done!')]);
-                            this.close();
                         };
                     } catch (e) {
                         db.close();
                         error([context.SetResponse(false, `Delete => ${table}: ${e.message}`)]);
-                        this.close();
                         console.warn(`Delete => ${table}: ${e.message}`);
                     }
                 };
@@ -601,18 +586,15 @@ class jsDB {
                         transaction.oncomplete = () => {
                             db.close();
                             resolve([context.SetResponse(true, `Table ${table} are empty`)]);
-                            this.close();
                         };
                         transaction.onerror = ev => {
                             db.close();
                             resolve([context.SetResponse(false, `Clean => ${table}: ${ev.target.error.message}`)]);
-                            this.close();
                             console.warn(ev.target.error.message);
                         };
                     } catch (e) {
                         db.close();
                         error([context.SetResponse(false, `Clean => ${table}: ${e.message}`)]);
-                        this.close();
                         console.warn(e);
                     }
                 };

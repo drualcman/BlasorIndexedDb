@@ -1,4 +1,6 @@
-﻿namespace BlazorIndexedDb.Configuration;
+﻿using BlazorIndexedDb.Extensions;
+
+namespace BlazorIndexedDb.Configuration;
 internal class InitializeDatabase
 {
     readonly Lazy<Task<IJSObjectReference>> ModuleTask;
@@ -32,7 +34,7 @@ internal class InitializeDatabase
         {
             try
             {
-                string dbName = await jsReference.InvokeAsync<string>("MyDb.Init", Setup.DataBaseModelAsJson);
+                string dbName = await jsReference.GetJsonResult<string>("MyDb.Init", Setup.DataBaseModelAsJson);
                 if (Settings.EnableDebug) Console.WriteLine($"Database Initialized => {dbName}");
                 DatabaseModels.Add(Setup.DBName);
             }

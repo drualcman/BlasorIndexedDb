@@ -1,4 +1,6 @@
-﻿namespace BlazorIndexedDb.Commands
+﻿using BlazorIndexedDb.Extensions;
+
+namespace BlazorIndexedDb.Commands
 {
     /// <summary>
     /// Select commands
@@ -33,7 +35,7 @@
             try
             {
                 IJSObjectReference jsRuntime = await InitializeDatabase.GetIJSObjectReference(JS, Setup);
-                data = await jsRuntime.InvokeAsync<List<TModel>>("MyDb.Select", Setup.Tables.GetTable<TModel>(), Setup.DBName, Setup.Version, Setup.ModelsAsJson);
+                data = await jsRuntime.GetJsonResult<List<TModel>>("MyDb.Select", Setup.Tables.GetTable<TModel>(), Setup.DBName, Setup.Version, Setup.ModelsAsJson);
             }
             catch (Exception ex)
             {
@@ -61,7 +63,7 @@
             try
             {
                 IJSObjectReference jsRuntime = await InitializeDatabase.GetIJSObjectReference(JS, Setup);
-                data = await jsRuntime.InvokeAsync<List<TModel>>("MyDb.SelectWhere", Setup.Tables.GetTable<TModel>(), column, value, Setup.DBName, Setup.Version, Setup.ModelsAsJson);
+                data = await jsRuntime.GetJsonResult<List<TModel>>("MyDb.SelectWhere", Setup.Tables.GetTable<TModel>(), column, value, Setup.DBName, Setup.Version, Setup.ModelsAsJson);
             }
             catch (Exception ex)
             {

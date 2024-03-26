@@ -1,4 +1,6 @@
-﻿namespace BlazorIndexedDb.Commands
+﻿using BlazorIndexedDb.Extensions;
+
+namespace BlazorIndexedDb.Commands
 {
     /// <summary>
     /// Other commands to execute
@@ -36,7 +38,7 @@
             {
                 try
                 {
-                    return await jsRuntime.InvokeAsync<List<ResponseJsDb>>($"MyDb.{command}", storeName, data, Setup.DBName, Setup.Version, Setup.ModelsAsJson);
+                    return await jsRuntime.GetJsonResult<List<ResponseJsDb>>($"MyDb.{command}", storeName, data, Setup.DBName, Setup.Version, Setup.ModelsAsJson);
                 }
                 catch(Exception ex)
                 {
@@ -51,6 +53,6 @@
         /// </summary>
         /// <returns></returns>
         internal async ValueTask<string> DbConnected() =>
-            await jsRuntime.InvokeAsync<string>("MyDb.Connected", Setup.DBName, Setup.Version);
+            await jsRuntime.GetJsonResult<string>("MyDb.Connected", Setup.DBName, Setup.Version);
     }
 }

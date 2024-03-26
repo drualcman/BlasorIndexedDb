@@ -1,4 +1,6 @@
-﻿namespace BlazorIndexedDb.Commands
+﻿using BlazorIndexedDb.Extensions;
+
+namespace BlazorIndexedDb.Commands
 {
     /// <summary>
     /// Delete commands
@@ -34,7 +36,7 @@
             {
                 List<ResponseJsDb> result = new List<ResponseJsDb>();
                 IJSObjectReference jsRuntime = await InitializeDatabase.GetIJSObjectReference(JS, Setup);
-                result.AddRange(await jsRuntime.InvokeAsync<List<ResponseJsDb>>($"MyDb.Delete", Setup.Tables.GetTable<TModel>(), id, Setup.DBName, Setup.Version, Setup.ModelsAsJson));
+                result.AddRange(await jsRuntime.GetJsonResult<List<ResponseJsDb>>($"MyDb.Delete", Setup.Tables.GetTable<TModel>(), id, Setup.DBName, Setup.Version, Setup.ModelsAsJson));
                 if (result.Count > 0) return result[0];
                 else return new ResponseJsDb { Result = false, Message = "No results" };
             }
@@ -64,7 +66,7 @@
             {
                 List<ResponseJsDb> result = new List<ResponseJsDb>();
                 IJSObjectReference jsRuntime = await InitializeDatabase.GetIJSObjectReference(JS, Setup);
-                result.AddRange(await jsRuntime.InvokeAsync<List<ResponseJsDb>>($"MyDb.Delete", Setup.Tables.GetTable<TModel>(), id, Setup.DBName, Setup.Version, Setup.ModelsAsJson));
+                result.AddRange(await jsRuntime.GetJsonResult<List<ResponseJsDb>>($"MyDb.Delete", Setup.Tables.GetTable<TModel>(), id, Setup.DBName, Setup.Version, Setup.ModelsAsJson));
                 if (result.Count > 0) return result[0];
                 else return new ResponseJsDb { Result = false, Message = "No results" };
 
@@ -96,7 +98,7 @@
             {
                 List<ResponseJsDb> result = new List<ResponseJsDb>();
                 IJSObjectReference jsRuntime = await InitializeDatabase.GetIJSObjectReference(JS, Setup);
-                result.AddRange(await jsRuntime.InvokeAsync<List<ResponseJsDb>>($"MyDb.Delete", Setup.Tables.GetTable<TModel>(), id, Setup.DBName, Setup.Version, Setup.ModelsAsJson));
+                result.AddRange(await jsRuntime.GetJsonResult<List<ResponseJsDb>>($"MyDb.Delete", Setup.Tables.GetTable<TModel>(), id, Setup.DBName, Setup.Version, Setup.ModelsAsJson));
                 if (result.Count > 0) return result[0];
                 else return new ResponseJsDb { Result = false, Message = "No results" };
             }
@@ -127,7 +129,7 @@
             {
                 List<ResponseJsDb> result = new List<ResponseJsDb>();
                 IJSObjectReference jsRuntime = await InitializeDatabase.GetIJSObjectReference(JS, Setup);
-                result.AddRange(await jsRuntime.InvokeAsync<List<ResponseJsDb>>($"MyDb.Delete", Setup.Tables.GetTable<TModel>(), id, Setup.DBName, Setup.Version, Setup.ModelsAsJson));
+                result.AddRange(await jsRuntime.GetJsonResult<List<ResponseJsDb>>($"MyDb.Delete", Setup.Tables.GetTable<TModel>(), id, Setup.DBName, Setup.Version, Setup.ModelsAsJson));
                 if (result.Count > 0) return result[0];
                 else return new ResponseJsDb { Result = false, Message = "No results" };
             }
@@ -157,7 +159,7 @@
             {
                 List<ResponseJsDb> result = new List<ResponseJsDb>();
                 IJSObjectReference jsRuntime = await InitializeDatabase.GetIJSObjectReference(JS, Setup);
-                result.AddRange(await jsRuntime.InvokeAsync<List<ResponseJsDb>>($"MyDb.Delete", Setup.Tables.GetTable<TModel>(), id, Setup.DBName, Setup.Version, Setup.ModelsAsJson));
+                result.AddRange(await jsRuntime.GetJsonResult<List<ResponseJsDb>>($"MyDb.Delete", Setup.Tables.GetTable<TModel>(), id, Setup.DBName, Setup.Version, Setup.ModelsAsJson));
                 if (result.Count > 0) return result[0];
                 else return new ResponseJsDb { Result = false, Message = "No results" };
             }
@@ -183,7 +185,7 @@
             try
             {
                 IJSObjectReference jsRuntime = await InitializeDatabase.GetIJSObjectReference(JS, Setup);
-                ResponseJsDb response = await jsRuntime.InvokeAsync<ResponseJsDb>("MyDb.Drop", Setup.DBName); 
+                ResponseJsDb response = await jsRuntime.GetJsonResult<ResponseJsDb>("MyDb.Drop", Setup.DBName); 
                 if (Settings.EnableDebug) Console.WriteLine($"DropDatabase: {Setup.DBName} => result {response.Result} with message: {response.Message}");
                 return response;
             }

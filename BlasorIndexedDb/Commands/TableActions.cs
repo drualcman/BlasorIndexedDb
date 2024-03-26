@@ -1,4 +1,6 @@
-﻿namespace BlazorIndexedDb.Commands
+﻿using BlazorIndexedDb.Extensions;
+
+namespace BlazorIndexedDb.Commands
 {
     /// <summary>
     /// Manage tables
@@ -43,7 +45,7 @@
                 List<ResponseJsDb> result = new List<ResponseJsDb>();
 
                 IJSObjectReference jsRuntime = await InitializeDatabase.GetIJSObjectReference(JS, Setup);
-                result.AddRange(await jsRuntime.InvokeAsync<List<ResponseJsDb>>($"MyDb.Clean", name, Setup.DBName, Setup.Version, Setup.ModelsAsJson));
+                result.AddRange(await jsRuntime.GetJsonResult<List<ResponseJsDb>>($"MyDb.Clean", name, Setup.DBName, Setup.Version, Setup.ModelsAsJson));
                 try
                 {
                 }
