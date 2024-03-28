@@ -20,7 +20,7 @@
         {
             if (string.IsNullOrEmpty(Setup.DBName))
             {
-                Setup.DBName = AppDomain.CurrentDomain.FriendlyName;
+                Setup.DBName = typeof(TStore).Name;
             }
             if (string.IsNullOrEmpty(Setup.AssemblyName))
             {

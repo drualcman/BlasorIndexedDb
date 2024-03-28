@@ -24,7 +24,7 @@
         public StoreContext(IJSRuntime js, Settings settings)
         {
             if(Settings.EnableDebug)
-                Console.WriteLine($"{settings.DBName} => StoreContext constructor with settings");
+                Console.WriteLine($"{settings.DBName} => StoreContext constructor with settings");      
             Setup = settings;   
             Js = js;
             DeleteActions = new(Js, Setup);

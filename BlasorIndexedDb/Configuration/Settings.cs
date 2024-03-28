@@ -11,15 +11,10 @@
         internal string DataBaseModelAsJson { get; set; }
         internal string ModelsAsJson { get; set; }
 
-        private string DbName_BK;
         /// <summary>
         /// Database name
         /// </summary>
-        public string DBName
-        {
-            get { return DbName_BK; }
-            set { DbName_BK = string.IsNullOrEmpty(value) ? AppDomain.CurrentDomain.FriendlyName : value; }
-        }
+        public string DBName { get; set; }
         /// <summary>
         /// Version of the database
         /// </summary>
