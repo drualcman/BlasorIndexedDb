@@ -13,7 +13,8 @@ internal static class JsRuntimeExtensions
                 new CustomJsonStringEnumConverter(),
                 new CustomStringBooleanConverter(),
                 new CustomJsonTimeSpanConverter(),
-                new CustomStringIntegerConverter()
+                new CustomStringIntegerConverter(),
+                new CustomDateTimeNullableConverter()
             }
         });
     }
