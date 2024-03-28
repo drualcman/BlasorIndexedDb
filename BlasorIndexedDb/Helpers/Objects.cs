@@ -285,7 +285,7 @@
                 bool isEnum = property.GetValue(sender).GetType().IsEnum;
                 if(!isEnum)
                 {
-                    if(property.GetType() == typeof(object))
+                    if(property.PropertyType == typeof(object))
                     {
                         result.Append(ToJson(property.GetValue(sender)));
                     }
