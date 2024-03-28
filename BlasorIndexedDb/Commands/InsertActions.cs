@@ -83,7 +83,7 @@
                             int p = properties.Length;
                             for (int a = 0; a < p; a++)
                             {
-                                if (Setup.Tables.InTables(t.Name))
+                                if (Setup.Tables.InTables(properties[a].Name))
                                 {
                                     if (ObjectConverter.IsGenericList(properties[a].GetValue(rows[i])))
                                     {
