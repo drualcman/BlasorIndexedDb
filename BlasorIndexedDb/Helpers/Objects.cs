@@ -1,4 +1,6 @@
-﻿namespace BlazorIndexedDb.Helpers
+﻿using System.Globalization;
+
+namespace BlazorIndexedDb.Helpers
 {
     /// <summary>
     /// Tools to work with objects
@@ -319,7 +321,8 @@
                     {
                         try
                         {
-                            result.Append($"{property.GetValue(sender)}");
+                            decimal toNumber = Convert.ToDecimal(property.GetValue(sender));
+                            result.Append($"{toNumber.ToString(CultureInfo.InvariantCulture)}");
                         }
                         catch
                         {
