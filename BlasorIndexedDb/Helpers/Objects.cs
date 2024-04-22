@@ -28,7 +28,7 @@ namespace BlazorIndexedDb.Helpers
             StringBuilder jsonString = new StringBuilder();
             jsonString.Append("[ ");
             int c = sender.Count;
-            for(int i = 0; i < c; i++)
+            for (int i = 0; i < c; i++)
             {
                 if(Settings.EnableDebug) Console.WriteLine($"ToJson parse generic list {sender[i].GetType().Name}");
                 jsonString.Append(ToJson(sender[i]));
@@ -70,7 +70,8 @@ namespace BlazorIndexedDb.Helpers
             jsonString.Append("[ ");
             foreach(TModel item in sender)
             {
-                if(Settings.EnableDebug) Console.WriteLine($"ToJson parse IEnumerable item {item.GetType().Name}");
+
+                if (Settings.EnableDebug) Console.WriteLine($"ToJson parse IEnumerable item {item.GetType().Name}");
                 jsonString.Append(ToJson(item));
                 jsonString.Append(",");
             }
@@ -89,73 +90,79 @@ namespace BlazorIndexedDb.Helpers
         {
             StringBuilder jsonString = new StringBuilder();
 
-            Type t = sender.GetType();
-
-            if(Settings.EnableDebug) Console.WriteLine($"ToJson parse model {typeof(TModel).Name}");
-
-            if(IsGenericList(sender))
+            if (sender is not null)
             {
-                if(Settings.EnableDebug) Console.WriteLine("ToJson {0} IsGenericList = true", t.Name);
 
-                System.Collections.IList toSend = sender as System.Collections.IList;
-                if(toSend is not null)
-                    jsonString.Append(ToJson(toSend));
+                Type t = sender.GetType();
+
+                if (Settings.EnableDebug) Console.WriteLine($"ToJson parse model {typeof(TModel).Name}");
+
+                if (IsGenericList(sender))
+                {
+                    if (Settings.EnableDebug) Console.WriteLine("ToJson {0} IsGenericList = true", t.Name);
+
+                    System.Collections.IList toSend = sender as System.Collections.IList;
+                    if (toSend is not null)
+                        jsonString.Append(ToJson(toSend));
+                    else
+                    {
+                        if (Settings.EnableDebug) Console.WriteLine("ToJson {0} is null", t.Name);
+                        jsonString.Append($"null");
+                    }
+                }
                 else
                 {
-                    if(Settings.EnableDebug) Console.WriteLine("ToJson {0} is null", t.Name);
-                    jsonString.Append($"null");
-                }
-            }
-            else
-            {
-                //read all properties
-                PropertyInfo[] properties = GetProperties(t);
+                    //read all properties
+                    PropertyInfo[] properties = GetProperties(t);
 
-                jsonString.Append("{ ");
-                for(int i = 0; i < properties.Length; i++)
-                {
-                    PropertyOptions property = new PropertyOptions(properties[i]);
-                    if(!property.ToIgnore)
+                    jsonString.Append("{ ");
+                    for (int i = 0; i < properties.Length; i++)
                     {
-                        if(Settings.Tables.InTables<TModel>())
+                        PropertyOptions property = new PropertyOptions(properties[i]);
+                        if (!property.ToIgnore)
                         {
-                            if(Settings.EnableDebug) Console.WriteLine("ToJson parse Property {0} not ignored", properties[i].Name);
-                            jsonString.Append($"\"{property.Name}\":");
-                            if(IsGenericList(properties[i]))
+                            if (Settings.Tables.InTables<TModel>())
                             {
-                                if(Settings.EnableDebug) Console.WriteLine("ToJson Property {0} IsGenericList = true", properties[i].Name);
-                                jsonString.Append(ToJson(properties[i].GetValue(sender)));
+                                if (Settings.EnableDebug) Console.WriteLine("ToJson parse Property {0} not ignored", properties[i].Name);
+                                jsonString.Append($"\"{property.Name}\":");
+                                if (IsGenericList(properties[i]))
+                                {
+                                    if (Settings.EnableDebug) Console.WriteLine("ToJson Property {0} IsGenericList = true", properties[i].Name);
+                                    jsonString.Append(ToJson(properties[i].GetValue(sender)));
+                                }
+                                else
+                                {
+                                    jsonString.Append(ValueToString(sender, properties[i], properties[i].PropertyType.Name));
+                                }
                             }
                             else
                             {
-                                jsonString.Append(ValueToString(sender, properties[i], properties[i].PropertyType.Name));
+                                //because is other table check if have a relationship
+                                if (!string.IsNullOrEmpty(property.FieldName))
+                                {
+                                    jsonString.Append($"\"{property.FieldName}\":");
+                                    jsonString.Append(ValueToString(sender, property.StoreIndexName, properties[i]));
+                                }
+                                else
+                                {
+                                    //is not other table parse the model directly
+                                    jsonString.Append($"\"{property.Name}\":");
+                                    jsonString.Append(ValueToString(sender, properties[i], properties[i].PropertyType.Name));
+                                }
                             }
+                            jsonString.Append(",");
                         }
                         else
-                        {
-                            //because is other table check if have a relationship
-                            if(!string.IsNullOrEmpty(property.FieldName))
-                            {
-                                jsonString.Append($"\"{property.FieldName}\":");
-                                jsonString.Append(ValueToString(sender, property.StoreIndexName, properties[i]));
-                            }
-                            else
-                            {
-                                //is not other table parse the model directly
-                                jsonString.Append($"\"{property.Name}\":");
-                                jsonString.Append(ValueToString(sender, properties[i], properties[i].PropertyType.Name));
-                            }
-                        }
-                        jsonString.Append(",");
+                            if (Settings.EnableDebug) Console.WriteLine("ToJson parse Property {0} ignored", properties[i].Name);
                     }
-                    else
-                        if(Settings.EnableDebug) Console.WriteLine("ToJson parse Property {0} ignored", properties[i].Name);
-                }
-                jsonString.Remove(jsonString.Length - 1, 1);
-                jsonString.Append("}");
+                    jsonString.Remove(jsonString.Length - 1, 1);
+                    jsonString.Append("}");
 
+                }
+                return jsonString.ToString();
             }
-            return jsonString.ToString();
+            else
+                return "null";
         }
         #endregion
 
