@@ -154,7 +154,7 @@ class jsDB {
         //set the values equal on the merged object
         for (let attrname in obj1) { obj3[attrname] = obj1[attrname]; }
         for (let attrname1 in obj3) {
-            if (obj2[attrname1]) obj3[attrname1] = obj2[attrname1];     //only if the property exists update
+            if (typeof obj2[attrname1] !== 'undefined') obj3[attrname1] = obj2[attrname1];     //only if the property exists update
             else continue;
         }
         return obj3;
