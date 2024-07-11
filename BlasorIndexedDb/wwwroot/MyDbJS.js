@@ -711,7 +711,7 @@ let Conn = (function () {
         SelectId: (table, id, database, version, models) => new Promise(function (ok, bad) {
             try {
                 db.SetDataBaseName(database, version, models);
-                db.Select(table, id).then(function (result) {
+                db.SelectId(table, id).then(function (result) {
                     ok(result);
                 }).catch(function (error) {
                     bad(error);
