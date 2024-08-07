@@ -154,7 +154,7 @@ class jsDB {
         //set the values equal on the merged object
         for (let attrname in obj1) { obj3[attrname] = obj1[attrname]; }
         for (let attrname1 in obj3) {
-            if (obj2[attrname1]) obj3[attrname1] = obj2[attrname1];     //only if the property exists update
+            if (typeof obj2[attrname1] !== 'undefined') obj3[attrname1] = obj2[attrname1];     //only if the property exists update
             else continue;
         }
         return obj3;
@@ -711,7 +711,7 @@ let Conn = (function () {
         SelectId: (table, id, database, version, models) => new Promise(function (ok, bad) {
             try {
                 db.SetDataBaseName(database, version, models);
-                db.Select(table, id).then(function (result) {
+                db.SelectId(table, id).then(function (result) {
                     ok(result);
                 }).catch(function (error) {
                     bad(error);
