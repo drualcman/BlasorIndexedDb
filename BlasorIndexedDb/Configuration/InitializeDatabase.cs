@@ -15,9 +15,17 @@ internal class InitializeDatabase
         Setup = setup;
     }
 
+    private string GetAssemblyVersion()
+    {
+        Assembly assembly = Assembly.GetAssembly(typeof(InitializeDatabase));
+        Version version = assembly.GetName().Version;
+        string versionString = version.ToString();
+        return versionString.Replace(".","");
+    }
+
     private Task<IJSObjectReference> GetJSObjectReference(IJSRuntime jsRuntime) =>
         jsRuntime.InvokeAsync<IJSObjectReference>(
-            "import", $"./_content/DrUalcman-BlazorIndexedDb/MyDbJS.js?v={DateTime.Today.Year}{DateTime.Today.Month}{DateTime.Today.Day}").AsTask();
+            "import", $"./_content/DrUalcman-BlazorIndexedDb/MyDbJS.js?a={GetAssemblyVersion()}&v={DateTime.Today.Year}{DateTime.Today.Month}{DateTime.Today.Day}").AsTask();
 
 
     /// <summary>
@@ -52,7 +60,7 @@ internal class InitializeDatabase
         bool result;
         if (DatabaseModels.Contains(dbName)) result = true;
         else result = false;
-        Console.WriteLine($"Database Initialized from c# name 1 =>: {result}");
+        if (Settings.EnableDebug) Console.WriteLine($"Database Initialized from c# name =>: {result}");
         return result;
     }
 
