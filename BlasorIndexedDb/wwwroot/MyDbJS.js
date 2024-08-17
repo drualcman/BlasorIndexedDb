@@ -236,10 +236,10 @@ class jsDB {
      * Request all data from a table name. Return the data or JSON response
      * @param {string} table table name to request the data
      */
-    Select(table) {
+    async Select(table) {
         const context = this;
         try {
-            return new Promise(function (resolve, error) {
+            return new Promise((resolve, error) => {
                 if (table == null) error([context.SetResponse(false, 'Not store name selected')]);
                 else {
                     const dbconnect = context.OpenDB().open(context.DB_NAME, context.DB_VERSION);
@@ -254,9 +254,10 @@ class jsDB {
                                 resolve([context.SetResponse(false, `${table}: ${ev.target.error.message}`)]);
                                 console.warn(`${table}: ${ev.target.error.message}`);
                             };
-                            request.onsuccess = ev => {
+                            request.onsuccess = async ev => {
                                 db.close();
-                                resolve(request.result);
+                                const data = await JsonToBytes(request.result);
+                                resolve(data);
                             };
                         } catch (e) {
                             db.close();
@@ -279,9 +280,9 @@ class jsDB {
      * @param {string} table table name
      * @param {any} id id value
      */
-    SelectId(table, id) {
+    async SelectId(table, id) {
         const context = this;
-        return new Promise(function (resolve, error) {
+        return new Promise((resolve, error) => {
             if (table == null) error([context.SetResponse(false, 'Not store name selected')]);
             else {
                 const dbconnect = context.OpenDB().open(context.DB_NAME, context.DB_VERSION);
@@ -290,15 +291,17 @@ class jsDB {
                     try {
                         const transaction = db.transaction(table, 'readonly');
                         const store = transaction.objectStore(table);
-                        const request = store.getAll(id);
+                        const range = IDBKeyRange.only(value);
+                        const request = store.getAll(range);
                         request.onerror = ev => {
                             db.close();
                             resolve([context.SetResponse(false, `${table}.${id}: ${ev.target.error.message}`)]);
                             console.warn(`${table},${id}: ${ev.target.error.message}`);
                         };
-                        request.onsuccess = () => {
+                        request.onsuccess = async () => {
                             db.close();
-                            resolve(request.result);
+                            const data = await JsonToBytes(request.result);
+                            resolve(data);
                         }
                     } catch (e) {
                         db.close();
@@ -314,9 +317,9 @@ class jsDB {
      * @param {string} column column name to filter
      * @param {any} value value for the filter
      */
-    SelectWhere(table, column, value) {
+    async SelectWhere(table, column, value) {
         const context = this;
-        return new Promise(function (resolve, error) {
+        return new Promise((resolve, error) => {
             if (table == null) error([context.SetResponse(false, 'Not store name selected')]);
             else {
                 const dbconnect = context.OpenDB().open(context.DB_NAME, context.DB_VERSION);
@@ -326,15 +329,17 @@ class jsDB {
                         const transaction = db.transaction(table, 'readonly');
                         const store = transaction.objectStore(table);
                         const index = store.index(column);
-                        const request = index.getAll(value);
+                        const range = IDBKeyRange.only(value);
+                        const request = index.getAll(range);
                         request.onerror = ev => {
                             db.close();
                             resolve([context.SetResponse(false, `${table}.${column}.${value}: ${ev.target.error.message}`)]);
                             console.warn(`${table}.${column}.${value}: ${ev.target.error.message}`);
                         };
-                        request.onsuccess = () => {
+                        request.onsuccess = async () => {
                             db.close();
-                            resolve(request.result);
+                            const data = await JsonToBytes(request.result);
+                            resolve(data);
                         }
                     } catch (e) {
                         db.close();
@@ -351,14 +356,14 @@ class jsDB {
      * @param {string} table table name
      * @param {JSON} data data with the model format to insert
      */
-    Insert(table, data) {
+    async Insert(table, data) {
         const context = this;
         let transactionResult = new Array();
-        return new Promise(function (ok, bad) {
+        return new Promise((ok, bad) => {
             if (table == null) bad([context.SetResponse(false, 'Not store name selected')]);
             else {
                 try {
-                    let result = new Promise(function (resolve, error) {
+                    let result = new Promise((resolve, error) => {
                         try {
                             if (!context.IsArray(data)) {
                                 let array = new Array();
@@ -442,14 +447,14 @@ class jsDB {
      * @param {string} table table name
      * @param {JSON} data data with the model format to update
      */
-    Update(table, data) {
+    async Update(table, data) {
         const context = this;
         let transactionResult = new Array();
-        return new Promise(function (ok, bad) {
+        return new Promise((ok, bad) => {
             if (table == null) bad([context.SetResponse(false, 'Not store name selected')]);
             else {
                 try {
-                    let result = new Promise(function (resolve, error) {
+                    let result = new Promise((resolve, error) => {
                         try {
                             if (!context.IsArray(data)) {
                                 let array = new Array();
@@ -537,9 +542,9 @@ class jsDB {
      * @param {string} table table name
      * @param {any} id value from the keypath
      */
-    Delete(table, id) {
+    async Delete(table, id) {
         const context = this;
-        return new Promise(function (resolve, error) {
+        return new Promise((resolve, error) => {
             if (table == null) error([context.SetResponse(false, 'Not store name selected')]);
             else {
                 const dbconnect = context.OpenDB().open(context.DB_NAME, context.DB_VERSION);
@@ -571,9 +576,9 @@ class jsDB {
      * Delete all the data from a table. Alway return a JSON response
      * @param {string} table table name
      */
-    Clean(table) {
+    async Clean(table) {
         const context = this;
-        return new Promise(function (resolve, error) {
+        return new Promise((resolve, error) => {
             if (table == null) error([context.SetResponse(false, 'Not store name selected')]);
             else {
                 const dbconnect = context.OpenDB().open(context.DB_NAME, context.DB_VERSION);
@@ -605,9 +610,9 @@ class jsDB {
      * Drop a database.
      * @param {string} table table name
      */
-    Drop(database) {
+    async Drop(database) {
         const context = this;
-        return new Promise(function (resolve, error) {
+        return new Promise((resolve, error) => {
             if (database == null) error(context.SetResponse(false, 'Not database name selected'));
             else {
                 const dbconnect = context.OpenDB();
@@ -649,7 +654,12 @@ class jsDB {
             reader.addEventListener('error', reject);
             reader.readAsArrayBuffer(blob);
         });
-    }
+    }   
+}
+async function JsonToBytes(data) {
+    const jsonString = JSON.stringify(data);
+    const encoder = new TextEncoder();
+    return encoder.encode(jsonString);
 }
 
 let Conn = (function () {
@@ -659,7 +669,7 @@ let Conn = (function () {
          * Initializing instance of a DB with a models send
          * @param {any} dbModel
         */
-        Init: (dbModel) => new Promise(function (ok, bad) {
+        Init: (dbModel) => new Promise((ok, bad) => {
             try {
                 db = new jsDB();
                 db.Initialize(JSON.parse(dbModel)).then(() => {
@@ -673,7 +683,7 @@ let Conn = (function () {
                 bad(`Init: ${e.message}`);
             }
         }),
-        Connected: (database, version) => new Promise(function (ok, bad) {
+        Connected: (database, version) => new Promise((ok, bad) => {
             db.SetDataBaseName(database, version, null);
             try {
                 ok(db.Connected());
@@ -688,10 +698,10 @@ let Conn = (function () {
          * @param {string} version database version
          * @param {string} models models to use
          */
-        Select: (table, database, version, models) => new Promise(function (ok, bad) {
+        Select: (table, database, version, models) => new Promise(async (ok, bad) => {
             try {
                 db.SetDataBaseName(database, version, models);
-                db.Select(table).then(function (result) {
+                await db.Select(table).then(function (result) {
                     ok(result);
                 }).catch(function (error) {
                     bad(error);
@@ -708,10 +718,10 @@ let Conn = (function () {
          * @param {string} version database version
          * @param {string} models models to use
          */
-        SelectId: (table, id, database, version, models) => new Promise(function (ok, bad) {
+        SelectId: (table, id, database, version, models) => new Promise(async (ok, bad) => {
             try {
                 db.SetDataBaseName(database, version, models);
-                db.SelectId(table, id).then(function (result) {
+                await db.SelectId(table, id).then(function (result) {
                     ok(result);
                 }).catch(function (error) {
                     bad(error);
@@ -729,10 +739,10 @@ let Conn = (function () {
          * @param {string} version database version
          * @param {string} models models to use
          */
-        SelectWhere: (table, column, value, database, version, models) => new Promise(function (ok, bad) {
+        SelectWhere: (table, column, value, database, version, models) => new Promise(async (ok, bad) => {
             try {
                 db.SetDataBaseName(database, version, models);
-                db.Select(table, column, value).then(function (result) {
+                await db.Select(table, column, value).then(function (result) {
                     ok(result);
                 }).catch(function (error) {
                     bad(error);
@@ -749,10 +759,10 @@ let Conn = (function () {
          * @param {string} version database version
          * @param {string} models models to use
          */
-        Insert: (table, data, database, version, models) => new Promise(function (ok, bad) {
+        Insert: (table, data, database, version, models) => new Promise(async (ok, bad) => {
             try {
                 db.SetDataBaseName(database, version, models);
-                db.Insert(table, JSON.parse(data)).then(function (result) {
+                await db.Insert(table, JSON.parse(data)).then(function (result) {
                     ok(result);
                 }).catch(function (error) {
                     bad(error);
@@ -769,10 +779,10 @@ let Conn = (function () {
          * @param {string} version database version
          * @param {string} models models to use
          */
-        Update: (table, data, database, version, models) => new Promise(function (ok, bad) {
+        Update: (table, data, database, version, models) => new Promise(async (ok, bad) => {
             try {
                 db.SetDataBaseName(database, version, models);
-                db.Update(table, JSON.parse(data)).then(function (result) {
+                await db.Update(table, JSON.parse(data)).then(function (result) {
                     ok(result);
                 }).catch(function (error) {
                     bad(error);
@@ -789,10 +799,10 @@ let Conn = (function () {
          * @param {string} version database version
          * @param {string} models models to use
          */
-        Delete: (table, id, database, version, models) => new Promise(function (ok, bad) {
+        Delete: (table, id, database, version, models) => new Promise(async (ok, bad) => {
             try {
                 db.SetDataBaseName(database, version, models);
-                db.Delete(table, id).then(function (result) {
+                await db.Delete(table, id).then(function (result) {
                     ok(result);
                 }).catch(function (error) {
                     bad(error);
@@ -808,10 +818,10 @@ let Conn = (function () {
          * @param {string} version database version
          * @param {string} models models to use
          */
-        Clean: (table, database, version, models) => new Promise(function (ok, bad) {
+        Clean: (table, database, version, models) => new Promise(async (ok, bad) => {
             try {
                 db.SetDataBaseName(database, version, models);
-                db.Clean(table).then(function (result) {
+                await db.Clean(table).then(function (result) {
                     ok(result);
                 }).catch(function (error) {
                     bad(error);
@@ -827,11 +837,10 @@ let Conn = (function () {
          * @param {string} version database version
          * @param {string} models models to use
          */
-        Drop: (database) => new Promise(function (ok, bad) {
+        Drop: (database) => new Promise(async (ok, bad) => {
             try {
                 console.log(1);
-                db.Drop(database).then(function (result) {
-                    console.log(2);
+                await db.Drop(database).then(function (result) {
                     ok(result);
                 }).catch(function (error) {
                     console.log(3);
@@ -849,7 +858,7 @@ let Conn = (function () {
          * @param {string} version database version
          * @param {string} models models to use
          */
-        HelperArrayBufferToBlob: (buffer, type, database, version, models) => new Promise(function (ok, bad) {
+        HelperArrayBufferToBlob: (buffer, type, database, version, models) => new Promise((ok, bad) => {
             try {
                 db.SetDataBaseName(database, version, models);
                 db.HelperArrayBufferToBlob(buffer, type).then(function (result) {
@@ -868,7 +877,7 @@ let Conn = (function () {
          * @param {string} version database version
          * @param {string} models models to use
          */
-        HelperBlobToArrayBuffer: (blob, database, version, models) => new Promise(function (ok, bad) {
+        HelperBlobToArrayBuffer: (blob, database, version, models) => new Promise((ok, bad) => {
             try {
                 db.SetDataBaseName(database, version, models);
                 db.HelperBlobToArrayBuffer(blob).then(function (result) {

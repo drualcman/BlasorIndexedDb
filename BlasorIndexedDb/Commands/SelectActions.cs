@@ -1,6 +1,4 @@
-﻿using BlazorIndexedDb.Extensions;
-
-namespace BlazorIndexedDb.Commands
+﻿namespace BlazorIndexedDb.Commands
 {
     /// <summary>
     /// Select commands
@@ -30,22 +28,19 @@ namespace BlazorIndexedDb.Commands
         /// <returns></returns>
         public async ValueTask<List<TModel>> DbSelect<TModel>()
         {
-            List<TModel> data;
-
+            List<TModel> data = new List<TModel>();
             try
             {
                 IJSObjectReference jsRuntime = await InitializeDatabase.GetIJSObjectReference(JS, Setup);
-                data = await jsRuntime.GetJsonResult<List<TModel>>("MyDb.Select", Setup.Tables.GetTable<TModel>(), Setup.DBName, Setup.Version, Setup.ModelsAsJson);
+                byte[] dataBytes = await jsRuntime.InvokeAsync<byte[]>("MyDb.Select", Setup.Tables.GetTable<TModel>(), Setup.DBName, Setup.Version, Setup.ModelsAsJson);
+                data = DeserializeData<TModel>(dataBytes);
             }
             catch (Exception ex)
             {
                 if (Settings.EnableDebug) Console.WriteLine($"{Setup.DBName} => SelectActions exception: {ex}");
                 throw new ResponseException(nameof(DbSelect), Setup.Tables.GetTable<TModel>(), ex.Message, ex);
-                //return null;
             }
-
             return data;
-
         }
 
         /// <summary>
@@ -59,21 +54,18 @@ namespace BlazorIndexedDb.Commands
         public async ValueTask<List<TModel>> DbSelect<TModel>([NotNull] string column, [NotNull] object value)
         {
             List<TModel> data;
-
             try
             {
                 IJSObjectReference jsRuntime = await InitializeDatabase.GetIJSObjectReference(JS, Setup);
-                data = await jsRuntime.GetJsonResult<List<TModel>>("MyDb.SelectWhere", Setup.Tables.GetTable<TModel>(), column, value, Setup.DBName, Setup.Version, Setup.ModelsAsJson);
+                byte[] dataBytes = await jsRuntime.GetJsonResult<byte[]>("MyDb.SelectWhere", Setup.Tables.GetTable<TModel>(), column, value, Setup.DBName, Setup.Version, Setup.ModelsAsJson);
+                data = DeserializeData<TModel>(dataBytes);
             }
             catch (Exception ex)
             {
                 if (Settings.EnableDebug) Console.WriteLine($"{Setup.DBName} => SelectActions exception: {ex}");
                 throw new ResponseException(nameof(DbSelect), Setup.Tables.GetTable<TModel>(), ex.Message, ex);
-                //return null;
             }
-
             return data;
-
         }
         #endregion
 
@@ -91,7 +83,8 @@ namespace BlazorIndexedDb.Commands
             try
             {
                 IJSObjectReference jsRuntime = await InitializeDatabase.GetIJSObjectReference(JS, Setup);
-                List<TModel> data = await jsRuntime.InvokeAsync<List<TModel>>("MyDb.SelectId", Setup.Tables.GetTable<TModel>(), id, Setup.DBName, Setup.Version, Setup.ModelsAsJson);
+                byte[] dataBytes = await jsRuntime.InvokeAsync<byte[]>("MyDb.SelectId", Setup.Tables.GetTable<TModel>(), id, Setup.DBName, Setup.Version, Setup.ModelsAsJson);
+                List<TModel> data = DeserializeData<TModel>(dataBytes);
                 if (data is not null && data.Any())
                     return data[0];
                 else
@@ -103,7 +96,17 @@ namespace BlazorIndexedDb.Commands
                 return null;
             }
         }
-        #endregion
+        #endregion 
+
+        private static List<TModel> DeserializeData<TModel>(byte[] dataBytes)
+        {
+            return JsonSerializer.Deserialize<List<TModel>>(dataBytes, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+                AllowTrailingCommas = true,
+                ReadCommentHandling = JsonCommentHandling.Skip
+            });
+        }
 
     }
 }

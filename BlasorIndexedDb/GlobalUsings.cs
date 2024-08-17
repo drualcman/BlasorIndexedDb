@@ -1,6 +1,7 @@
 global using BlazorIndexedDb.Commands;
 global using BlazorIndexedDb.Configuration;
 global using BlazorIndexedDb.Converters;
+global using BlazorIndexedDb.Extensions;
 global using BlazorIndexedDb.Helpers;
 global using BlazorIndexedDb.Models;
 global using BlazorIndexedDb.Store;
