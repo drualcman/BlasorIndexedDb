@@ -1,4 +1,6 @@
-﻿namespace BlazorIndexedDb.Commands
+﻿using System.Xml.Linq;
+
+namespace BlazorIndexedDb.Commands
 {
     /// <summary>
     /// Select commands
@@ -103,8 +105,17 @@
             return JsonSerializer.Deserialize<List<TModel>>(dataBytes, new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true,
+                IncludeFields = true,
                 AllowTrailingCommas = true,
-                ReadCommentHandling = JsonCommentHandling.Skip
+                ReadCommentHandling = JsonCommentHandling.Skip,
+                Converters =
+                {
+                    new CustomJsonStringEnumConverter(),
+                    new CustomStringBooleanConverter(),
+                    new CustomJsonTimeSpanConverter(),
+                    new CustomStringIntegerConverter(),
+                    new CustomDateTimeNullableConverter()
+                }
             });
         }
 

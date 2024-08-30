@@ -3,14 +3,14 @@
 	<PropertyGroup>
 		<TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<Version>1.6.43</Version>
+		<Version>1.6.44</Version>
 		<Authors>Sergi Ortiz Gomez</Authors>
 		<Company>DrUalcman</Company>
 		<Description>Manage IndexedDb from Blazor WebAssembly applications. Create a StoreDbContext similar how is working in EF. Please report any bug or changes you need using our contact form in the web site. Thanks.</Description>
 		<Copyright>Free</Copyright>
 		<PackageLicenseFile>License.txt</PackageLicenseFile>
 		<PackageTags>webassembly, blazor, indexedDb, interop, javascript, database</PackageTags>
-		<PackageReleaseNotes>Improved possible cache issue when update nuget using assembly version.Fixed bug #5. Update nugets dependencies.</PackageReleaseNotes>
+		<PackageReleaseNotes>Improvements how to deserialize timespan, string, boolean, enum and datetime.</PackageReleaseNotes>
 		<RepositoryUrl>https://github.com/drualcman/BlasorIndexedDb</RepositoryUrl>
 		<RepositoryType>Git</RepositoryType>
 		<PackageId>DrUalcman-BlazorIndexedDb</PackageId>
