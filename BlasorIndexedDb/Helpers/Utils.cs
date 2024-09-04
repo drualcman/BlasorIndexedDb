@@ -10,14 +10,15 @@
 
         internal static CommandResponse CommandResponse(List<ResponseJsDb> response)
         {
-            bool allGood;
+            bool allGood = true;
             int c = response.Count;
             int i = 0;
-            do
+
+            while (i < c && allGood)
             {
                 allGood = response[i].Result;
                 i++;
-            } while(allGood && i < c);
+            }
 
             return new(allGood, allGood ? "All transactions finished with true" : "Some transaction can't be finished", response);
         }

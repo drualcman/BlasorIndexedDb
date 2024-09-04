@@ -18,7 +18,7 @@
         /// <param name="setup"></param>
         public StoreSet(IJSRuntime js, Settings setup)
         {
-            if(Settings.EnableDebug) Console.WriteLine($"StoreSet constructor for: {Utils.GetGenericTypeName(this.GetType())}");
+            if (Settings.EnableDebug) Console.WriteLine($"StoreSet constructor for: {Utils.GetGenericTypeName(this.GetType())}");
             DeleteActions = new(js, setup);
             InsertActions = new(js, setup);
             UpdateActions = new(js, setup);
@@ -55,69 +55,6 @@
         public async Task<List<TModel>> SelectAsync() =>
             await SelectActions.DbSelect<TModel>();
 
-        /// <summary>
-        /// Get a single record from store model
-        /// </summary>
-        /// <param name="id">primary key id to search</param>
-        /// <returns></returns>
-        [Obsolete("Please use GetAcync")]
-        public async Task<TModel> SelectAsync(object id) =>
-            await SelectActions.SingleRecord<TModel>(id);
-
-        /// <summary>
-        /// Get a single record from store model
-        /// </summary>
-        /// <param name="id">primary key id to search</param>
-        /// <returns></returns>   
-        [Obsolete("Please use GetAcync")]
-        public async Task<TModel> SelectAsync(int id) =>
-            await SelectActions.SingleRecord<TModel>(id);
-
-        /// <summary>
-        /// Get a single record from store model
-        /// </summary>
-        /// <param name="id">primary key id to search</param>
-        /// <returns></returns>  
-        [Obsolete("Please use GetAcync")]
-        public async Task<TModel> SelectAsync(double id) =>
-            await SelectActions.SingleRecord<TModel>(id);
-
-        /// <summary>
-        /// Get a single record from store model
-        /// </summary>
-        /// <param name="id">primary key id to search</param>
-        /// <returns></returns> 
-        [Obsolete("Please use GetAcync")]
-        public async Task<TModel> SelectAsync(decimal id) =>
-            await SelectActions.SingleRecord<TModel>(id);
-
-        /// <summary>
-        /// Get a single record from store model
-        /// </summary>
-        /// <param name="id">primary key id to search</param>
-        /// <returns></returns> 
-        [Obsolete("Please use GetAcync")]
-        public async Task<TModel> SelectAsync(long id) =>
-            await SelectActions.SingleRecord<TModel>(id);
-
-        /// <summary>
-        /// Get a single record from store model
-        /// </summary>
-        /// <param name="id">primary key id to search</param>
-        /// <returns></returns>  
-        [Obsolete("Please use GetAcync")]
-        public async Task<TModel> SelectAsync(string id) =>
-            await SelectActions.SingleRecord<TModel>(id);
-
-        /// <summary>
-        /// Get a single record from store model
-        /// </summary>
-        /// <param name="id">primary key id to search</param>
-        /// <returns></returns>   
-        [Obsolete("Please use GetAcync")]
-        public async Task<TModel> SelectAsync(DateTime id) =>
-            await SelectActions.SingleRecord<TModel>(id);
-        
         /// <summary>
         /// Get a single record from store model
         /// </summary>
@@ -183,7 +120,7 @@
         public async Task<CommandResponse> AddAsync(TModel toAdd, bool isOffline = false)
         {
             ResponseJsDb result;
-            if(isOffline)
+            if (isOffline)
                 result = await InsertActions.DbInserOffline(toAdd);
             else
                 result = await InsertActions.DbInsert(toAdd);
@@ -199,23 +136,29 @@
         /// <returns></returns>
         public async Task<CommandResponse> AddAsync(List<TModel> toAdd, bool isOffline = false, int limitRowTansaction = 500)
         {
-            List<ResponseJsDb> result = default;
+            ConcurrentBag<ResponseJsDb> result = new();
 
             List<List<TModel>> rowsList = Split(toAdd, limitRowTansaction);
             List<Task> tasks = new List<Task>();
-            foreach(var rows in rowsList)
+            foreach (var rows in rowsList)
             {
                 tasks.Add(Task.Run(async () =>
                 {
-                    if(isOffline)
-                        result = await InsertActions.DbInserOffline(rows);
+                    List<ResponseJsDb> partialResult;
+                    if (isOffline)
+                        partialResult = await InsertActions.DbInserOffline(rows);
                     else
-                        result = await InsertActions.DbInsert(rows);
+                        partialResult = await InsertActions.DbInsert(rows);
+
+                    foreach (var item in partialResult)
+                    {
+                        result.Add(item);
+                    }
                 }));
             }
             await Task.WhenAll(tasks);
 
-            return Utils.CommandResponse(result);
+            return Utils.CommandResponse(result.ToList());
         }
 
         /// <summary>
@@ -227,7 +170,7 @@
         public async Task<CommandResponse> UpdateAsync(TModel toUpdate, bool isOffline = false)
         {
             ResponseJsDb result;
-            if(isOffline)
+            if (isOffline)
                 result = await UpdateActions.DbUpdateOffLine(toUpdate);
             else
                 result = await UpdateActions.DbUpdate(toUpdate);
@@ -243,22 +186,28 @@
         /// <returns></returns>
         public async Task<CommandResponse> UpdateAsync(List<TModel> toUpdate, bool isOffline = false, int limitRowTansaction = 500)
         {
-            List<ResponseJsDb> result = default;
+            ConcurrentBag<ResponseJsDb> result = new();
 
             List<List<TModel>> rowsList = Split(toUpdate, limitRowTansaction);
             List<Task> tasks = new List<Task>();
-            foreach(var rows in rowsList)
+            foreach (var rows in rowsList)
             {
                 tasks.Add(Task.Run(async () =>
                 {
-                    if(isOffline)
-                        result = await UpdateActions.DbUpdateOffLine(rows);
+                    List<ResponseJsDb> partialResult;
+                    if (isOffline)
+                        partialResult = await UpdateActions.DbUpdateOffLine(rows);
                     else
-                        result = await UpdateActions.DbUpdate(rows);
+                        partialResult = await UpdateActions.DbUpdate(rows);
+
+                    foreach (var item in partialResult)
+                    {
+                        result.Add(item);
+                    }
                 }));
             }
             await Task.WhenAll(tasks);
-            return Utils.CommandResponse(result);
+            return Utils.CommandResponse(result.ToList());
         }
 
         /// <summary>
@@ -308,24 +257,28 @@
         public async Task<CommandResponse> DeleteAsync(DateTime id)
             => Utils.CommandResponse(await DeleteActions.DbDelete<TModel>(id));
 
-        private List<List<TModel>> Split<TModel>(List<TModel> original, int sizeList)
+        private List<List<TModel>> Split(List<TModel> original, int sizeList)
         {
-            List<List<TModel>> Result = new List<List<TModel>>();
-            int Index = 0;
-            if(original is not null)
+            List<List<TModel>> result = new List<List<TModel>>();
+            int index = 0;
+            if (original is not null && original.Count > 0)
             {
-                while(Index < original.Count)
+                while (index < original.Count)
                 {
-                    List<TModel> List = original.GetRange(Index, Math.Min(sizeList, original.Count - Index));
-                    Result.Add(List);
-                    Index += sizeList;
+                    int count = Math.Min(sizeList, original.Count - index);
+                    if (count > 0)
+                    {
+                        List<TModel> List = original.GetRange(index, Math.Min(sizeList, original.Count - index));
+                        result.Add(List);
+                    }
+                    index += sizeList;
                 }
             }
             else
             {
-                Result.Add(new List<TModel>());
+                result.Add(new List<TModel>());
             }
-            return Result;
+            return result;
         }
 
     }
