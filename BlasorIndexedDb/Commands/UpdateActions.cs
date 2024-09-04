@@ -28,10 +28,12 @@
         /// <param name="data">data to insert</param>
         /// <exception cref="ResponseException"></exception>
         /// <returns></returns>
-        internal async ValueTask<ResponseJsDb> DbUpdate<TModel>([NotNull] TModel data)
+        internal async Task<ResponseJsDb> DbUpdate<TModel>([NotNull] TModel data)
         {
-            List<TModel> rows = new List<TModel>();
-            rows.Add(data);
+            List<TModel> rows = new List<TModel>
+            {
+                data
+            };
             List<ResponseJsDb> response = await DbUpdate(rows);
             if (response.Count > 0) return response[0];
             else return new ResponseJsDb { Result = false, Message = "No results" };
@@ -44,7 +46,7 @@
         /// <param name="rows">data to insert</param>
         /// <exception cref="ResponseException"></exception>
         /// <returns></returns>
-        internal async ValueTask<List<ResponseJsDb>> DbUpdate<TModel>([NotNull] List<TModel> rows)
+        internal async Task<List<ResponseJsDb>> DbUpdate<TModel>([NotNull] List<TModel> rows)
         {
             try
             {
@@ -87,10 +89,12 @@
         /// <typeparam name="TModel">Table or store to use</typeparam>
         /// <param name="data">data to insert</param>
         /// <returns></returns>
-        internal async ValueTask<ResponseJsDb> DbUpdateOffLine<TModel>([NotNull] TModel data)
+        internal async Task<ResponseJsDb> DbUpdateOffLine<TModel>([NotNull] TModel data)
         {
-            List<TModel> rows = new List<TModel>();
-            rows.Add(data);
+            List<TModel> rows = new List<TModel>
+            {
+                data
+            };
             List<ResponseJsDb> response = await DbUpdateOffLine(rows);
             if (response.Count > 0) return response[0];
             else return new ResponseJsDb { Result = false, Message = "No results" };
@@ -103,7 +107,7 @@
         /// <param name="rows">data to insert</param>
         /// <exception cref="ResponseException"></exception>
         /// <returns></returns>
-        internal async ValueTask<List<ResponseJsDb>> DbUpdateOffLine<TModel>([NotNull] List<TModel> rows)
+        internal async Task<List<ResponseJsDb>> DbUpdateOffLine<TModel>([NotNull] List<TModel> rows)
         {
             try
             {
@@ -115,7 +119,7 @@
             catch (ResponseException ex)
             {
                 if (Settings.EnableDebug) Console.WriteLine($"{Setup.DBName} => DbUpdateOffLine Model: {ex.StoreName} Error: {ex.Message} PayLoad: {ex.TransactionData}");
-                throw ex;
+                throw;
             }
             catch (Exception ex)
             {

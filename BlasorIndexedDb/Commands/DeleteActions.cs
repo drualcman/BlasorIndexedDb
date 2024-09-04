@@ -29,7 +29,7 @@ namespace BlazorIndexedDb.Commands
         /// <param name="id"></param>
         /// <exception cref="ResponseException"></exception>
         /// <returns></returns>
-        internal async ValueTask<ResponseJsDb> DbDelete<TModel>([NotNull] int id)
+        internal async Task<ResponseJsDb> DbDelete<TModel>([NotNull] int id)
         {
             if (Settings.EnableDebug) Console.WriteLine($"{Setup.DBName} => DbDelete Model: {Setup.Tables.GetTable<TModel>()}.");
             try
@@ -60,7 +60,7 @@ namespace BlazorIndexedDb.Commands
         /// <param name="id">id from the row to delete</param>
         /// <exception cref="ResponseException"></exception>
         /// <returns></returns>
-        internal async ValueTask<ResponseJsDb> DbDelete<TModel>([NotNull] double id)
+        internal async Task<ResponseJsDb> DbDelete<TModel>([NotNull] double id)
         {
             try
             {
@@ -92,7 +92,7 @@ namespace BlazorIndexedDb.Commands
         /// <param name="id">id from the row to delete</param>
         /// <exception cref="ResponseException"></exception>
         /// <returns></returns>
-        internal async ValueTask<ResponseJsDb> DbDelete<TModel>([NotNull] decimal id)
+        internal async Task<ResponseJsDb> DbDelete<TModel>([NotNull] decimal id)
         {
             try
             {
@@ -123,7 +123,7 @@ namespace BlazorIndexedDb.Commands
         /// <param name="id">id from the row to delete</param>
         /// <exception cref="ResponseException"></exception>
         /// <returns></returns>
-        internal async ValueTask<ResponseJsDb> DbDelete<TModel>([NotNull] string id)
+        internal async Task<ResponseJsDb> DbDelete<TModel>([NotNull] string id)
         {
             try
             {
@@ -153,7 +153,7 @@ namespace BlazorIndexedDb.Commands
         /// <param name="id">id from the row to delete</param>
         /// <exception cref="ResponseException"></exception>
         /// <returns></returns>
-        internal async ValueTask<ResponseJsDb> DbDelete<TModel>([NotNull] DateTime id)
+        internal async Task<ResponseJsDb> DbDelete<TModel>([NotNull] DateTime id)
         {
             try
             {
@@ -180,7 +180,7 @@ namespace BlazorIndexedDb.Commands
         /// Remove the database from indexed db
         /// </summary>
         /// <returns></returns>
-        internal async ValueTask<ResponseJsDb> DropDatabase()
+        internal async Task<ResponseJsDb> DropDatabase()
         {
             try
             {

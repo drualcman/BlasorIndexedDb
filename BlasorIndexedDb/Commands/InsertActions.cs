@@ -28,7 +28,7 @@
         /// <param name="data"></param>
         /// <exception cref="ResponseException"></exception>
         /// <returns></returns>
-        internal async ValueTask<ResponseJsDb> DbInsert<TModel>([NotNull] TModel data)
+        internal async Task<ResponseJsDb> DbInsert<TModel>([NotNull] TModel data)
         {
             List<TModel> rows = new List<TModel>
             {
@@ -46,7 +46,7 @@
         /// <param name="rows">data to insert</param>
         /// <exception cref="ResponseException"></exception>
         /// <returns></returns>
-        internal async ValueTask<List<ResponseJsDb>> DbInsert<TModel>([NotNull] List<TModel> rows)
+        internal async Task<List<ResponseJsDb>> DbInsert<TModel>([NotNull] List<TModel> rows)
         {
             try
             {
@@ -85,12 +85,8 @@
                             {
                                 if (Setup.Tables.InTables(properties[a].Name))
                                 {
-                                    if (ObjectConverter.IsGenericList(properties[a].GetValue(rows[i])))
-                                    {
-                                        Console.WriteLine($"{Setup.DBName} => esto es una lista que tendremos que recorrer");
-                                    }
-                                    else
-                                    {
+                                    if (!ObjectConverter.IsGenericList(properties[a].GetValue(rows[i])))
+                                    { 
                                         if (Settings.EnableDebug) Console.WriteLine($"{Setup.DBName} => Add to the store {properties[a].PropertyType.Name} the value from the property {properties[a].Name}");
                                         //is single object add the data to the corresponding store
                                         result.AddRange(await Commands.DbCommand(DbCommands.Insert, properties[a].PropertyType.Name, await ObjectConverter.ToJsonAsync(properties[a].GetValue(rows[i]))));
@@ -129,10 +125,12 @@
         /// <typeparam name="TModel">Table or store to use</typeparam>
         /// <param name="data">data to insert</param>
         /// <returns></returns>
-        internal async ValueTask<ResponseJsDb> DbInserOffline<TModel>([NotNull] TModel data)
+        internal async Task<ResponseJsDb> DbInserOffline<TModel>([NotNull] TModel data)
         {
-            List<TModel> rows = new List<TModel>();
-            rows.Add(data);
+            List<TModel> rows = new List<TModel>
+            {
+                data
+            };
             List<ResponseJsDb> response = await DbInserOffline(rows);
             if (response.Count > 0) return response[0];
             else return new ResponseJsDb { Result = false, Message = "No results" };
@@ -145,7 +143,7 @@
         /// <param name="rows">data to insert</param>
         /// <exception cref="ResponseException"></exception>
         /// <returns></returns>
-        internal async ValueTask<List<ResponseJsDb>> DbInserOffline<TModel>([NotNull] List<TModel> rows)
+        internal async Task<List<ResponseJsDb>> DbInserOffline<TModel>([NotNull] List<TModel> rows)
         {
             try
             {

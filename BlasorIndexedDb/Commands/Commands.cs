@@ -29,7 +29,7 @@ namespace BlazorIndexedDb.Commands
         /// <param name="data"></param>
         /// <exception cref="ResponseException"></exception>
         /// <returns></returns>
-        internal async ValueTask<List<ResponseJsDb>> DbCommand(DbCommands command, string storeName, string data)
+        internal async Task<List<ResponseJsDb>> DbCommand(DbCommands command, string storeName, string data)
         {
             if(Settings.EnableDebug) Console.WriteLine($"{Setup.DBName} => {command} store = {storeName}, data = {data}");
             if(string.IsNullOrEmpty(storeName)) throw new ResponseException(command.ToString(), "StoreName can't be null", data);
@@ -52,7 +52,7 @@ namespace BlazorIndexedDb.Commands
         /// Get is we are connected to a indexed db
         /// </summary>
         /// <returns></returns>
-        internal async ValueTask<string> DbConnected() =>
+        internal async Task<string> DbConnected() =>
             await jsRuntime.GetJsonResult<string>("MyDb.Connected", Setup.DBName, Setup.Version);
     }
 }

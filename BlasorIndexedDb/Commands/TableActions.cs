@@ -27,7 +27,7 @@ namespace BlazorIndexedDb.Commands
         /// <typeparam name="TModel">Table or store to use</typeparam>
         /// <exception cref="ResponseException"></exception>
         /// <returns></returns>
-        internal async ValueTask<ResponseJsDb> DbCleanTable<TModel>()
+        internal async Task<ResponseJsDb> DbCleanTable<TModel>()
         {
             return await DbCleanTable(Setup.Tables.GetTable<TModel>());
         }
@@ -38,7 +38,7 @@ namespace BlazorIndexedDb.Commands
         /// <param name="name"></param>
         /// <exception cref="ResponseException"></exception>
         /// <returns></returns>
-        internal async ValueTask<ResponseJsDb> DbCleanTable([NotNull] string name)
+        internal async Task<ResponseJsDb> DbCleanTable([NotNull] string name)
         {
             try
             {
@@ -52,8 +52,10 @@ namespace BlazorIndexedDb.Commands
                 catch (Exception ex)
                 {
                     if (Settings.EnableDebug) Console.WriteLine($"{Setup.DBName} => DbCleanTable: {name} Error: {ex}");
-                    result = new List<ResponseJsDb>();
-                    result.Add(new ResponseJsDb { Result = false, Message = ex.Message });
+                    result = new List<ResponseJsDb>
+                    {
+                        new ResponseJsDb { Result = false, Message = ex.Message }
+                    };
                 }
                 return result[0];
             }

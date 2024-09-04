@@ -28,7 +28,7 @@ namespace BlazorIndexedDb.Commands
         /// <typeparam name="TModel">Table or store to use</typeparam>
         /// <exception cref="ResponseException"></exception>
         /// <returns></returns>
-        public async ValueTask<List<TModel>> DbSelect<TModel>()
+        public async Task<List<TModel>> DbSelect<TModel>()
         {
             List<TModel> data = new List<TModel>();
             try
@@ -53,7 +53,7 @@ namespace BlazorIndexedDb.Commands
         /// <param name="value">value to compare</param>
         /// <exception cref="ResponseException"></exception>
         /// <returns></returns>
-        public async ValueTask<List<TModel>> DbSelect<TModel>([NotNull] string column, [NotNull] object value)
+        public async Task<List<TModel>> DbSelect<TModel>([NotNull] string column, [NotNull] object value)
         {
             List<TModel> data;
             try
@@ -80,7 +80,7 @@ namespace BlazorIndexedDb.Commands
         /// <param name="id">column to compare</param>
         /// <exception cref="ResponseException"></exception>
         /// <returns></returns>
-        public async ValueTask<TModel> SingleRecord<TModel>([NotNull] object id) where TModel : class
+        public async Task<TModel> SingleRecord<TModel>([NotNull] object id) where TModel : class
         {
             try
             {
