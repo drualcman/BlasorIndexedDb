@@ -839,11 +839,9 @@ let Conn = (function () {
          */
         Drop: (database) => new Promise(async (ok, bad) => {
             try {
-                console.log(1);
                 await db.Drop(database).then(function (result) {
                     ok(result);
                 }).catch(function (error) {
-                    console.log(3);
                     bad(error);
                 });
             } catch (e) {
