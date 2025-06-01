@@ -3,14 +3,14 @@
 	<PropertyGroup>
 		<TargetFrameworks>net6.0;net8.0;net9.0</TargetFrameworks>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<Version>1.8.47</Version>
+		<Version>1.8.48</Version>
 		<Authors>Sergi Ortiz Gomez</Authors>
 		<Company>DrUalcman</Company>
 		<Description>Manage IndexedDb from Blazor WebAssembly applications. Create a StoreDbContext similar how is working in EF. Please report any bug or changes you need using our contact form in the web site. Thanks.</Description>
 		<Copyright>Free</Copyright>
 		<PackageLicenseFile>License.txt</PackageLicenseFile>
 		<PackageTags>webassembly, blazor, indexedDb, interop, javascript, database</PackageTags>
-		<PackageReleaseNotes>Removed support for NET7 because vulnerabilities with JSON.</PackageReleaseNotes>
+		<PackageReleaseNotes>Update license and dependencies</PackageReleaseNotes>
 		<RepositoryUrl>https://github.com/drualcman/BlasorIndexedDb</RepositoryUrl>
 		<RepositoryType>Git</RepositoryType>
 		<PackageId>DrUalcman-BlazorIndexedDb</PackageId>
@@ -38,15 +38,13 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.33" Condition="'$(TargetFramework)' == 'net6.0'" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.10" Condition="'$(TargetFramework)' == 'net8.0'" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.0" Condition="'$(TargetFramework)' == 'net9.0'" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.33" Condition="'$(TargetFramework)' == 'net6.0'" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.10" Condition="'$(TargetFramework)' == 'net8.0'" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.0" Condition="'$(TargetFramework)' == 'net9.0'" />
-		<PackageReference Include="System.Text.Json" Version="6.0.10" Condition="'$(TargetFramework)' == 'net6.0'"/>
-		<PackageReference Include="System.Text.Json" Version="8.0.5" Condition="'$(TargetFramework)' == 'net8.0'"/>
-		<PackageReference Include="System.Text.Json" Version="9.0.0" Condition="'$(TargetFramework)' == 'net9.0'"/>
+		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.36" Condition="'$(TargetFramework)' == 'net6.0'" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.16" Condition="'$(TargetFramework)' == 'net8.0'" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.5" Condition="'$(TargetFramework)' == 'net9.0'" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.36" Condition="'$(TargetFramework)' == 'net6.0'" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.16" Condition="'$(TargetFramework)' == 'net8.0'" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.5" Condition="'$(TargetFramework)' == 'net9.0'" />
+
 	</ItemGroup>
 
 	<ItemGroup>
