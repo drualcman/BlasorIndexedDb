@@ -1,6 +1,4 @@
-﻿using BlazorIndexedDb.Extensions;
-
-namespace BlazorIndexedDb.Commands
+﻿namespace BlazorIndexedDb.Commands
 {
     /// <summary>
     /// Other commands to execute
@@ -31,18 +29,22 @@ namespace BlazorIndexedDb.Commands
         /// <returns></returns>
         internal async Task<List<ResponseJsDb>> DbCommand(DbCommands command, string storeName, string data)
         {
-            if(Settings.EnableDebug) Console.WriteLine($"{Setup.DBName} => {command} store = {storeName}, data = {data}");
-            if(string.IsNullOrEmpty(storeName)) throw new ResponseException(command.ToString(), "StoreName can't be null", data);
-            else if(string.IsNullOrEmpty(data)) throw new ResponseException(command.ToString(), storeName, "Data can't be null");
+            if (Settings.EnableDebug)
+                Console.WriteLine($"{Setup.DBName} => {command} store = {storeName}, data = {data}");
+            if (string.IsNullOrEmpty(storeName))
+                throw new ResponseException(command.ToString(), "StoreName can't be null", data);
+            else if (string.IsNullOrEmpty(data))
+                throw new ResponseException(command.ToString(), storeName, "Data can't be null");
             else
             {
                 try
                 {
                     return await jsRuntime.GetJsonResult<List<ResponseJsDb>>($"MyDb.{command}", storeName, data, Setup.DBName, Setup.Version, Setup.ModelsAsJson);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
-                    if(Settings.EnableDebug) Console.WriteLine($"{Setup.DBName} => Exception: {ex}");
+                    if (Settings.EnableDebug)
+                        Console.WriteLine($"{Setup.DBName} => Exception: {ex}");
                     throw new ResponseException(command.ToString(), storeName, data, ex);
                 }
             }

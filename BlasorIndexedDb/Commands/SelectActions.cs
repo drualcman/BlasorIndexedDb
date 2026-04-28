@@ -1,6 +1,4 @@
-﻿using System.Xml.Linq;
-
-namespace BlazorIndexedDb.Commands
+﻿namespace BlazorIndexedDb.Commands
 {
     /// <summary>
     /// Select commands
@@ -39,7 +37,8 @@ namespace BlazorIndexedDb.Commands
             }
             catch (Exception ex)
             {
-                if (Settings.EnableDebug) Console.WriteLine($"{Setup.DBName} => SelectActions exception: {ex}");
+                if (Settings.EnableDebug)
+                    Console.WriteLine($"{Setup.DBName} => SelectActions exception: {ex}");
                 throw new ResponseException(nameof(DbSelect), Setup.Tables.GetTable<TModel>(), ex.Message, ex);
             }
             return data;
@@ -64,7 +63,8 @@ namespace BlazorIndexedDb.Commands
             }
             catch (Exception ex)
             {
-                if (Settings.EnableDebug) Console.WriteLine($"{Setup.DBName} => SelectActions exception: {ex}");
+                if (Settings.EnableDebug)
+                    Console.WriteLine($"{Setup.DBName} => SelectActions exception: {ex}");
                 throw new ResponseException(nameof(DbSelect), Setup.Tables.GetTable<TModel>(), ex.Message, ex);
             }
             return data;
@@ -94,7 +94,8 @@ namespace BlazorIndexedDb.Commands
             }
             catch (Exception ex)
             {
-                if (Settings.EnableDebug) Console.WriteLine($"{Setup.DBName} => SelectActions exception: {ex}");
+                if (Settings.EnableDebug)
+                    Console.WriteLine($"{Setup.DBName} => SelectActions exception: {ex}");
                 return null;
             }
         }

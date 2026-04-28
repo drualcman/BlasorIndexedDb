@@ -18,7 +18,7 @@
         {
             Setup = setup;
             JS = js;
-            ObjectConverter = new ObjectConverter(setup);
+            ObjectConverter = new ObjectConverter();
         }
 
         /// <summary>
@@ -35,8 +35,10 @@
                 data
             };
             List<ResponseJsDb> response = await DbInsert(rows);
-            if (response.Count > 0) return response[0];
-            else return new ResponseJsDb { Result = false, Message = "No results" };
+            if (response.Count > 0)
+                return response[0];
+            else
+                return new ResponseJsDb { Result = false, Message = "No results" };
         }
 
         /// <summary>
@@ -57,7 +59,8 @@
                 if (c > 0)
                 {
                     List<ResponseJsDb> response = await Commands.DbCommand(DbCommands.Insert, Setup.Tables.GetTable<TModel>(), await ObjectConverter.ToJsonAsync(rows));
-                    if (Settings.EnableDebug) Console.WriteLine($"{Setup.DBName} => Insert response is null {response == null}");
+                    if (Settings.EnableDebug)
+                        Console.WriteLine($"{Setup.DBName} => Insert response is null {response == null}");
                     bool allGood = false;
                     int i = 0;
                     if (response != null)
@@ -70,37 +73,13 @@
                             i++;
                         }
                     }
-                    if (allGood)
-                    {
-                        //need check the object received and do the action into the other tables if have
-                        c = rows.Count;
-                        for (i = 0; i < c; i++)
-                        {
-                            Type t = rows[i].GetType();
 
-                            //read all properties
-                            PropertyInfo[] properties = ObjectConverter.GetProperties(t);
-                            int p = properties.Length;
-                            for (int a = 0; a < p; a++)
-                            {
-                                if (Setup.Tables.InTables(properties[a].Name))
-                                {
-                                    if (!ObjectConverter.IsGenericList(properties[a].GetValue(rows[i])))
-                                    { 
-                                        if (Settings.EnableDebug) Console.WriteLine($"{Setup.DBName} => Add to the store {properties[a].PropertyType.Name} the value from the property {properties[a].Name}");
-                                        //is single object add the data to the corresponding store
-                                        result.AddRange(await Commands.DbCommand(DbCommands.Insert, properties[a].PropertyType.Name, await ObjectConverter.ToJsonAsync(properties[a].GetValue(rows[i]))));
-                                    }
-                                }
-                            }
-
-                        }
-                    }
                 }
                 else
                 {
-                    if (Settings.EnableDebug) Console.WriteLine($"{Setup.DBName} => DbInsert No need insert into {Setup.Tables.GetTable<TModel>()}");
-                        result = new List<ResponseJsDb>{
+                    if (Settings.EnableDebug)
+                        Console.WriteLine($"{Setup.DBName} => DbInsert No need insert into {Setup.Tables.GetTable<TModel>()}");
+                    result = new List<ResponseJsDb>{
                             new ResponseJsDb { Result = true, Message = $"{Setup.DBName} => No need insert into {Setup.Tables.GetTable<TModel>()}!" }
                         };
                 }
@@ -108,12 +87,14 @@
             }
             catch (ResponseException ex)
             {
-                if (Settings.EnableDebug) Console.WriteLine($"{Setup.DBName} => DbInsert Model: {Setup.Tables.GetTable<TModel>()} ResponseException: {ex.Message}");
+                if (Settings.EnableDebug)
+                    Console.WriteLine($"{Setup.DBName} => DbInsert Model: {Setup.Tables.GetTable<TModel>()} ResponseException: {ex.Message}");
                 throw;
             }
             catch (Exception ex)
             {
-                if (Settings.EnableDebug) Console.WriteLine($"{Setup.DBName} => DbInsert Model: {Setup.Tables.GetTable<TModel>()} Exception: {ex.Message}");
+                if (Settings.EnableDebug)
+                    Console.WriteLine($"{Setup.DBName} => DbInsert Model: {Setup.Tables.GetTable<TModel>()} Exception: {ex.Message}");
                 throw new ResponseException(nameof(DbInsert), typeof(TModel).Name, ex.Message, ex);
             }
 
@@ -132,8 +113,10 @@
                 data
             };
             List<ResponseJsDb> response = await DbInserOffline(rows);
-            if (response.Count > 0) return response[0];
-            else return new ResponseJsDb { Result = false, Message = "No results" };
+            if (response.Count > 0)
+                return response[0];
+            else
+                return new ResponseJsDb { Result = false, Message = "No results" };
         }
 
         /// <summary>
@@ -148,12 +131,14 @@
             try
             {
                 List<dynamic> expanded = await AddOflineProperty.AddOfflineAsync(rows);
-                if (Settings.EnableDebug) Console.WriteLine($"{Setup.DBName} => DbInserOffline in model: {Setup.Tables.GetTable<TModel>()}");
+                if (Settings.EnableDebug)
+                    Console.WriteLine($"{Setup.DBName} => DbInserOffline in model: {Setup.Tables.GetTable<TModel>()}");
                 return await DbInsert(expanded);
             }
             catch (ResponseException ex)
             {
-                if (Settings.EnableDebug) Console.WriteLine($"{Setup.DBName} => DbInsert Model: {Setup.Tables.GetTable<TModel>()} Error: {ex.Message}");
+                if (Settings.EnableDebug)
+                    Console.WriteLine($"{Setup.DBName} => DbInsert Model: {Setup.Tables.GetTable<TModel>()} Error: {ex.Message}");
                 throw;
             }
             catch (Exception ex)

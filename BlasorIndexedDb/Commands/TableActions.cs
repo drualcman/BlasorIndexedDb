@@ -1,6 +1,4 @@
-﻿using BlazorIndexedDb.Extensions;
-
-namespace BlazorIndexedDb.Commands
+﻿namespace BlazorIndexedDb.Commands
 {
     /// <summary>
     /// Manage tables
@@ -51,7 +49,8 @@ namespace BlazorIndexedDb.Commands
                 }
                 catch (Exception ex)
                 {
-                    if (Settings.EnableDebug) Console.WriteLine($"{Setup.DBName} => DbCleanTable: {name} Error: {ex}");
+                    if (Settings.EnableDebug)
+                        Console.WriteLine($"{Setup.DBName} => DbCleanTable: {name} Error: {ex}");
                     result = new List<ResponseJsDb>
                     {
                         new ResponseJsDb { Result = false, Message = ex.Message }

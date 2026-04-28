@@ -457,14 +457,6 @@
             <param name="sender"></param>
             <returns></returns>
         </member>
-        <member name="M:BlazorIndexedDb.Helpers.ObjectConverter.ToJson``1(System.Collections.Generic.List{``0})">
-            <summary>
-            Convert into a Json string the model send
-            </summary>
-            <typeparam name="TModel"></typeparam>
-            <param name="sender"></param>
-            <returns></returns>
-        </member>
         <member name="M:BlazorIndexedDb.Helpers.ObjectConverter.ToJson``1(System.Collections.Generic.IEnumerable{``0})">
             <summary>
             Convert into a Json string the model send

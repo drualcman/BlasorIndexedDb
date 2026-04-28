@@ -3,34 +3,34 @@
 
 
 # BlazorIndexedDb
-Manage indexedDb from c# with Blazor. Simple way to interact with IndexedDB similar how you can do with EntityFramework
+Manage IndexedDB from C# with Blazor. A simple way to interact with IndexedDB, similar to how you can do with Entity Framework.
 
 # NuGet installation
 ```PM> Install-Package DrUalcman-BlazorIndexedDb```
 
 ## New version changes coming
-Working on change version control to avoid need to delete the previous database if add, delete or change StoreSet
+Working on changing version control to avoid the need to delete the existing database when adding, removing, or modifying a StoreSet.
 
 # Current features
-Create StoreContext<TStore> from abstract class. Allow multiple StoreContext but dabase name should be different names.
+Create StoreContext<TStore> from abstract class. Allow multiple StoreContext but database name should be different names.
 StoreSet per each model you need into a database.
-Set PrimaKey in the model. Using convention if have property Id or TableNameId or IdTableName then this is used like PrimaryKey AutoIncremental (only if it's a number is autoincremental)
+Set PrimaryKey in the model. Using convention if have property Id or TableNameId or IdTableName then this is used like PrimaryKey AutoIncremental (only if it's a number is autoincremental)
 CRUD from StoreSet
 Select all or one by PrimaryKey or property from StoreSet
-Clean all data in a storeSet
+Clean all data in a StoreSet
 Drop Database
 
 # How to use
-BlazorIndexedDb requires an instance IJSRuntime, should normally already be registered.
+BlazorIndexedDb requires an instance of IJSRuntime, which should normally already be registered.
 
-Create any code first database model you'd like to create and inherit from IndexedDb. You must be use the attribute FieldAttribute to setup the properties.
+Create a code-first database model and inherit from IndexedDb. You must use the FieldAttribute to configure the properties.
 
-Your model (eg. PlayList) should contain an Id property or a property marked with the key attribute.
+Your model (e.g., PlayList) should contain an Id property or a property marked with the key attribute.
 
 ```
     public class PlayList
     {
-        [FieldAttribute(IsKeyPath = true, IsAutoIncemental = false, IsUnique = true)]           //not required from version 1.5.18
+        [FieldAttribute(IsKeyPath = true, IsAutoIncremental = false, IsUnique = true)]           //not required from version 1.5.18
         public string Id { get; set; }
         public string Url { get; set; }
         public string Title { get; set; }
@@ -48,13 +48,13 @@ BlazorIndexedDb.Models
 BlazorIndexedDb.Store
 ```
 
-Then can create a DBContext class inherits from StoreContext<TSore> to manage the database like in EF using a constructor with IJSRuntime and properties with the server about how to manage your tables.
+Then create a DBContext class inheriting from StoreContext<TStore> to manage the database, similar to Entity Framework. Define properties that represent your tables.
 
 ```
 public class DBContext : StoreContext<DBContext>
     {
         #region properties
-        public StoreSet<PlayList> PlaysList { get; set; }
+        public StoreSet<PlayList> PlayList { get; set; }
         #endregion
 
         #region constructor
@@ -81,9 +81,9 @@ public class Program
         }
     }
 ```
-In the Index.html no need add any javascript reference. This file in previous versions is now dynamic add when is needed.
+In index.html, there is no need to add any JavaScript reference. In previous versions this was required, but now it is added dynamically when needed.
 
-In the component need to use a IndexDb inject DBContext
+In the component, inject DBContext to access IndexedDB.
 
 ```
         [Inject]
@@ -91,13 +91,13 @@ In the component need to use a IndexDb inject DBContext
 
         void Select()
         {
-            var PlaysList = await DB.PlaysList.SelectAsync();
+            var PlayList = await DB.PlayList.SelectAsync();
         }
 
         void Add()
         {
             var NewItems = new List<PlayList>();
-            CommandResponse response = await DB.PlaysList.AddAsync(NewItems);
+            CommandResponse response = await DB.PlayList.AddAsync(NewItems);
             Console.WriteLine(response.Message);
             Console.WriteLine(response.Result);
             //Get result per each element
@@ -111,7 +111,7 @@ In the component need to use a IndexDb inject DBContext
         void Update()
         {
             var NewItem = new PlayList();
-            CommandResponse response = await DB.PlaysList.UpdateAsync(NewItem);
+            CommandResponse response = await DB.PlayList.UpdateAsync(NewItem);
             Console.WriteLine(response.Message);
             Console.WriteLine(response.Result);
             //Get result per each element
@@ -125,7 +125,7 @@ In the component need to use a IndexDb inject DBContext
         void Delete()
         {
             int id = 1;
-            CommandResponse response = await DB.PlaysList.DeleteAsync(id);
+            CommandResponse response = await DB.PlayList.DeleteAsync(id);
             Console.WriteLine(response.Message);
             Console.WriteLine(response.Result);
             //Get result per each element
@@ -153,8 +153,9 @@ In the component need to use a IndexDb inject DBContext
 You can modify the model classes any time, but if the model you will pass don't match with the model created when create the IndexDb this will return a exception.
 
 # Working with records
-In all the select action you will receive the List<TModel> except if you are looking for one Key Id send, then you will receive the Model object.
-In all actions you will receive a ResponseJsDb model or a List<ResponseJsDb> with all the responses, if you are sending a lot of rows.
+In all select actions, you will receive a List<TModel>, except when querying by a single key, in which case you will receive a single model instance.
+
+All actions return either a ResponseJsDb or a List<ResponseJsDb> when multiple rows are processed.
 
 ```
     public class ResponseJsDb
@@ -165,14 +166,14 @@ In all actions you will receive a ResponseJsDb model or a List<ResponseJsDb> wit
 ```
 
 # Working with records from StoreSet
-The store set always return the model or list of the model for all select actions and CommandResponse record for the comands actions
+The store set always returns the model or list of the model for all select actions and CommandResponse record for the commands actions
 
 ```
  public record CommandResponse(bool Result, string Message, List<ResponseJsDb> Response);
 ```
 
 # Exceptions
-When exception will return a ResponseException
+When an exception occurs, a ResponseException will be returned.
 
 ```
     public class ResponseException : Exception

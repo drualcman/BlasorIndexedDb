@@ -18,7 +18,7 @@
         {
             Setup = setup;
             JS = js;
-            ObjectConverter = new ObjectConverter(setup);
+            ObjectConverter = new ObjectConverter();
         }
 
         /// <summary>
@@ -35,8 +35,10 @@
                 data
             };
             List<ResponseJsDb> response = await DbUpdate(rows);
-            if (response.Count > 0) return response[0];
-            else return new ResponseJsDb { Result = false, Message = "No results" };
+            if (response.Count > 0)
+                return response[0];
+            else
+                return new ResponseJsDb { Result = false, Message = "No results" };
         }
 
         /// <summary>
@@ -58,12 +60,15 @@
                 if (c > 0)
                 {
                     List<ResponseJsDb> response = await Commands.DbCommand(DbCommands.Update, Setup.Tables.GetTable<TModel>(), await ObjectConverter.ToJsonAsync(rows));
-                    if (Settings.EnableDebug) Console.WriteLine($"{Setup.DBName} => Update response is null {response == null}");
-                    if (response != null) result.AddRange(response);
+                    if (Settings.EnableDebug)
+                        Console.WriteLine($"{Setup.DBName} => Update response is null {response == null}");
+                    if (response != null)
+                        result.AddRange(response);
                 }
                 else
                 {
-                    if (Settings.EnableDebug) Console.WriteLine($"{Setup.DBName} => DbUpdate No need update into {Setup.Tables.GetTable<TModel>()}");
+                    if (Settings.EnableDebug)
+                        Console.WriteLine($"{Setup.DBName} => DbUpdate No need update into {Setup.Tables.GetTable<TModel>()}");
                     result = new List<ResponseJsDb>{
                             new ResponseJsDb { Result = true, Message =$"No need update into {Setup.Tables.GetTable<TModel>()}!" }
                         };
@@ -72,7 +77,8 @@
             }
             catch (ResponseException ex)
             {
-                if (Settings.EnableDebug) Console.WriteLine($"{Setup.DBName} => DbUpdate Model: {ex.StoreName} Error: {ex.Message} PayLoad: {ex.TransactionData}");
+                if (Settings.EnableDebug)
+                    Console.WriteLine($"{Setup.DBName} => DbUpdate Model: {ex.StoreName} Error: {ex.Message} PayLoad: {ex.TransactionData}");
                 throw;
             }
             catch (Exception ex)
@@ -96,8 +102,10 @@
                 data
             };
             List<ResponseJsDb> response = await DbUpdateOffLine(rows);
-            if (response.Count > 0) return response[0];
-            else return new ResponseJsDb { Result = false, Message = "No results" };
+            if (response.Count > 0)
+                return response[0];
+            else
+                return new ResponseJsDb { Result = false, Message = "No results" };
         }
 
         /// <summary>
@@ -112,13 +120,15 @@
             try
             {
                 List<dynamic> expanded = await AddOflineProperty.AddOfflineAsync(rows);
-                if (Settings.EnableDebug) Console.WriteLine($"{Setup.DBName} => DbUpdateOffLine in modelL  = {Setup.Tables.GetTable<TModel>()}");
+                if (Settings.EnableDebug)
+                    Console.WriteLine($"{Setup.DBName} => DbUpdateOffLine in modelL  = {Setup.Tables.GetTable<TModel>()}");
                 return await DbUpdate(expanded);
             }
 
             catch (ResponseException ex)
             {
-                if (Settings.EnableDebug) Console.WriteLine($"{Setup.DBName} => DbUpdateOffLine Model: {ex.StoreName} Error: {ex.Message} PayLoad: {ex.TransactionData}");
+                if (Settings.EnableDebug)
+                    Console.WriteLine($"{Setup.DBName} => DbUpdateOffLine Model: {ex.StoreName} Error: {ex.Message} PayLoad: {ex.TransactionData}");
                 throw;
             }
             catch (Exception ex)

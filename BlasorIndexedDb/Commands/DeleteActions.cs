@@ -1,6 +1,4 @@
-﻿using BlazorIndexedDb.Extensions;
-
-namespace BlazorIndexedDb.Commands
+﻿namespace BlazorIndexedDb.Commands
 {
     /// <summary>
     /// Delete commands
@@ -31,23 +29,28 @@ namespace BlazorIndexedDb.Commands
         /// <returns></returns>
         internal async Task<ResponseJsDb> DbDelete<TModel>([NotNull] int id)
         {
-            if (Settings.EnableDebug) Console.WriteLine($"{Setup.DBName} => DbDelete Model: {Setup.Tables.GetTable<TModel>()}.");
+            if (Settings.EnableDebug)
+                Console.WriteLine($"{Setup.DBName} => DbDelete Model: {Setup.Tables.GetTable<TModel>()}.");
             try
             {
                 List<ResponseJsDb> result = new List<ResponseJsDb>();
                 IJSObjectReference jsRuntime = await InitializeDatabase.GetIJSObjectReference(JS, Setup);
                 result.AddRange(await jsRuntime.GetJsonResult<List<ResponseJsDb>>($"MyDb.Delete", Setup.Tables.GetTable<TModel>(), id, Setup.DBName, Setup.Version, Setup.ModelsAsJson));
-                if (result.Count > 0) return result[0];
-                else return new ResponseJsDb { Result = false, Message = "No results" };
+                if (result.Count > 0)
+                    return result[0];
+                else
+                    return new ResponseJsDb { Result = false, Message = "No results" };
             }
             catch (ResponseException ex)
             {
-                if (Settings.EnableDebug) Console.WriteLine($"{Setup.DBName} => DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
+                if (Settings.EnableDebug)
+                    Console.WriteLine($"{Setup.DBName} => DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
                 throw;
             }
             catch (Exception ex)
             {
-                if (Settings.EnableDebug) Console.WriteLine($"{Setup.DBName} => DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
+                if (Settings.EnableDebug)
+                    Console.WriteLine($"{Setup.DBName} => DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
                 throw new ResponseException(nameof(DbDelete), typeof(TModel).Name, ex.Message, ex);
             }
 
@@ -67,18 +70,22 @@ namespace BlazorIndexedDb.Commands
                 List<ResponseJsDb> result = new List<ResponseJsDb>();
                 IJSObjectReference jsRuntime = await InitializeDatabase.GetIJSObjectReference(JS, Setup);
                 result.AddRange(await jsRuntime.GetJsonResult<List<ResponseJsDb>>($"MyDb.Delete", Setup.Tables.GetTable<TModel>(), id, Setup.DBName, Setup.Version, Setup.ModelsAsJson));
-                if (result.Count > 0) return result[0];
-                else return new ResponseJsDb { Result = false, Message = "No results" };
+                if (result.Count > 0)
+                    return result[0];
+                else
+                    return new ResponseJsDb { Result = false, Message = "No results" };
 
             }
             catch (ResponseException ex)
             {
-                if (Settings.EnableDebug) Console.WriteLine($"{Setup.DBName} => DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
+                if (Settings.EnableDebug)
+                    Console.WriteLine($"{Setup.DBName} => DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
                 throw;
             }
             catch (Exception ex)
             {
-                if (Settings.EnableDebug) Console.WriteLine($"{Setup.DBName} => DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
+                if (Settings.EnableDebug)
+                    Console.WriteLine($"{Setup.DBName} => DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
                 throw new ResponseException(nameof(DbDelete), typeof(TModel).Name, ex.Message, ex);
             }
 
@@ -99,17 +106,21 @@ namespace BlazorIndexedDb.Commands
                 List<ResponseJsDb> result = new List<ResponseJsDb>();
                 IJSObjectReference jsRuntime = await InitializeDatabase.GetIJSObjectReference(JS, Setup);
                 result.AddRange(await jsRuntime.GetJsonResult<List<ResponseJsDb>>($"MyDb.Delete", Setup.Tables.GetTable<TModel>(), id, Setup.DBName, Setup.Version, Setup.ModelsAsJson));
-                if (result.Count > 0) return result[0];
-                else return new ResponseJsDb { Result = false, Message = "No results" };
+                if (result.Count > 0)
+                    return result[0];
+                else
+                    return new ResponseJsDb { Result = false, Message = "No results" };
             }
             catch (ResponseException ex)
             {
-                if (Settings.EnableDebug) Console.WriteLine($"{Setup.DBName} => DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
+                if (Settings.EnableDebug)
+                    Console.WriteLine($"{Setup.DBName} => DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
                 throw;
             }
             catch (Exception ex)
             {
-                if (Settings.EnableDebug) Console.WriteLine($"{Setup.DBName} => DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
+                if (Settings.EnableDebug)
+                    Console.WriteLine($"{Setup.DBName} => DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
                 throw new ResponseException(nameof(DbDelete), typeof(TModel).Name, ex.Message, ex);
             }
 
@@ -130,17 +141,21 @@ namespace BlazorIndexedDb.Commands
                 List<ResponseJsDb> result = new List<ResponseJsDb>();
                 IJSObjectReference jsRuntime = await InitializeDatabase.GetIJSObjectReference(JS, Setup);
                 result.AddRange(await jsRuntime.GetJsonResult<List<ResponseJsDb>>($"MyDb.Delete", Setup.Tables.GetTable<TModel>(), id, Setup.DBName, Setup.Version, Setup.ModelsAsJson));
-                if (result.Count > 0) return result[0];
-                else return new ResponseJsDb { Result = false, Message = "No results" };
+                if (result.Count > 0)
+                    return result[0];
+                else
+                    return new ResponseJsDb { Result = false, Message = "No results" };
             }
             catch (ResponseException ex)
             {
-                if (Settings.EnableDebug) Console.WriteLine($"{Setup.DBName} => DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
+                if (Settings.EnableDebug)
+                    Console.WriteLine($"{Setup.DBName} => DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
                 throw;
             }
             catch (Exception ex)
             {
-                if (Settings.EnableDebug) Console.WriteLine($"{Setup.DBName} => DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
+                if (Settings.EnableDebug)
+                    Console.WriteLine($"{Setup.DBName} => DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
                 throw new ResponseException(nameof(DbDelete), typeof(TModel).Name, ex.Message, ex);
             }
 
@@ -160,17 +175,21 @@ namespace BlazorIndexedDb.Commands
                 List<ResponseJsDb> result = new List<ResponseJsDb>();
                 IJSObjectReference jsRuntime = await InitializeDatabase.GetIJSObjectReference(JS, Setup);
                 result.AddRange(await jsRuntime.GetJsonResult<List<ResponseJsDb>>($"MyDb.Delete", Setup.Tables.GetTable<TModel>(), id, Setup.DBName, Setup.Version, Setup.ModelsAsJson));
-                if (result.Count > 0) return result[0];
-                else return new ResponseJsDb { Result = false, Message = "No results" };
+                if (result.Count > 0)
+                    return result[0];
+                else
+                    return new ResponseJsDb { Result = false, Message = "No results" };
             }
             catch (ResponseException ex)
             {
-                if (Settings.EnableDebug) Console.WriteLine($"{Setup.DBName} => DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
+                if (Settings.EnableDebug)
+                    Console.WriteLine($"{Setup.DBName} => DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
                 throw;
             }
             catch (Exception ex)
             {
-                if (Settings.EnableDebug) Console.WriteLine($"{Setup.DBName} => DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
+                if (Settings.EnableDebug)
+                    Console.WriteLine($"{Setup.DBName} => DbDelete Model: {Setup.Tables.GetTable<TModel>()} Error: {ex}");
                 throw new ResponseException(nameof(DbDelete), typeof(TModel).Name, ex.Message, ex);
             }
 
@@ -185,18 +204,21 @@ namespace BlazorIndexedDb.Commands
             try
             {
                 IJSObjectReference jsRuntime = await InitializeDatabase.GetIJSObjectReference(JS, Setup);
-                ResponseJsDb response = await jsRuntime.GetJsonResult<ResponseJsDb>("MyDb.Drop", Setup.DBName); 
-                if (Settings.EnableDebug) Console.WriteLine($"DropDatabase: {Setup.DBName} => result {response.Result} with message: {response.Message}");
+                ResponseJsDb response = await jsRuntime.GetJsonResult<ResponseJsDb>("MyDb.Drop", Setup.DBName);
+                if (Settings.EnableDebug)
+                    Console.WriteLine($"DropDatabase: {Setup.DBName} => result {response.Result} with message: {response.Message}");
                 return response;
             }
             catch (ResponseException ex)
             {
-                if (Settings.EnableDebug) Console.WriteLine($"Can't drop database: {Setup.DBName} => Error: {ex}");
+                if (Settings.EnableDebug)
+                    Console.WriteLine($"Can't drop database: {Setup.DBName} => Error: {ex}");
                 throw;
             }
             catch (Exception ex)
             {
-                if (Settings.EnableDebug) Console.WriteLine($"Can't drop database: {Setup.DBName} => Error: {ex}");
+                if (Settings.EnableDebug)
+                    Console.WriteLine($"Can't drop database: {Setup.DBName} => Error: {ex}");
                 throw new ResponseException(nameof(DbDelete), Setup.DBName, ex.Message, ex);
             }
 
