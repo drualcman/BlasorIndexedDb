@@ -360,82 +360,110 @@ class jsDB {
         const context = this;
         let transactionResult = new Array();
         return new Promise((ok, bad) => {
-            if (table == null) bad([context.SetResponse(false, 'Not store name selected')]);
-            else {
-                try {
-                    let result = new Promise((resolve, error) => {
-                        try {
-                            if (!context.IsArray(data)) {
-                                let array = new Array();
-                                array.push(data);
-                                data = array;
-                            }
-                            let toAdd = new Array(); 
-                            let canContinues = true;
-                            data.forEach(element => {
-                                const obj = context.CheckModel(table, element);
-                                if (obj === null) {
-                                    transactionResult.push(context.SetResponse(false, "Model doesn't match"));
-                                    canContinues = false;
-                                }
-                                else {
-                                        try {
-                                            let defaultModel = context.GetDefault(table);
-                                            //get who is the keypath
-                                            let model = context.MODELS.find(el => el.name === table);
-                                            let keyPath = model.options.keyPath;
-                                            let o = context.MergeObjects(defaultModel, element);
-                                            if (o[keyPath] != null && model.options.autoIncrement) {
-                                                delete o[keyPath];
-                                            }
-                                            toAdd.push(o);
-                                        } catch (e) {
-                                            transactionResult.push(context.SetResponse(false, `Insert => ${table}: ${e.message}`));
-                                            console.warn(`Insert => ${table}: ${e.message}`);
-                                        }
-                                }
-                            });
-                            if (canContinues) {                               
-                                let dbconnect = context.OpenDB().open(context.DB_NAME, context.DB_VERSION);
-                                dbconnect.onsuccess = function () {
-                                    let db = this.result;
-                                    try {
-                                        let transaction = db.transaction(table, 'readwrite');
-                                        let store = transaction.objectStore(table);
-                                        let rows = toAdd.length;
-                                        for (var r = 0; r < rows; r++) {
-                                            store.add(toAdd[r]);
-                                        }
-                                        transaction.onerror = ev => {
-                                            db.close();
-                                            transactionResult.push(context.SetResponse(false, ev.target.error.message));
-                                            console.warn(ev.target.error.message);
-                                        };
-                                        transaction.oncomplete = () => {
-                                            db.close();
-                                            transactionResult.push(context.SetResponse(true, 'Insert done!'));
-                                        };
-                                    } catch (e) {
-                                        db.close();
-                                        transactionResult.push(context.SetResponse(false, `Insert => ${table}: ${e.message}`));
-                                        console.warn(`Insert => ${table}: ${e.message}`);
-                                    }
-                                };
-                            }
-                            resolve(data.length);
-                        } catch (e) {
-                            error([context.SetResponse(false, `Insert => ${table}: ${e.message}`)]);
-                        }
-                    });
-
-                    result.then(function (rows) {
-                        setTimeout(() => {
-                            ok(transactionResult);
-                        }, rows * 50);
-                    }, bad);
-                } catch (e) {
-                    bad([context.SetResponse(false, `Insert => ${table}: ${e.message}`)]);
+            if (table == null) {
+                bad([context.SetResponse(false, 'Not store name selected')]);
+                return;
+            }
+            // Settle exactly once. onerror and onabort BOTH fire when a request fails (the error
+            // bubbles to the transaction and aborts it), and a resolved promise ignores the second
+            // call anyway — this just keeps us from closing the connection twice.
+            let settled = false;
+            const finish = () => {
+                if (settled) return;
+                settled = true;
+                ok(transactionResult);
+            };
+            try {
+                if (!context.IsArray(data)) {
+                    let array = new Array();
+                    array.push(data);
+                    data = array;
                 }
+                let toAdd = new Array();
+                let canContinues = true;
+                data.forEach(element => {
+                    const obj = context.CheckModel(table, element);
+                    if (obj === null) {
+                        transactionResult.push(context.SetResponse(false, "Model doesn't match"));
+                        canContinues = false;
+                    }
+                    else {
+                        try {
+                            let defaultModel = context.GetDefault(table);
+                            //get who is the keypath
+                            let model = context.MODELS.find(el => el.name === table);
+                            let keyPath = model.options.keyPath;
+                            let o = context.MergeObjects(defaultModel, element);
+                            if (o[keyPath] != null && model.options.autoIncrement) {
+                                delete o[keyPath];
+                            }
+                            toAdd.push(o);
+                        } catch (e) {
+                            transactionResult.push(context.SetResponse(false, `Insert => ${table}: ${e.message}`));
+                            console.warn(`Insert => ${table}: ${e.message}`);
+                        }
+                    }
+                });
+                if (!canContinues) {
+                    finish();
+                    return;
+                }
+
+                const dbconnect = context.OpenDB().open(context.DB_NAME, context.DB_VERSION);
+                // Opening can fail or be blocked. Nothing used to handle that, which was survivable
+                // only because the old timeout resolved regardless; now it would hang forever.
+                dbconnect.onerror = ev => {
+                    transactionResult.push(context.SetResponse(false, `Insert => ${table}: ${ev.target.error ? ev.target.error.message : 'cannot open database'}`));
+                    finish();
+                };
+                dbconnect.onblocked = () => {
+                    transactionResult.push(context.SetResponse(false, `Insert => ${table}: database blocked`));
+                    finish();
+                };
+                dbconnect.onsuccess = function () {
+                    const db = this.result;
+                    try {
+                        const transaction = db.transaction(table, 'readwrite');
+                        const store = transaction.objectStore(table);
+                        const rows = toAdd.length;
+                        for (let r = 0; r < rows; r++) {
+                            store.add(toAdd[r]);
+                        }
+                        // Resolve from the transaction's own events. This used to resolve on a
+                        // setTimeout of rows * 50ms — a guess at how long the write would take —
+                        // which made the cost grow by 50ms per row regardless of how fast IndexedDB
+                        // actually was, and let the caller continue while the transaction was still
+                        // open and the connection unclosed. oncomplete is the real "the rows are
+                        // committed" signal, and it is what Clean and Delete already use.
+                        transaction.oncomplete = () => {
+                            db.close();
+                            transactionResult.push(context.SetResponse(true, 'Insert done!'));
+                            finish();
+                        };
+                        transaction.onerror = ev => {
+                            db.close();
+                            transactionResult.push(context.SetResponse(false, ev.target.error ? ev.target.error.message : `Insert => ${table}: failed`));
+                            if (ev.target.error) console.warn(ev.target.error.message);
+                            finish();
+                        };
+                        // A failed request (e.g. store.add on an existing key) aborts the whole
+                        // transaction and oncomplete never fires. Without this the promise would
+                        // never settle — the old timeout hid it by reporting success for rows that
+                        // were never written.
+                        transaction.onabort = ev => {
+                            db.close();
+                            transactionResult.push(context.SetResponse(false, `Insert => ${table}: transaction aborted${ev.target.error ? ': ' + ev.target.error.message : ''}`));
+                            finish();
+                        };
+                    } catch (e) {
+                        db.close();
+                        transactionResult.push(context.SetResponse(false, `Insert => ${table}: ${e.message}`));
+                        console.warn(`Insert => ${table}: ${e.message}`);
+                        finish();
+                    }
+                };
+            } catch (e) {
+                bad([context.SetResponse(false, `Insert => ${table}: ${e.message}`)]);
             }
         });
 
@@ -451,89 +479,114 @@ class jsDB {
         const context = this;
         let transactionResult = new Array();
         return new Promise((ok, bad) => {
-            if (table == null) bad([context.SetResponse(false, 'Not store name selected')]);
-            else {
-                try {
-                    let result = new Promise((resolve, error) => {
-                        try {
-                            if (!context.IsArray(data)) {
-                                let array = new Array();
-                                array.push(data);
-                                data = array;
+            if (table == null) {
+                bad([context.SetResponse(false, 'Not store name selected')]);
+                return;
+            }
+            // See Insert: settle once, from the transaction's own events.
+            let settled = false;
+            const finish = () => {
+                if (settled) return;
+                settled = true;
+                ok(transactionResult);
+            };
+            try {
+                if (!context.IsArray(data)) {
+                    let array = new Array();
+                    array.push(data);
+                    data = array;
+                }
+                const dbconnect = context.OpenDB().open(context.DB_NAME, context.DB_VERSION);
+                dbconnect.onerror = ev => {
+                    transactionResult.push(context.SetResponse(false, `Update => ${table}: ${ev.target.error ? ev.target.error.message : 'cannot open database'}`));
+                    finish();
+                };
+                dbconnect.onblocked = () => {
+                    transactionResult.push(context.SetResponse(false, `Update => ${table}: database blocked`));
+                    finish();
+                };
+                dbconnect.onsuccess = function () {
+                    const db = this.result;
+                    try {
+                        const transaction = db.transaction(table, 'readwrite');
+                        const store = transaction.objectStore(table);
+                        data.forEach(element => {
+                            const obj = context.CheckModel(table, element);
+                            if (obj === null) {
+                                transactionResult.push(context.SetResponse(false, "Model doesn't match"));
                             }
-                            let dbconnect = context.OpenDB().open(context.DB_NAME, context.DB_VERSION);
-                            dbconnect.onsuccess = function () {
-                                let db = this.result;
-                                let toAdd = new Array();
-                                let canContinues = false;
-
-                                let transaction = db.transaction(table, 'readwrite');
-                                let store = transaction.objectStore(table);
-                                data.forEach(element => {
-                                    const obj = context.CheckModel(table, element);
-                                    if (obj === null) {
-                                        transactionResult.push(context.SetResponse(false, "Model doesn't match"));
-                                        canContinues = false;
+                            else {
+                                try {
+                                    //get who is the keypath
+                                    let model = context.MODELS.find(el => el.name === table);
+                                    let keyPath = model.options.keyPath;
+                                    if (!keyPath) {
+                                        keyPath = 'ssnId';
                                     }
-                                    else {
-                                        try {
-                                            //get who is the keypath
-                                            let model = context.MODELS.find(el => el.name === table);
-                                            let keyPath = model.options.keyPath;
-                                            if (!keyPath) {
-                                                keyPath = 'ssnId';
-                                            }
-                                            let ssnId = obj[keyPath];
-                                            let dat = null;
-                                            let objRequest;
-                                            if (ssnId) {
-                                                let request = store.get(ssnId);
-                                                //retrieve the actual data for the index about the element
-                                                request.onsuccess = function () {
-                                                    dat = context.UpdateModel(request.result, obj);
-                                                    objRequest = store.put(dat);
-                                                    objRequest.onsuccess = () => {
-                                                        transactionResult.push(context.SetResponse(true, `Success in updating record ${ssnId}`));
-                                                    };
-                                                    objRequest.onerror = ev => {
-                                                        transactionResult.push(context.SetResponse(false, `Error in updating record ${ssnId}`));
-                                                        console.warn(ev.target.error.message);
-                                                    };
-                                                }
-                                            }
-                                            else {
-                                                dat = context.MergeObjects(obj, element);
-                                                objRequest = store.put(dat);
-                                                objRequest.onsuccess = () => {
-                                                    transactionResult.push(context.SetResponse(true, `Success in updating record ${ssnId}`));
-                                                };
-                                                objRequest.onerror = ev => {
-                                                    transactionResult.push(context.SetResponse(false, `Error in updating record ${ssnId}`));
-                                                    console.warn(ev.target.error.message);
-                                                };
-                                            }
-
-                                        } catch (e) {
-                                            transactionResult.push(context.SetResponse(false, `Update => ${table}: ${e.message} | 2`));
-                                            console.warn(`Update => ${table}: ${e.message} | 2`);
+                                    let ssnId = obj[keyPath];
+                                    let dat = null;
+                                    let objRequest;
+                                    if (ssnId) {
+                                        let request = store.get(ssnId);
+                                        //retrieve the actual data for the index about the element
+                                        request.onsuccess = function () {
+                                            dat = context.UpdateModel(request.result, obj);
+                                            objRequest = store.put(dat);
+                                            objRequest.onsuccess = () => {
+                                                transactionResult.push(context.SetResponse(true, `Success in updating record ${ssnId}`));
+                                            };
+                                            objRequest.onerror = ev => {
+                                                transactionResult.push(context.SetResponse(false, `Error in updating record ${ssnId}`));
+                                                console.warn(ev.target.error.message);
+                                            };
                                         }
                                     }
-                                });
+                                    else {
+                                        dat = context.MergeObjects(obj, element);
+                                        objRequest = store.put(dat);
+                                        objRequest.onsuccess = () => {
+                                            transactionResult.push(context.SetResponse(true, `Success in updating record ${ssnId}`));
+                                        };
+                                        objRequest.onerror = ev => {
+                                            transactionResult.push(context.SetResponse(false, `Error in updating record ${ssnId}`));
+                                            console.warn(ev.target.error.message);
+                                        };
+                                    }
+
+                                } catch (e) {
+                                    transactionResult.push(context.SetResponse(false, `Update => ${table}: ${e.message} | 2`));
+                                    console.warn(`Update => ${table}: ${e.message} | 2`);
+                                }
                             }
-                            resolve(data.length);
-                        } catch (e) {
-                            error([context.SetResponse(false, `Update => ${table}: ${e.message} | 1`)]);
-                            console.warn(`Update => ${table}: ${e.message} | 1`);
-                        }
-                    });
-                    result.then(function (rows) {
-                        setTimeout(() => {
-                            ok(transactionResult);
-                        }, rows * 50);
-                    }, bad);
-                } catch (e) {
-                    bad([context.SetResponse(false, `Update => ${table}: ${e.message}`)]);
-                }
+                        });
+                        // Resolved from the transaction, not from a timeout. The get/put pairs above
+                        // are queued from inside their own callbacks, so oncomplete is the only
+                        // reliable point at which every row really has been written. This also closes
+                        // the connection, which Update never did at all.
+                        transaction.oncomplete = () => {
+                            db.close();
+                            finish();
+                        };
+                        transaction.onerror = ev => {
+                            db.close();
+                            transactionResult.push(context.SetResponse(false, ev.target.error ? ev.target.error.message : `Update => ${table}: failed`));
+                            if (ev.target.error) console.warn(ev.target.error.message);
+                            finish();
+                        };
+                        transaction.onabort = ev => {
+                            db.close();
+                            transactionResult.push(context.SetResponse(false, `Update => ${table}: transaction aborted${ev.target.error ? ': ' + ev.target.error.message : ''}`));
+                            finish();
+                        };
+                    } catch (e) {
+                        db.close();
+                        transactionResult.push(context.SetResponse(false, `Update => ${table}: ${e.message} | 1`));
+                        console.warn(`Update => ${table}: ${e.message} | 1`);
+                        finish();
+                    }
+                };
+            } catch (e) {
+                bad([context.SetResponse(false, `Update => ${table}: ${e.message}`)]);
             }
         });
     }

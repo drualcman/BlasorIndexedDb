@@ -25,6 +25,21 @@
 			which cannot deserialize a Uint8Array (System.Text.Json expects base64 for byte[]).
 			- JsonSerializerOptions are shared instead of rebuilt per call, which also restores the
 			serializer metadata cache. The two copies that existed had already drifted apart.
+
+			Insert and Update no longer guess when a write has finished.
+
+			- They resolved on setTimeout(rows * 50), so the cost of a write grew by 50ms for every
+			row in the call no matter how fast IndexedDB actually was — a batch of 4944 rows took
+			247 seconds against a real write time of milliseconds — and the caller resumed while the
+			transaction was still open and the connection unclosed. Both now resolve from
+			transaction.oncomplete, the same signal Clean and Delete already used.
+			- Added transaction.onabort. A failed request (store.add on an existing key, for
+			instance) aborts the whole transaction and oncomplete never fires; the timeout used to
+			hide that by reporting success for rows that were never written. Such a write is now
+			reported as failed.
+			- Added onerror/onblocked on the database open request. Nothing handled a failed open,
+			which only survived because the timeout resolved regardless.
+			- Update now closes its connection. It never did.
 		</PackageReleaseNotes>
 		<RepositoryUrl>https://github.com/drualcman/BlasorIndexedDb</RepositoryUrl>
 		<RepositoryType>Git</RepositoryType>
