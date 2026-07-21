@@ -67,13 +67,19 @@
             <param name="js"></param>
             <param name="setup"></param>
         </member>
-        <member name="M:BlazorIndexedDb.Commands.Commands.DbCommand(BlazorIndexedDb.ValueObjects.DbCommands,System.String,System.String)">
+        <member name="M:BlazorIndexedDb.Commands.Commands.DbCommand(BlazorIndexedDb.ValueObjects.DbCommands,System.String,System.Byte[])">
             <summary>
-            Execute a command directly sending a json string
+            Execute a command sending the payload as UTF-8 encoded Json.
             </summary>
+            <remarks>
+            The payload used to travel as a string, which meant .NET built the whole Json into a
+            string, marshalled it, and JS parsed it back — and the response made the same trip in
+            reverse through a JsonElement. Bytes cross the boundary as a Uint8Array with no string in
+            between, which is what the read side (Select) has always done.
+            </remarks>
             <param name="command"></param>
             <param name="storeName"></param>
-            <param name="data"></param>
+            <param name="data">payload already encoded as UTF-8 Json</param>
             <exception cref="T:BlazorIndexedDb.Models.ResponseException"></exception>
             <returns></returns>
         </member>
@@ -409,6 +415,24 @@
             <param name="app"></param>
             <returns></returns>
         </member>
+        <member name="P:BlazorIndexedDb.Extensions.JsRuntimeExtensions.InteropOptions">
+            <summary>
+            Options every payload crossing the JS boundary is read with. Kept in one place so the byte
+            path and the JsonElement path can never drift apart.
+            </summary>
+        </member>
+        <member name="M:BlazorIndexedDb.Extensions.JsRuntimeExtensions.GetBytesResult``1(Microsoft.JSInterop.IJSObjectReference,System.String,System.Object[])">
+            <summary>
+            Invoke a JS function that answers with UTF-8 encoded Json and deserialize straight from the
+            bytes.
+            </summary>
+            <remarks>
+            Prefer this over <see cref="M:BlazorIndexedDb.Extensions.JsRuntimeExtensions.GetJsonResult``1(Microsoft.JSInterop.IJSObjectReference,System.String,System.Object[])"/>. A byte[] crosses the boundary as a
+            Uint8Array, so nothing has to build a JS string, marshal it and re-parse it into a
+            JsonElement only to serialize that back out again — which is what the JsonElement path does
+            for every single response.
+            </remarks>
+        </member>
         <member name="T:BlazorIndexedDb.Helpers.AddOflineProperty">
             <summary>
             Add offline property to the entities to control when the transaction can't be saved into a live db
@@ -443,32 +467,23 @@
             Tools to work with objects
             </summary>
         </member>
-        <member name="M:BlazorIndexedDb.Helpers.ObjectConverter.ToJson(System.Collections.IList)">
-            <summary>
-            Convert into a Json string the model send
-            </summary>
-            <param name="sender"></param>
-            <returns></returns>
-        </member>
-        <member name="M:BlazorIndexedDb.Helpers.ObjectConverter.ToJson(System.Collections.Generic.List{System.Object})">
-            <summary>
-            Convert into a Json string the model send
-            </summary>
-            <param name="sender"></param>
-            <returns></returns>
-        </member>
-        <member name="M:BlazorIndexedDb.Helpers.ObjectConverter.ToJson``1(System.Collections.Generic.IEnumerable{``0})">
-            <summary>
-            Convert into a Json string the model send
-            </summary>
-            <typeparam name="TModel"></typeparam>
-            <param name="sender"></param>
-            <returns></returns>
-        </member>
         <member name="M:BlazorIndexedDb.Helpers.ObjectConverter.ToJson``1(``0)">
             <summary>
             Convert into a Json string the object send
             </summary>
+            <param name="sender"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Helpers.ObjectConverter.ToBytes``1(``0)">
+            <summary>
+            Convert the object send into UTF-8 encoded Json.
+            </summary>
+            <remarks>
+            Preferred over <see cref="M:BlazorIndexedDb.Helpers.ObjectConverter.ToJson``1(``0)"/> for anything crossing into JS: a
+            byte[] is marshalled straight through as a Uint8Array, so neither side has to build and
+            re-parse a string for the whole payload. Serializing directly to UTF-8 also skips the
+            intermediate .NET string entirely.
+            </remarks>
             <param name="sender"></param>
             <returns></returns>
         </member>
@@ -480,18 +495,11 @@
             <param name="sender"></param>
             <returns></returns>
         </member>
-        <member name="M:BlazorIndexedDb.Helpers.ObjectConverter.ToJsonAsync``1(System.Collections.Generic.IEnumerable{``0})">
+        <member name="M:BlazorIndexedDb.Helpers.ObjectConverter.ToBytesAsync``1(System.Collections.Generic.List{``0})">
             <summary>
-            Convert into a Json string the model send
+            Convert into UTF-8 encoded Json the model send
             </summary>
             <typeparam name="TModel"></typeparam>
-            <param name="sender"></param>
-            <returns></returns>
-        </member>
-        <member name="M:BlazorIndexedDb.Helpers.ObjectConverter.ToJsonAsync(System.Object)">
-            <summary>
-            Convert into a Json string the model send
-            </summary>
             <param name="sender"></param>
             <returns></returns>
         </member>

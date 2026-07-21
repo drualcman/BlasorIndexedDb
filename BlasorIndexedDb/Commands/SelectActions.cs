@@ -58,7 +58,11 @@
             try
             {
                 IJSObjectReference jsRuntime = await InitializeDatabase.GetIJSObjectReference(JS, Setup);
-                byte[] dataBytes = await jsRuntime.GetJsonResult<byte[]>("MyDb.SelectWhere", Setup.Tables.GetTable<TModel>(), column, value, Setup.DBName, Setup.Version, Setup.ModelsAsJson);
+                // Was GetJsonResult<byte[]>, unlike every other Select here. That route reads the
+                // response as a JsonElement first, and a Uint8Array arrives there as an array of
+                // numbers while System.Text.Json expects base64 for a byte[] — so it could not
+                // deserialize what JS actually sent. InvokeAsync<byte[]> takes the bytes straight.
+                byte[] dataBytes = await jsRuntime.InvokeAsync<byte[]>("MyDb.SelectWhere", Setup.Tables.GetTable<TModel>(), column, value, Setup.DBName, Setup.Version, Setup.ModelsAsJson);
                 data = DeserializeData<TModel>(dataBytes);
             }
             catch (Exception ex)
@@ -103,21 +107,12 @@
 
         private static List<TModel> DeserializeData<TModel>(byte[] dataBytes)
         {
-            return JsonSerializer.Deserialize<List<TModel>>(dataBytes, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true,
-                IncludeFields = true,
-                AllowTrailingCommas = true,
-                ReadCommentHandling = JsonCommentHandling.Skip,
-                Converters =
-                {
-                    new CustomJsonStringEnumConverter(),
-                    new CustomStringBooleanConverter(),
-                    new CustomJsonTimeSpanConverter(),
-                    new CustomStringIntegerConverter(),
-                    new CustomDateTimeNullableConverter()
-                }
-            });
+            if (dataBytes is null || dataBytes.Length == 0)
+                return new List<TModel>();
+            // Shared options (see JsRuntimeExtensions): a second copy here had already drifted from
+            // the one used elsewhere, and building a fresh JsonSerializerOptions per call also
+            // defeats System.Text.Json's metadata cache.
+            return JsonSerializer.Deserialize<List<TModel>>(dataBytes, JsRuntimeExtensions.InteropOptions);
         }
 
     }

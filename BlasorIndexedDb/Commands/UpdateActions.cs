@@ -59,7 +59,7 @@
                 int c = rows.Count;
                 if (c > 0)
                 {
-                    List<ResponseJsDb> response = await Commands.DbCommand(DbCommands.Update, Setup.Tables.GetTable<TModel>(), await ObjectConverter.ToJsonAsync(rows));
+                    List<ResponseJsDb> response = await Commands.DbCommand(DbCommands.Update, Setup.Tables.GetTable<TModel>(), await ObjectConverter.ToBytesAsync(rows));
                     if (Settings.EnableDebug)
                         Console.WriteLine($"{Setup.DBName} => Update response is null {response == null}");
                     if (response != null)

@@ -3,14 +3,29 @@
 	<PropertyGroup>
 		<TargetFrameworks>net6.0;net8.0;net9.0;net10.0</TargetFrameworks>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<Version>1.9.49</Version>
+		<Version>1.10.50</Version>
 		<Authors>Sergi Ortiz Gomez</Authors>
 		<Company>DrUalcman</Company>
 		<Description>Manage IndexedDb from Blazor WebAssembly applications. Create a StoreDbContext similar how is working in EF. Please report any bug or changes you need using our contact form in the web site. Thanks.</Description>
 		<Copyright>Free</Copyright>
 		<PackageLicenseFile>License.txt</PackageLicenseFile>
 		<PackageTags>webassembly, blazor, indexedDb, interop, javascript, database</PackageTags>
-		<PackageReleaseNotes>Refactor how to serialize objects. Target NET10. Update dependencies</PackageReleaseNotes>
+		<PackageReleaseNotes>
+			Performance and correctness work on the JS interop boundary.
+
+			- Insert, Update and Delete now exchange UTF-8 encoded Json with JavaScript in BOTH
+			directions, as Select already did. Payloads travel as byte[] (a Uint8Array on the JS
+			side), so neither end builds or re-parses a string for the whole batch. Responses are
+			deserialized straight from the bytes instead of being materialized as a JsonElement and
+			serialized again.
+			- Fixed SelectWhere: the interop wrapper called Select(table, column, value), but Select
+			only takes the table name, so the filter was dropped and the WHOLE store was returned.
+			The indexed lookup it was supposed to use is now actually reached.
+			- Fixed the C# side of SelectWhere too: it read the response through GetJsonResult&lt;byte[]&gt;,
+			which cannot deserialize a Uint8Array (System.Text.Json expects base64 for byte[]).
+			- JsonSerializerOptions are shared instead of rebuilt per call, which also restores the
+			serializer metadata cache. The two copies that existed had already drifted apart.
+		</PackageReleaseNotes>
 		<RepositoryUrl>https://github.com/drualcman/BlasorIndexedDb</RepositoryUrl>
 		<RepositoryType>Git</RepositoryType>
 		<PackageId>DrUalcman-BlazorIndexedDb</PackageId>
@@ -39,13 +54,13 @@
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.36" Condition="'$(TargetFramework)' == 'net6.0'" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.26" Condition="'$(TargetFramework)' == 'net8.0'" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.15" Condition="'$(TargetFramework)' == 'net9.0'" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.7" Condition="'$(TargetFramework)' == 'net10.0'" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.29" Condition="'$(TargetFramework)' == 'net8.0'" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.18" Condition="'$(TargetFramework)' == 'net9.0'" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.10" Condition="'$(TargetFramework)' == 'net10.0'" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.36" Condition="'$(TargetFramework)' == 'net6.0'" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.26" Condition="'$(TargetFramework)' == 'net8.0'" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.15" Condition="'$(TargetFramework)' == 'net9.0'" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.7" Condition="'$(TargetFramework)' == 'net10.0'" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.29" Condition="'$(TargetFramework)' == 'net8.0'" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.18" Condition="'$(TargetFramework)' == 'net9.0'" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.10" Condition="'$(TargetFramework)' == 'net10.0'" />
 	</ItemGroup>
 
 	<ItemGroup>

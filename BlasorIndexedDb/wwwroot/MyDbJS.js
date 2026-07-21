@@ -661,6 +661,20 @@ async function JsonToBytes(data) {
     const encoder = new TextEncoder();
     return encoder.encode(jsonString);
 }
+/**
+ * Decode a UTF-8 payload coming from .NET back into an object. The counterpart of JsonToBytes:
+ * .NET sends byte[] (marshalled straight through as a Uint8Array) instead of a string, which
+ * avoids building and re-parsing a JS string for the whole payload on every write.
+ * @param {Uint8Array} data payload received from .NET
+ */
+function BytesToJson(data) {
+    if (data === null || data === undefined) return null;
+    // Already an object (a caller that still passes JSON) -> take it as-is, so both shapes work.
+    if (typeof data === 'object' && !(data instanceof Uint8Array) && !(data instanceof ArrayBuffer)) return data;
+    if (typeof data === 'string') return JSON.parse(data);
+    const bytes = data instanceof Uint8Array ? data : new Uint8Array(data);
+    return JSON.parse(new TextDecoder().decode(bytes));
+}
 
 let Conn = (function () {
     let db;
@@ -742,7 +756,10 @@ let Conn = (function () {
         SelectWhere: (table, column, value, database, version, models) => new Promise(async (ok, bad) => {
             try {
                 db.SetDataBaseName(database, version, models);
-                await db.Select(table, column, value).then(function (result) {
+                // Was calling db.Select(table, column, value). Select only accepts (table), so the
+                // extra arguments were dropped and this returned the WHOLE store instead of the
+                // matching rows — the index lookup in SelectWhere below was never reached.
+                await db.SelectWhere(table, column, value).then(function (result) {
                     ok(result);
                 }).catch(function (error) {
                     bad(error);
@@ -762,8 +779,8 @@ let Conn = (function () {
         Insert: (table, data, database, version, models) => new Promise(async (ok, bad) => {
             try {
                 db.SetDataBaseName(database, version, models);
-                await db.Insert(table, JSON.parse(data)).then(function (result) {
-                    ok(result);
+                await db.Insert(table, BytesToJson(data)).then(async function (result) {
+                    ok(await JsonToBytes(result));
                 }).catch(function (error) {
                     bad(error);
                 });
@@ -782,8 +799,8 @@ let Conn = (function () {
         Update: (table, data, database, version, models) => new Promise(async (ok, bad) => {
             try {
                 db.SetDataBaseName(database, version, models);
-                await db.Update(table, JSON.parse(data)).then(function (result) {
-                    ok(result);
+                await db.Update(table, BytesToJson(data)).then(async function (result) {
+                    ok(await JsonToBytes(result));
                 }).catch(function (error) {
                     bad(error);
                 });
@@ -802,8 +819,8 @@ let Conn = (function () {
         Delete: (table, id, database, version, models) => new Promise(async (ok, bad) => {
             try {
                 db.SetDataBaseName(database, version, models);
-                await db.Delete(table, id).then(function (result) {
-                    ok(result);
+                await db.Delete(table, id).then(async function (result) {
+                    ok(await JsonToBytes(result));
                 }).catch(function (error) {
                     bad(error);
                 });

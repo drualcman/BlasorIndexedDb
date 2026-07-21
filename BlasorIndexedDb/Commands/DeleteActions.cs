@@ -35,7 +35,7 @@
             {
                 List<ResponseJsDb> result = new List<ResponseJsDb>();
                 IJSObjectReference jsRuntime = await InitializeDatabase.GetIJSObjectReference(JS, Setup);
-                result.AddRange(await jsRuntime.GetJsonResult<List<ResponseJsDb>>($"MyDb.Delete", Setup.Tables.GetTable<TModel>(), id, Setup.DBName, Setup.Version, Setup.ModelsAsJson));
+                result.AddRange(await jsRuntime.GetBytesResult<List<ResponseJsDb>>($"MyDb.Delete", Setup.Tables.GetTable<TModel>(), id, Setup.DBName, Setup.Version, Setup.ModelsAsJson));
                 if (result.Count > 0)
                     return result[0];
                 else
@@ -69,7 +69,7 @@
             {
                 List<ResponseJsDb> result = new List<ResponseJsDb>();
                 IJSObjectReference jsRuntime = await InitializeDatabase.GetIJSObjectReference(JS, Setup);
-                result.AddRange(await jsRuntime.GetJsonResult<List<ResponseJsDb>>($"MyDb.Delete", Setup.Tables.GetTable<TModel>(), id, Setup.DBName, Setup.Version, Setup.ModelsAsJson));
+                result.AddRange(await jsRuntime.GetBytesResult<List<ResponseJsDb>>($"MyDb.Delete", Setup.Tables.GetTable<TModel>(), id, Setup.DBName, Setup.Version, Setup.ModelsAsJson));
                 if (result.Count > 0)
                     return result[0];
                 else
@@ -105,7 +105,7 @@
             {
                 List<ResponseJsDb> result = new List<ResponseJsDb>();
                 IJSObjectReference jsRuntime = await InitializeDatabase.GetIJSObjectReference(JS, Setup);
-                result.AddRange(await jsRuntime.GetJsonResult<List<ResponseJsDb>>($"MyDb.Delete", Setup.Tables.GetTable<TModel>(), id, Setup.DBName, Setup.Version, Setup.ModelsAsJson));
+                result.AddRange(await jsRuntime.GetBytesResult<List<ResponseJsDb>>($"MyDb.Delete", Setup.Tables.GetTable<TModel>(), id, Setup.DBName, Setup.Version, Setup.ModelsAsJson));
                 if (result.Count > 0)
                     return result[0];
                 else
@@ -140,7 +140,7 @@
             {
                 List<ResponseJsDb> result = new List<ResponseJsDb>();
                 IJSObjectReference jsRuntime = await InitializeDatabase.GetIJSObjectReference(JS, Setup);
-                result.AddRange(await jsRuntime.GetJsonResult<List<ResponseJsDb>>($"MyDb.Delete", Setup.Tables.GetTable<TModel>(), id, Setup.DBName, Setup.Version, Setup.ModelsAsJson));
+                result.AddRange(await jsRuntime.GetBytesResult<List<ResponseJsDb>>($"MyDb.Delete", Setup.Tables.GetTable<TModel>(), id, Setup.DBName, Setup.Version, Setup.ModelsAsJson));
                 if (result.Count > 0)
                     return result[0];
                 else
@@ -174,7 +174,7 @@
             {
                 List<ResponseJsDb> result = new List<ResponseJsDb>();
                 IJSObjectReference jsRuntime = await InitializeDatabase.GetIJSObjectReference(JS, Setup);
-                result.AddRange(await jsRuntime.GetJsonResult<List<ResponseJsDb>>($"MyDb.Delete", Setup.Tables.GetTable<TModel>(), id, Setup.DBName, Setup.Version, Setup.ModelsAsJson));
+                result.AddRange(await jsRuntime.GetBytesResult<List<ResponseJsDb>>($"MyDb.Delete", Setup.Tables.GetTable<TModel>(), id, Setup.DBName, Setup.Version, Setup.ModelsAsJson));
                 if (result.Count > 0)
                     return result[0];
                 else
