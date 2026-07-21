@@ -426,8 +426,25 @@ class jsDB {
                         const transaction = db.transaction(table, 'readwrite');
                         const store = transaction.objectStore(table);
                         const rows = toAdd.length;
+                        const model = context.MODELS.find(el => el.name === table);
+                        const keyPath = model && model.options ? model.options.keyPath : null;
+                        let failed = 0;
                         for (let r = 0; r < rows; r++) {
-                            store.add(toAdd[r]);
+                            const request = store.add(toAdd[r]);
+                            // add, so a duplicated key IS rejected -- this is an insert, not an
+                            // upsert. But an unhandled request error propagates and aborts the WHOLE
+                            // transaction, which is why one duplicate used to throw away every other
+                            // row in the batch and why nothing could report which row was at fault.
+                            // preventDefault() stops that propagation: the offending row is the only
+                            // one that does not get written, the rest of the transaction commits,
+                            // and the caller gets a per-row failure in the response list.
+                            request.onerror = ev => {
+                                failed++;
+                                const key = keyPath ? toAdd[r][keyPath] : undefined;
+                                const reason = ev.target.error ? ev.target.error.message : 'insert failed';
+                                transactionResult.push(context.SetResponse(false, `Insert => ${table}: ${key === undefined ? `row ${r}` : `record ${key}`}: ${reason}`));
+                                ev.preventDefault();
+                            };
                         }
                         // Resolve from the transaction's own events. This used to resolve on a
                         // setTimeout of rows * 50ms — a guess at how long the write would take —
@@ -437,7 +454,13 @@ class jsDB {
                         // committed" signal, and it is what Clean and Delete already use.
                         transaction.oncomplete = () => {
                             db.close();
-                            transactionResult.push(context.SetResponse(true, 'Insert done!'));
+                            // The rows that failed already pushed their own response above, so this
+                            // one only reports what actually went in. Aggregating the successes into
+                            // a single response keeps the payload small on big batches; a failure is
+                            // always reported individually because that is the part you can act on.
+                            const inserted = rows - failed;
+                            if (inserted > 0 || failed === 0)
+                                transactionResult.push(context.SetResponse(true, failed === 0 ? 'Insert done!' : `Insert done! ${inserted} of ${rows} rows`));
                             finish();
                         };
                         transaction.onerror = ev => {
@@ -446,10 +469,9 @@ class jsDB {
                             if (ev.target.error) console.warn(ev.target.error.message);
                             finish();
                         };
-                        // A failed request (e.g. store.add on an existing key) aborts the whole
-                        // transaction and oncomplete never fires. Without this the promise would
-                        // never settle — the old timeout hid it by reporting success for rows that
-                        // were never written.
+                        // A failed request aborts the whole transaction and oncomplete never fires.
+                        // Without this the promise would never settle — the old timeout hid it by
+                        // reporting success for rows that were never written.
                         transaction.onabort = ev => {
                             db.close();
                             transactionResult.push(context.SetResponse(false, `Insert => ${table}: transaction aborted${ev.target.error ? ': ' + ev.target.error.message : ''}`));
@@ -591,38 +613,66 @@ class jsDB {
         });
     }
     /**
-     * Delete one row from a table. Alway return a JSON response
+     * Delete one or many rows from a table. Alway return a JSON response
      * @param {string} table table name
-     * @param {any} id value from the keypath
+     * @param {any} id value from the keypath, or an array of values to delete in one transaction
      */
     async Delete(table, id) {
         const context = this;
         return new Promise((resolve, error) => {
-            if (table == null) error([context.SetResponse(false, 'Not store name selected')]);
-            else {
-                const dbconnect = context.OpenDB().open(context.DB_NAME, context.DB_VERSION);
-                dbconnect.onsuccess = function () {
-                    const db = this.result;
-                    try {
-                        const transaction = db.transaction(table, 'readwrite');
-                        const store = transaction.objectStore(table);
-                        store.delete(id);
-                        transaction.onerror = ev => {
-                            db.close();
-                            resolve([context.SetResponse(false, ev.target.error.message)]);
-                            console.warn(ev.target.error.message);
-                        };
-                        transaction.oncomplete = r => {
-                            db.close();
-                            resolve([context.SetResponse(true, 'Delete done!')]);
-                        };
-                    } catch (e) {
-                        db.close();
-                        error([context.SetResponse(false, `Delete => ${table}: ${e.message}`)]);
-                        console.warn(`Delete => ${table}: ${e.message}`);
-                    }
-                };
+            if (table == null) {
+                error([context.SetResponse(false, 'Not store name selected')]);
+                return;
             }
+            // A single id and a list of ids take the same path now. Deleting N rows used to mean N
+            // calls, each opening its own connection and its own transaction; they all go into one
+            // transaction here, which is what made the batch cost N times more than it had to.
+            const ids = context.IsArray(id) ? id : [id];
+            let settled = false;
+            const finish = result => {
+                if (settled) return;
+                settled = true;
+                resolve(result);
+            };
+            if (ids.length === 0) {
+                finish([context.SetResponse(true, 'Delete done! Nothing to delete')]);
+                return;
+            }
+            const dbconnect = context.OpenDB().open(context.DB_NAME, context.DB_VERSION);
+            dbconnect.onerror = ev => finish([context.SetResponse(false, `Delete => ${table}: ${ev.target.error ? ev.target.error.message : 'cannot open database'}`)]);
+            dbconnect.onblocked = () => finish([context.SetResponse(false, `Delete => ${table}: database blocked`)]);
+            dbconnect.onsuccess = function () {
+                const db = this.result;
+                try {
+                    const transaction = db.transaction(table, 'readwrite');
+                    const store = transaction.objectStore(table);
+                    for (let i = 0; i < ids.length; i++) {
+                        store.delete(ids[i]);
+                    }
+                    transaction.oncomplete = () => {
+                        db.close();
+                        finish([context.SetResponse(true, ids.length === 1 ? 'Delete done!' : `Delete done! ${ids.length} rows`)]);
+                    };
+                    transaction.onerror = ev => {
+                        db.close();
+                        if (ev.target.error) console.warn(ev.target.error.message);
+                        finish([context.SetResponse(false, ev.target.error ? ev.target.error.message : `Delete => ${table}: failed`)]);
+                    };
+                    // Same reason as in Insert: an aborted transaction never fires oncomplete, and
+                    // there was no timeout here to paper over it — the promise simply hung.
+                    transaction.onabort = ev => {
+                        db.close();
+                        finish([context.SetResponse(false, `Delete => ${table}: transaction aborted${ev.target.error ? ': ' + ev.target.error.message : ''}`)]);
+                    };
+                } catch (e) {
+                    db.close();
+                    console.warn(`Delete => ${table}: ${e.message}`);
+                    if (!settled) {
+                        settled = true;
+                        error([context.SetResponse(false, `Delete => ${table}: ${e.message}`)]);
+                    }
+                }
+            };
         });
     }
     /**
@@ -647,8 +697,13 @@ class jsDB {
                         };
                         transaction.onerror = ev => {
                             db.close();
-                            resolve([context.SetResponse(false, `Clean => ${table}: ${ev.target.error.message}`)]);
-                            console.warn(ev.target.error.message);
+                            resolve([context.SetResponse(false, `Clean => ${table}: ${ev.target.error ? ev.target.error.message : 'failed'}`)]);
+                            if (ev.target.error) console.warn(ev.target.error.message);
+                        };
+                        // Without this an aborted transaction leaves the promise pending forever.
+                        transaction.onabort = ev => {
+                            db.close();
+                            resolve([context.SetResponse(false, `Clean => ${table}: transaction aborted${ev.target.error ? ': ' + ev.target.error.message : ''}`)]);
                         };
                     } catch (e) {
                         db.close();

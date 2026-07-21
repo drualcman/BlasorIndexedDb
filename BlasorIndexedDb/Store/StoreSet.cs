@@ -56,6 +56,20 @@
             await SelectActions.DbSelect<TModel>();
 
         /// <summary>
+        /// Get a list with the rows whose column matches the value, resolved by IndexedDB itself
+        /// </summary>
+        /// <remarks>
+        /// Unlike <see cref="SelectAsync(Func{TModel, bool})"/>, which reads the whole store and
+        /// filters it in C#, this looks the value up through the store index and only the matching
+        /// rows ever cross into .NET. The column must have an index.
+        /// </remarks>
+        /// <param name="column">column to compare</param>
+        /// <param name="value">value to compare</param>
+        /// <returns></returns>
+        public async Task<List<TModel>> SelectAsync([NotNull] string column, [NotNull] object value) =>
+            await SelectActions.DbSelect<TModel>(column, value);
+
+        /// <summary>
         /// Get a single record from store model
         /// </summary>
         /// <param name="id">primary key id to search</param>
@@ -256,6 +270,20 @@
         /// <returns></returns>
         public async Task<CommandResponse> DeleteAsync(DateTime id)
             => Utils.CommandResponse(await DeleteActions.DbDelete<TModel>(id));
+
+        /// <summary>
+        /// Delete several records from a table store in a single transaction
+        /// </summary>
+        /// <remarks>
+        /// Prefer this over calling <c>DeleteAsync</c> in a loop: every single-id call opens its own
+        /// connection and its own transaction, so deleting N rows that way costs N times what it has
+        /// to. All the ids here are deleted inside one transaction.
+        /// </remarks>
+        /// <typeparam name="TKey">type of the keypath</typeparam>
+        /// <param name="ids"></param>
+        /// <returns></returns>
+        public async Task<CommandResponse> DeleteAsync<TKey>(IEnumerable<TKey> ids)
+            => Utils.CommandResponse(await DeleteActions.DbDeleteMany<TModel, TKey>(ids));
 
         private List<List<TModel>> Split(List<TModel> original, int sizeList)
         {

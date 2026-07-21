@@ -40,7 +40,37 @@
 			- Added onerror/onblocked on the database open request. Nothing handled a failed open,
 			which only survived because the timeout resolved regardless.
 			- Update now closes its connection. It never did.
-		</PackageReleaseNotes>
+
+			Deleting many rows no longer costs one connection per row.
+
+			- New DeleteAsync(IEnumerable&lt;TKey&gt; ids) deletes every id inside ONE transaction. The
+			only way to remove several rows was to call DeleteAsync in a loop, and each call opened
+			its own database connection and its own transaction, so N rows cost N times what they
+			had to. The single-id overloads are unchanged and now share the same code path.
+			- Delete gained transaction.onabort and onerror/onblocked on the open request, so an
+			aborted or failed delete reports a failure instead of leaving the promise pending
+			forever. Clean gained onabort for the same reason.
+
+			A rejected row no longer takes the rest of the batch down with it.
+
+			- Insert still uses add, so a duplicated key is still refused — this is an insert, not an
+			upsert, and it behaves like a primary key in SQL. What changed is the blast radius: an
+			unhandled request error in IndexedDB propagates and aborts the WHOLE transaction, so one
+			duplicate used to discard every other row in the call, and no response could say which
+			row was at fault.
+			- Each request now handles its own error and calls preventDefault(), which stops that
+			propagation. The offending row is the only one not written, everything else commits, and
+			the response list gets one entry per rejected row naming its key and the reason. The
+			aggregate success entry reports how many of how many went in.
+			- CommandResponse.Result is false whenever any row was rejected, as before, so a caller
+			that only checks the flag sees no change. Splitting a write into chunks purely to find
+			out which rows failed is no longer necessary.
+			- CommandResponse.Errors lists just the refused rows, and CommandResponse.EnsureSuccess()
+			throws a ResponseException carrying their messages if there were any. Writes still report
+			failures instead of throwing — the per-row detail cannot survive an exception raised in
+			JavaScript, since a rejected promise reaches .NET as a message and nothing else — so
+			EnsureSuccess lets the caller opt into EF-like behaviour where it wants it.
+</PackageReleaseNotes>
 		<RepositoryUrl>https://github.com/drualcman/BlasorIndexedDb</RepositoryUrl>
 		<RepositoryType>Git</RepositoryType>
 		<PackageId>DrUalcman-BlazorIndexedDb</PackageId>
