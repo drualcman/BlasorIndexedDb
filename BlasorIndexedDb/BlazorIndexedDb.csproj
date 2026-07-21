@@ -51,6 +51,26 @@
 			aborted or failed delete reports a failure instead of leaving the promise pending
 			forever. Clean gained onabort for the same reason.
 
+			Reads: looking a record up by its key never worked, and a failed open hung.
+
+			- SelectId built its key range from a variable that does not exist in that scope, so every
+			call threw a ReferenceError before touching the store. SingleRecord swallows the
+			rejection and returns null, so GetAsync(id) always came back empty and reported nothing.
+			- Select handled a failed open by calling close() on the open REQUEST, which has no such
+			method, so the handler threw and the promise was never settled: the caller hung forever.
+			- None of the three read paths handled a failed open at all. Select, SelectId and
+			SelectWhere now report one.
+
+			A blocked database is no longer reported as an error.
+
+			- blocked does not mean the operation failed, it means it is queued behind another
+			connection that has not closed yet, and it goes ahead on its own once that happens.
+			DropDatabase rejected on it, so it reported a failure for a delete that then went ahead
+			and completed anyway — and since the event carries no error, the rejection had no message
+			either. Every blocked handler now warns to the console and lets onsuccess/onerror settle.
+			- This is much less likely to be reached now that Update closes its connection and Select
+			no longer leaks one on failure. Those leaked connections are exactly what blocks a drop.
+
 			A rejected row no longer takes the rest of the batch down with it.
 
 			- Insert still uses add, so a duplicated key is still refused — this is an insert, not an

@@ -269,10 +269,19 @@ class jsDB {
                             console.warn(`${table}: ${e.message}`);
                         }
                     }
-                    dbconnect.onerror = function (e) {
-                        this.close();
-                        console.warn(`${table}: ${e.message}`);
-                    }
+                    // This used to call this.close() on the open REQUEST, which has no close(), so
+                    // it threw a TypeError and the promise was never settled at all: a failed open
+                    // hung the caller forever. Rejecting reports the reason instead. onblocked was
+                    // missing too, and it is the case that hangs the longest — the open is waiting
+                    // for another connection to close.
+                    dbconnect.onerror = ev => {
+                        console.warn(`${table}: ${ev.target.error ? ev.target.error.message : 'cannot open database'}`);
+                        error([context.SetResponse(false, `${table}: ${ev.target.error ? ev.target.error.message : 'cannot open database'}`)]);
+                    };
+                    // Warn only. blocked means the open is queued behind another connection that has
+                    // not closed yet, not that it failed; onsuccess still fires once it does. It
+                    // only happens at all when the open needs a version upgrade.
+                    dbconnect.onblocked = () => console.warn(`${table}: database blocked, waiting for the other open connections to close`);
                 }
             });
         } catch (e) {
@@ -295,7 +304,12 @@ class jsDB {
                     try {
                         const transaction = db.transaction(table, 'readonly');
                         const store = transaction.objectStore(table);
-                        const range = IDBKeyRange.only(value);
+                        // Was IDBKeyRange.only(value). There is no "value" here, the parameter is
+                        // "id", so every call threw a ReferenceError before touching the store. The
+                        // catch below turned it into a rejection and SingleRecord swallows those and
+                        // returns null, which is why looking a record up by its key always came back
+                        // empty and never reported anything.
+                        const range = IDBKeyRange.only(id);
                         const request = store.getAll(range);
                         request.onerror = ev => {
                             db.close();
@@ -312,6 +326,8 @@ class jsDB {
                         error([context.SetResponse(false, `${table}.${id}: ${e.message}`)]);
                     }
                 }
+                dbconnect.onerror = ev => error([context.SetResponse(false, `${table}.${id}: ${ev.target.error ? ev.target.error.message : 'cannot open database'}`)]);
+                dbconnect.onblocked = () => console.warn(`${table}.${id}: database blocked, waiting for the other open connections to close`);
             }
         });
     }
@@ -351,6 +367,10 @@ class jsDB {
                         console.warn(`${table}.${column}.${value}: ${e.message}`);
                     }
                 }
+                // Same gap as Select and SelectId had: nothing handled a failed or blocked open, so
+                // the promise stayed pending.
+                dbconnect.onerror = ev => error([context.SetResponse(false, `${table}.${column}.${value}: ${ev.target.error ? ev.target.error.message : 'cannot open database'}`)]);
+                dbconnect.onblocked = () => console.warn(`${table}.${column}.${value}: database blocked, waiting for the other open connections to close`);
             }
         });
 
@@ -426,10 +446,9 @@ class jsDB {
                     transactionResult.push(context.SetResponse(false, `Insert => ${table}: ${ev.target.error ? ev.target.error.message : 'cannot open database'}`));
                     finish();
                 };
-                dbconnect.onblocked = () => {
-                    transactionResult.push(context.SetResponse(false, `Insert => ${table}: database blocked`));
-                    finish();
-                };
+                // Warn only: blocked means the open is queued behind another connection that has not
+                // closed, not that it failed. onsuccess still fires once it does.
+                dbconnect.onblocked = () => console.warn(`Insert => ${table}: database blocked, waiting for the other open connections to close`);
                 dbconnect.onsuccess = function () {
                     const db = this.result;
                     try {
@@ -531,10 +550,7 @@ class jsDB {
                     transactionResult.push(context.SetResponse(false, `Update => ${table}: ${ev.target.error ? ev.target.error.message : 'cannot open database'}`));
                     finish();
                 };
-                dbconnect.onblocked = () => {
-                    transactionResult.push(context.SetResponse(false, `Update => ${table}: database blocked`));
-                    finish();
-                };
+                dbconnect.onblocked = () => console.warn(`Update => ${table}: database blocked, waiting for the other open connections to close`);
                 dbconnect.onsuccess = function () {
                     const db = this.result;
                     try {
@@ -648,7 +664,7 @@ class jsDB {
             }
             const dbconnect = context.OpenDB().open(context.DB_NAME, context.DB_VERSION);
             dbconnect.onerror = ev => finish([context.SetResponse(false, `Delete => ${table}: ${ev.target.error ? ev.target.error.message : 'cannot open database'}`)]);
-            dbconnect.onblocked = () => finish([context.SetResponse(false, `Delete => ${table}: database blocked`)]);
+            dbconnect.onblocked = () => console.warn(`Delete => ${table}: database blocked, waiting for the other open connections to close`);
             dbconnect.onsuccess = function () {
                 const db = this.result;
                 try {
@@ -743,8 +759,13 @@ class jsDB {
                     console.warn(`Drop => ${database}: ${event.target.error}`);
                 };
 
-                request.onblocked = function (event) {
-                    error(context.SetResponse(false, `Databse ${database} blocked. ${event.target.error}`));
+                // blocked is not a failure, it is "waiting": other connections to this database are
+                // still open, and deleteDatabase proceeds on its own as soon as they close. This
+                // used to reject here, which reported a failure for something that then went ahead
+                // and happened anyway -- and event.target.error is null on blocked, so the rejection
+                // carried no message either. onsuccess and onerror remain the signals that settle.
+                request.onblocked = function () {
+                    console.warn(`Drop => ${database}: blocked, waiting for the other open connections to close`);
                 };
             }
         });
