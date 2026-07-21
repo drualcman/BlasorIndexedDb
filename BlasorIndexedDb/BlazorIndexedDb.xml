@@ -774,6 +774,19 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:BlazorIndexedDb.Store.StoreSet`1.SelectAsync(System.String,System.Object)">
+            <summary>
+            Get a list with the rows whose column matches the value, resolved by IndexedDB itself
+            </summary>
+            <remarks>
+            Unlike <see cref="M:BlazorIndexedDb.Store.StoreSet`1.SelectAsync(System.Func{`0,System.Boolean})"/>, which reads the whole store and
+            filters it in C#, this looks the value up through the store index and only the matching
+            rows ever cross into .NET. The column must have an index.
+            </remarks>
+            <param name="column">column to compare</param>
+            <param name="value">value to compare</param>
+            <returns></returns>
+        </member>
         <member name="M:BlazorIndexedDb.Store.StoreSet`1.GetAsync(System.Object)">
             <summary>
             Get a single record from store model
