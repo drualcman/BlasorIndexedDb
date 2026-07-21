@@ -198,22 +198,26 @@ class jsDB {
      * @returns {obj} return same object with all the fields
      */
     CheckModel(table, s) {
-        const context = this;
-        const model = this.GetDefault(table);
-        if (model) {
-            let canContinue = true;
-            for (let key in s) {
-                if (!Object.hasOwnProperty.call(model, key)) {
-                    if (key !== 'OffLine') canContinue = false;
-                    break;
-                }
+        return this.CheckModelWith(this.GetDefault(table), s);
+    }
+    /**
+     * Same as CheckModel, but against a default model the caller already has.
+     * @remarks GetDefault builds its result by concatenating a Json string and parsing it, so it is
+     * not something to call once per row when every row in a batch shares the same table.
+     * @param {obj} model default model for the table, from GetDefault
+     * @param {obj} s object to compare
+     * @returns {obj} return same object with all the fields
+     */
+    CheckModelWith(model, s) {
+        if (!model) return null;
+        let canContinue = true;
+        for (let key in s) {
+            if (!Object.hasOwnProperty.call(model, key)) {
+                if (key !== 'OffLine') canContinue = false;
+                break;
             }
-            if (canContinue) return context.MergeObjects(model, s);
-            else return null;
         }
-        else {
-            return null;
-        }
+        return canContinue ? this.MergeObjects(model, s) : null;
     }
     IsArray(object) {
         return object.constructor === Array;
@@ -381,20 +385,26 @@ class jsDB {
                 }
                 let toAdd = new Array();
                 let canContinues = true;
+                // Every row in the batch belongs to the same table, so everything that depends only
+                // on the table is resolved once instead of once per row. GetDefault in particular
+                // builds its object by concatenating a Json string and parsing it, and it used to
+                // run TWICE per row: once inside CheckModel and once here.
+                const defaultModel = context.GetDefault(table);
+                const model = context.MODELS.find(el => el.name === table);
+                const keyPath = model && model.options ? model.options.keyPath : null;
+                const autoIncrement = !!(model && model.options && model.options.autoIncrement);
                 data.forEach(element => {
-                    const obj = context.CheckModel(table, element);
-                    if (obj === null) {
+                    // CheckModel validates the row and returns MergeObjects(defaultModel, element).
+                    // The row was then merged a second time from the same two inputs, producing the
+                    // same object, and the first result was thrown away. Merge once and keep it.
+                    const o = context.CheckModelWith(defaultModel, element);
+                    if (o === null) {
                         transactionResult.push(context.SetResponse(false, "Model doesn't match"));
                         canContinues = false;
                     }
                     else {
                         try {
-                            let defaultModel = context.GetDefault(table);
-                            //get who is the keypath
-                            let model = context.MODELS.find(el => el.name === table);
-                            let keyPath = model.options.keyPath;
-                            let o = context.MergeObjects(defaultModel, element);
-                            if (o[keyPath] != null && model.options.autoIncrement) {
+                            if (keyPath && o[keyPath] != null && autoIncrement) {
                                 delete o[keyPath];
                             }
                             toAdd.push(o);
@@ -426,8 +436,6 @@ class jsDB {
                         const transaction = db.transaction(table, 'readwrite');
                         const store = transaction.objectStore(table);
                         const rows = toAdd.length;
-                        const model = context.MODELS.find(el => el.name === table);
-                        const keyPath = model && model.options ? model.options.keyPath : null;
                         let failed = 0;
                         for (let r = 0; r < rows; r++) {
                             const request = store.add(toAdd[r]);
@@ -532,19 +540,19 @@ class jsDB {
                     try {
                         const transaction = db.transaction(table, 'readwrite');
                         const store = transaction.objectStore(table);
+                        // Resolved once for the whole batch, not once per row: see Insert. GetDefault
+                        // parses a Json string it builds itself, and CheckModel calls it every time.
+                        const defaultModel = context.GetDefault(table);
+                        const model = context.MODELS.find(el => el.name === table);
+                        //get who is the keypath
+                        const keyPath = (model && model.options && model.options.keyPath) ? model.options.keyPath : 'ssnId';
                         data.forEach(element => {
-                            const obj = context.CheckModel(table, element);
+                            const obj = context.CheckModelWith(defaultModel, element);
                             if (obj === null) {
                                 transactionResult.push(context.SetResponse(false, "Model doesn't match"));
                             }
                             else {
                                 try {
-                                    //get who is the keypath
-                                    let model = context.MODELS.find(el => el.name === table);
-                                    let keyPath = model.options.keyPath;
-                                    if (!keyPath) {
-                                        keyPath = 'ssnId';
-                                    }
                                     let ssnId = obj[keyPath];
                                     let dat = null;
                                     let objRequest;
