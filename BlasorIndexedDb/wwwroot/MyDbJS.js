@@ -576,15 +576,31 @@ class jsDB {
                                         let request = store.get(ssnId);
                                         //retrieve the actual data for the index about the element
                                         request.onsuccess = function () {
-                                            dat = context.UpdateModel(request.result, obj);
-                                            objRequest = store.put(dat);
-                                            objRequest.onsuccess = () => {
-                                                transactionResult.push(context.SetResponse(true, `Success in updating record ${ssnId}`));
-                                            };
-                                            objRequest.onerror = ev => {
-                                                transactionResult.push(context.SetResponse(false, `Error in updating record ${ssnId}`));
-                                                console.warn(ev.target.error.message);
-                                            };
+                                            try {
+                                                // A row that is not there yet has nothing to merge into, and
+                                                // UpdateModel walks the keys of what it was given: from
+                                                // undefined it returned {}, and put({}) throws DataError
+                                                // because the key path yields no value. Thrown from inside
+                                                // this handler it also escaped the try below, aborting the
+                                                // whole transaction — so updating a row somebody else had
+                                                // just deleted took every other row in the batch with it.
+                                                // put is an upsert, so the row itself is what goes in.
+                                                dat = request.result === undefined
+                                                    ? obj
+                                                    : context.UpdateModel(request.result, obj);
+                                                objRequest = store.put(dat);
+                                                objRequest.onsuccess = () => {
+                                                    transactionResult.push(context.SetResponse(true, `Success in updating record ${ssnId}`));
+                                                };
+                                                objRequest.onerror = ev => {
+                                                    transactionResult.push(context.SetResponse(false, `Error in updating record ${ssnId}`));
+                                                    console.warn(ev.target.error.message);
+                                                    ev.preventDefault();
+                                                };
+                                            } catch (e) {
+                                                transactionResult.push(context.SetResponse(false, `Update => ${table}: record ${ssnId}: ${e.message}`));
+                                                console.warn(`Update => ${table}: record ${ssnId}: ${e.message}`);
+                                            }
                                         }
                                     }
                                     else {

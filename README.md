@@ -12,6 +12,11 @@ Manage IndexedDB from C# with Blazor. A simple way to interact with IndexedDB, s
 Working on changing version control to avoid the need to delete the existing database when adding, removing, or modifying a StoreSet.
 
 ## What changed in this version
+**Offline writes work.** `AddAsync(row, isOffline: true)` and `UpdateAsync(row, isOffline: true)` never wrote anything, in any version: they came back with `[Insert] StoreName can't be null` and never reached the database. The offline write adds an `OffLine` flag to each row by turning it into an `ExpandoObject`, and then handed the result back to the ordinary insert — where the generic argument is no longer your entity but `object`, so looking up which store it belongs to asked for a model named "Object" and got nothing. The database was never involved, which is why deleting and recreating it changed nothing. If you ever gave up on the offline flag because it did not work, this is the release to try again.
+
+**Updating a row that is not there no longer discards the rest of the batch.** `Update` reads the stored row first so it can keep the columns you left out, and from a row that does not exist that merge produced an empty object — which IndexedDB refuses, from a place where the error aborts the whole transaction and rolls back every other row in the call. It is a `put`, so a row that is not stored yet is now simply written as it is. Updating a row that something else had just deleted was enough to hit this.
+
+## What changed in 1.10.50
 Writes got dramatically faster, a broken filter got fixed, and failures that used to be reported as success are now reported as failures. Nothing in your code has to change, but two of these are visible from the outside.
 
 **Writes no longer wait on a guess.** Insert and Update used to resolve on a timer of 50ms per row, so a batch of 4944 rows took 247 seconds no matter how fast IndexedDB really was. They now resolve when the transaction actually completes. That same batch takes milliseconds of database time.

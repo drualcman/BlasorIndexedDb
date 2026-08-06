@@ -2,8 +2,8 @@
 
 	<PropertyGroup>
 		<TargetFrameworks>net6.0;net8.0;net9.0;net10.0</TargetFrameworks>
-		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<Version>1.10.50</Version>
+		<GeneratePackageOnBuild Condition="'$(Configuration)' == 'Release'">true</GeneratePackageOnBuild>
+		<Version>1.10.51</Version>
 		<Authors>Sergi Ortiz Gomez</Authors>
 		<Company>DrUalcman</Company>
 		<Description>Manage IndexedDb from Blazor WebAssembly applications. Create a StoreDbContext similar how is working in EF. Please report any bug or changes you need using our contact form in the web site. Thanks.</Description>
@@ -11,85 +11,27 @@
 		<PackageLicenseFile>License.txt</PackageLicenseFile>
 		<PackageTags>webassembly, blazor, indexedDb, interop, javascript, database</PackageTags>
 		<PackageReleaseNotes>
-			Performance and correctness work on the JS interop boundary.
+			1.10.51 — offline writes never wrote anything, and updating a missing row took the batch down.
 
-			- Insert, Update and Delete now exchange UTF-8 encoded Json with JavaScript in BOTH
-			directions, as Select already did. Payloads travel as byte[] (a Uint8Array on the JS
-			side), so neither end builds or re-parses a string for the whole batch. Responses are
-			deserialized straight from the bytes instead of being materialized as a JsonElement and
-			serialized again.
-			- Fixed SelectWhere: the interop wrapper called Select(table, column, value), but Select
-			only takes the table name, so the filter was dropped and the WHOLE store was returned.
-			The indexed lookup it was supposed to use is now actually reached.
-			- Fixed the C# side of SelectWhere too: it read the response through GetJsonResult&lt;byte[]&gt;,
-			which cannot deserialize a Uint8Array (System.Text.Json expects base64 for byte[]).
-			- JsonSerializerOptions are shared instead of rebuilt per call, which also restores the
-			serializer metadata cache. The two copies that existed had already drifted apart.
-
-			Insert and Update no longer guess when a write has finished.
-
-			- They resolved on setTimeout(rows * 50), so the cost of a write grew by 50ms for every
-			row in the call no matter how fast IndexedDB actually was — a batch of 4944 rows took
-			247 seconds against a real write time of milliseconds — and the caller resumed while the
-			transaction was still open and the connection unclosed. Both now resolve from
-			transaction.oncomplete, the same signal Clean and Delete already used.
-			- Added transaction.onabort. A failed request (store.add on an existing key, for
-			instance) aborts the whole transaction and oncomplete never fires; the timeout used to
-			hide that by reporting success for rows that were never written. Such a write is now
-			reported as failed.
-			- Added onerror/onblocked on the database open request. Nothing handled a failed open,
-			which only survived because the timeout resolved regardless.
-			- Update now closes its connection. It never did.
-
-			Deleting many rows no longer costs one connection per row.
-
-			- New DeleteAsync(IEnumerable&lt;TKey&gt; ids) deletes every id inside ONE transaction. The
-			only way to remove several rows was to call DeleteAsync in a loop, and each call opened
-			its own database connection and its own transaction, so N rows cost N times what they
-			had to. The single-id overloads are unchanged and now share the same code path.
-			- Delete gained transaction.onabort and onerror/onblocked on the open request, so an
-			aborted or failed delete reports a failure instead of leaving the promise pending
-			forever. Clean gained onabort for the same reason.
-
-			Reads: looking a record up by its key never worked, and a failed open hung.
-
-			- SelectId built its key range from a variable that does not exist in that scope, so every
-			call threw a ReferenceError before touching the store. SingleRecord swallows the
-			rejection and returns null, so GetAsync(id) always came back empty and reported nothing.
-			- Select handled a failed open by calling close() on the open REQUEST, which has no such
-			method, so the handler threw and the promise was never settled: the caller hung forever.
-			- None of the three read paths handled a failed open at all. Select, SelectId and
-			SelectWhere now report one.
-
-			A blocked database is no longer reported as an error.
-
-			- blocked does not mean the operation failed, it means it is queued behind another
-			connection that has not closed yet, and it goes ahead on its own once that happens.
-			DropDatabase rejected on it, so it reported a failure for a delete that then went ahead
-			and completed anyway — and since the event carries no error, the rejection had no message
-			either. Every blocked handler now warns to the console and lets onsuccess/onerror settle.
-			- This is much less likely to be reached now that Update closes its connection and Select
-			no longer leaks one on failure. Those leaked connections are exactly what blocks a drop.
-
-			A rejected row no longer takes the rest of the batch down with it.
-
-			- Insert still uses add, so a duplicated key is still refused — this is an insert, not an
-			upsert, and it behaves like a primary key in SQL. What changed is the blast radius: an
-			unhandled request error in IndexedDB propagates and aborts the WHOLE transaction, so one
-			duplicate used to discard every other row in the call, and no response could say which
-			row was at fault.
-			- Each request now handles its own error and calls preventDefault(), which stops that
-			propagation. The offending row is the only one not written, everything else commits, and
-			the response list gets one entry per rejected row naming its key and the reason. The
-			aggregate success entry reports how many of how many went in.
-			- CommandResponse.Result is false whenever any row was rejected, as before, so a caller
-			that only checks the flag sees no change. Splitting a write into chunks purely to find
-			out which rows failed is no longer necessary.
-			- CommandResponse.Errors lists just the refused rows, and CommandResponse.EnsureSuccess()
-			throws a ResponseException carrying their messages if there were any. Writes still report
-			failures instead of throwing — the per-row detail cannot survive an exception raised in
-			JavaScript, since a rejected promise reaches .NET as a message and nothing else — so
-			EnsureSuccess lets the caller opt into EF-like behaviour where it wants it.
+			- AddAsync(row, isOffline: true) and UpdateAsync(row, isOffline: true) always failed with
+			"[Insert] StoreName can't be null" and never touched the database. The offline write adds
+			an OffLine flag to each row by turning it into an ExpandoObject, then handed the result
+			back to the ordinary insert — where TModel is no longer your entity but object. Resolving
+			the store from it asked for one belonging to a model named "Object", got null, and the
+			guard against a null store name refused the call. Nothing was ever wrong with the
+			database, so deleting and recreating it made no difference. The store name is now
+			resolved once from the caller's TModel and passed down as a parameter. If you use the
+			offline flag, this is the release that makes it work at all.
+			- DbInsert and DbUpdate gained an overload taking the store name explicitly. The existing
+			signatures resolve it and delegate, so no caller changes.
+			- Update on a row that does not exist no longer aborts the whole transaction. It read the
+			stored row first to keep the columns the caller left out, and from undefined that merge
+			produced an empty object: put({}) then threw DataError because the key path yields no
+			value, and it threw from inside the request handler where the surrounding try cannot see
+			it — which in IndexedDB rolls back every other row in the batch. put is an upsert, so a
+			row that is not there yet now goes in as-is, the handler body is wrapped, and a rejected
+			row calls preventDefault() so the failure stays that row's. Updating a row another part
+			of the app had just deleted was enough to reach this.
 </PackageReleaseNotes>
 		<RepositoryUrl>https://github.com/drualcman/BlasorIndexedDb</RepositoryUrl>
 		<RepositoryType>Git</RepositoryType>

@@ -48,7 +48,24 @@
         /// <param name="rows">data to insert</param>
         /// <exception cref="ResponseException"></exception>
         /// <returns></returns>
-        internal async Task<List<ResponseJsDb>> DbUpdate<TModel>([NotNull] List<TModel> rows)
+        internal Task<List<ResponseJsDb>> DbUpdate<TModel>([NotNull] List<TModel> rows) =>
+            DbUpdate(Setup.Tables.GetTable<TModel>(), rows);
+
+        /// <summary>
+        /// Update table to a db
+        /// </summary>
+        /// <remarks>
+        /// The store is named by the caller instead of being resolved again from the rows. The
+        /// offline write turns every row into an ExpandoObject, so resolving it here looked up a
+        /// store for "Object", found none, and the write failed with "StoreName can't be null"
+        /// before it ever reached the database.
+        /// </remarks>
+        /// <typeparam name="TModel">Table or store to use</typeparam>
+        /// <param name="storeName">store the rows belong to</param>
+        /// <param name="rows">data to insert</param>
+        /// <exception cref="ResponseException"></exception>
+        /// <returns></returns>
+        internal async Task<List<ResponseJsDb>> DbUpdate<TModel>([NotNull] string storeName, [NotNull] List<TModel> rows)
         {
             try
             {
@@ -59,7 +76,7 @@
                 int c = rows.Count;
                 if (c > 0)
                 {
-                    List<ResponseJsDb> response = await Commands.DbCommand(DbCommands.Update, Setup.Tables.GetTable<TModel>(), await ObjectConverter.ToBytesAsync(rows));
+                    List<ResponseJsDb> response = await Commands.DbCommand(DbCommands.Update, storeName, await ObjectConverter.ToBytesAsync(rows));
                     if (Settings.EnableDebug)
                         Console.WriteLine($"{Setup.DBName} => Update response is null {response == null}");
                     if (response != null)
@@ -68,9 +85,9 @@
                 else
                 {
                     if (Settings.EnableDebug)
-                        Console.WriteLine($"{Setup.DBName} => DbUpdate No need update into {Setup.Tables.GetTable<TModel>()}");
+                        Console.WriteLine($"{Setup.DBName} => DbUpdate No need update into {storeName}");
                     result = new List<ResponseJsDb>{
-                            new ResponseJsDb { Result = true, Message =$"No need update into {Setup.Tables.GetTable<TModel>()}!" }
+                            new ResponseJsDb { Result = true, Message =$"No need update into {storeName}!" }
                         };
                 }
                 return result;
@@ -83,7 +100,7 @@
             }
             catch (Exception ex)
             {
-                throw new ResponseException(nameof(DbUpdate), Setup.Tables.GetTable<TModel>(), ex.Message, ex);
+                throw new ResponseException(nameof(DbUpdate), storeName, ex.Message, ex);
             }
 
         }
@@ -117,12 +134,15 @@
         /// <returns></returns>
         internal async Task<List<ResponseJsDb>> DbUpdateOffLine<TModel>([NotNull] List<TModel> rows)
         {
+            // Resolved from TModel, which is the only place it can be read from: the expanded rows
+            // below are ExpandoObjects and no longer name any store.
+            string storeName = Setup.Tables.GetTable<TModel>();
             try
             {
                 List<dynamic> expanded = await AddOflineProperty.AddOfflineAsync(rows);
                 if (Settings.EnableDebug)
-                    Console.WriteLine($"{Setup.DBName} => DbUpdateOffLine in modelL  = {Setup.Tables.GetTable<TModel>()}");
-                return await DbUpdate(expanded);
+                    Console.WriteLine($"{Setup.DBName} => DbUpdateOffLine in modelL  = {storeName}");
+                return await DbUpdate(storeName, expanded);
             }
 
             catch (ResponseException ex)
@@ -133,7 +153,7 @@
             }
             catch (Exception ex)
             {
-                throw new ResponseException(nameof(DbUpdateOffLine), Setup.Tables.GetTable<TModel>(), ex.Message, ex);
+                throw new ResponseException(nameof(DbUpdateOffLine), storeName, ex.Message, ex);
             }
 
         }

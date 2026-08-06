@@ -219,6 +219,63 @@ any row was refused, so code that only checks the flag needs no change.
 
 ---
 
+# 1.10.51
+
+## Every offline write failed before it reached the database
+
+`AddAsync(row, isOffline: true)` and `UpdateAsync(row, isOffline: true)` never wrote anything. They
+came back with:
+
+```
+[Insert] StoreName can't be null
+```
+
+The store name is resolved from the model type: `GetTable<TModel>()` looks up which store
+`TModel` belongs to. The offline write adds an `OffLine` flag to each row, and to do that it turns
+every row into an `ExpandoObject`, then hands the result back to the ordinary insert:
+
+```csharp
+List<dynamic> expanded = await AddOflineProperty.AddOfflineAsync(rows);
+return await DbInsert(expanded);        // TModel is `object` from here on
+```
+
+On that second call `TModel` is no longer your entity, it is `object`. So the lookup asked for a
+store belonging to a model named `Object`, found none, and got back `null` — and the guard in
+`DbCommand` that rejects a null store name did its job. The database was never touched, and no
+amount of deleting or recreating it made any difference, because nothing was ever wrong with it.
+
+The name is now resolved once, from the caller's `TModel`, and travels as a parameter from there
+on. `DbInsert` and `DbUpdate` each gained an overload taking the store name explicitly; the
+existing signatures resolve it and delegate, so nothing changes for callers.
+
+This applies to both `DbInserOffline` and `DbUpdateOffLine`. If you use the offline flag, this is
+the release that makes it work at all.
+
+## Updating a row that was not there aborted the whole transaction
+
+`Update` reads the stored row first so it can keep the columns the caller left out. When the row
+did not exist:
+
+```javascript
+dat = context.UpdateModel(request.result, obj);   // request.result is undefined -> dat is {}
+objRequest = store.put(dat);                      // DataError: key path yields no value
+```
+
+`UpdateModel` walks the keys of what it is given, and `undefined` has none, so it returned an
+empty object. `put({})` then threw `DataError` because the key path evaluates to nothing — and it
+threw from inside the `onsuccess` handler, where the surrounding `try` cannot see it. An
+unhandled exception in a request handler aborts the transaction, which rolls back **every other
+row in the batch**.
+
+`put` is an upsert, so a row that is not there yet is simply the row itself: it now goes in as-is,
+the handler body is wrapped, and a rejected row calls `preventDefault()` so it stays that one
+row's failure instead of the batch's.
+
+This was reachable without doing anything unusual — updating a row another part of the app had
+just deleted was enough.
+
+---
+
 ## Upgrading
 
 No API was removed and no signature changed, so nothing should stop compiling. Two behaviours do
