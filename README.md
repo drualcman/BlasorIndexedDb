@@ -8,8 +8,29 @@ Manage IndexedDB from C# with Blazor. A simple way to interact with IndexedDB, s
 # NuGet installation
 ```PM> Install-Package DrUalcman-BlazorIndexedDb```
 
-## New version changes coming
-Working on changing version control to avoid the need to delete the existing database when adding, removing, or modifying a StoreSet.
+## Schema changes keep your data
+
+Adding, removing or changing a `StoreSet` no longer means deleting the database. The schema in the
+browser is compared with your context on every start, and only what differs is applied:
+
+| What you changed | What happens to the data |
+| --- | --- |
+| Added a `StoreSet` | Nothing. The store is created, every other store is untouched. |
+| Removed a `StoreSet` | Its store is dropped. The rows in it are gone, and how many is written to the console. |
+| Added or removed a property | The index is created or dropped. Rows are not touched. |
+| Changed the primary key | The store is rebuilt and the rows are carried across. A row the new key cannot be taken from is the only one that cannot come, and it is reported with its old key. |
+
+You do not have to bump the version for this. A model that changed without a new version still gets
+one, because a version change is the only place IndexedDB lets a schema be modified — so the number
+in the browser can end up ahead of the one in your settings, and the library takes that into account
+everywhere instead of failing with a `VersionError`.
+
+It all happens inside the version change transaction, which is what makes it safe: the rows are read
+from the old store and written to the new one without leaving that transaction, so there is nothing
+to copy anywhere else first, and anything that goes wrong aborts the whole thing and leaves the
+database exactly as it was. Half-migrated is not a state you can end up in.
+
+The console is only told about what was **lost**. A migration that keeps everything says nothing.
 
 ## What changed in this version
 **Offline writes work.** `AddAsync(row, isOffline: true)` and `UpdateAsync(row, isOffline: true)` never wrote anything, in any version: they came back with `[Insert] StoreName can't be null` and never reached the database. The offline write adds an `OffLine` flag to each row by turning it into an `ExpandoObject`, and then handed the result back to the ordinary insert — where the generic argument is no longer your entity but `object`, so looking up which store it belongs to asked for a model named "Object" and got nothing. The database was never involved, which is why deleting and recreating it changed nothing. If you ever gave up on the offline flag because it did not work, this is the release to try again.

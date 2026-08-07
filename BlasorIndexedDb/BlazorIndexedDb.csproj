@@ -3,7 +3,7 @@
 	<PropertyGroup>
 		<TargetFrameworks>net6.0;net8.0;net9.0;net10.0</TargetFrameworks>
 		<GeneratePackageOnBuild Condition="'$(Configuration)' == 'Release'">true</GeneratePackageOnBuild>
-		<Version>1.10.51</Version>
+		<Version>1.11.52</Version>
 		<Authors>Sergi Ortiz Gomez</Authors>
 		<Company>DrUalcman</Company>
 		<Description>Manage IndexedDb from Blazor WebAssembly applications. Create a StoreDbContext similar how is working in EF. Please report any bug or changes you need using our contact form in the web site. Thanks.</Description>
@@ -11,27 +11,22 @@
 		<PackageLicenseFile>License.txt</PackageLicenseFile>
 		<PackageTags>webassembly, blazor, indexedDb, interop, javascript, database</PackageTags>
 		<PackageReleaseNotes>
-			1.10.51 — offline writes never wrote anything, and updating a missing row took the batch down.
+			1.11.52 — a schema change keeps the data it can.
 
-			- AddAsync(row, isOffline: true) and UpdateAsync(row, isOffline: true) always failed with
-			"[Insert] StoreName can't be null" and never touched the database. The offline write adds
-			an OffLine flag to each row by turning it into an ExpandoObject, then handed the result
-			back to the ordinary insert — where TModel is no longer your entity but object. Resolving
-			the store from it asked for one belonging to a model named "Object", got null, and the
-			guard against a null store name refused the call. Nothing was ever wrong with the
-			database, so deleting and recreating it made no difference. The store name is now
-			resolved once from the caller's TModel and passed down as a parameter. If you use the
-			offline flag, this is the release that makes it work at all.
-			- DbInsert and DbUpdate gained an overload taking the store name explicitly. The existing
-			signatures resolve it and delegate, so no caller changes.
-			- Update on a row that does not exist no longer aborts the whole transaction. It read the
-			stored row first to keep the columns the caller left out, and from undefined that merge
-			produced an empty object: put({}) then threw DataError because the key path yields no
-			value, and it threw from inside the request handler where the surrounding try cannot see
-			it — which in IndexedDB rolls back every other row in the batch. put is an upsert, so a
-			row that is not there yet now goes in as-is, the handler body is wrapped, and a rejected
-			row calls preventDefault() so the failure stays that row's. Updating a row another part
-			of the app had just deleted was enough to reach this.
+			- Adding, removing or changing a StoreSet no longer means deleting the database. The schema
+			in the browser is compared with the context on every start and only the difference is
+			applied: a new store is created, a store the model dropped is dropped, a property added or
+			removed is an index created or dropped with the rows untouched, and a store whose primary
+			key changed is rebuilt with its rows carried across one by one. All of it inside the version
+			change transaction, so the rows never leave it and anything that fails aborts the lot and
+			leaves the database as it was — half migrated is not reachable.
+			- The version does not have to be bumped for a schema change to be applied. A model that
+			changed without a new version takes the next one, so the database can end up ahead of the
+			version in the settings, and reads and writes no longer ask for a version at all instead of
+			failing with a VersionError when they disagree.
+			- Only what was lost is reported. A store dropped from the model says how many rows went
+			with it, and a rebuilt store names the rows the new key could not be taken from with the key
+			they used to have. A migration that keeps everything says nothing.
 </PackageReleaseNotes>
 		<RepositoryUrl>https://github.com/drualcman/BlasorIndexedDb</RepositoryUrl>
 		<RepositoryType>Git</RepositoryType>

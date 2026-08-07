@@ -7,84 +7,377 @@ class jsDB {
         console.info('Database jsDB instance created!');
     }
 
+    /**
+     * Bring the database in line with the model, keeping everything that can be kept. A store the
+     * model no longer has is dropped, a new one is created, and one whose key changed is rebuilt with
+     * its rows carried across. Nothing is deleted wholesale and no version has to be bumped by hand
+     * for a store to appear. See Migrate.
+     * @param {any} dbModel {name, version, tables} built by the C# side from the context
+     */
     Initialize(dbModel) {
         return new Promise((resolve, reject) => {
             if (!this.OpenDB()) {
                 reject([this.SetResponse(false, `${this.DB_NAME} => IndexedDB not compatible!`)]);
+                return;
             }
-            else {
-                if (dbModel.name) {
-                    this.DB_NAME = dbModel.name;
-                    this.DB_VERSION = dbModel.version;
-                    this.MODELS = dbModel.tables; 
-                    const dbconnect = this.OpenDB().open(this.DB_NAME, this.DB_VERSION);
-                    dbconnect.onblocked = ev => {
-                        // If some other tab is loaded with the database, then it needs to be closed
-                        // before we can proceed.
-                        alert("Please close all other tabs with this site open!");
-                        reject([this.SetResponse(false, `${this.DB_NAME} => OnBlocked Error: Please close all other tabs with this site open!`)]);
-                        this.close();
-                    };
-                    dbconnect.onupgradeneeded = ev => {
-                        //create database with the model send
-                        const db = ev.target.result;
-                        const t = this.MODELS.length;
-                        //get tables
-                        if (t > 0) {
-                            for (let ti = 0; ti < t; ti++) {
-                                let tabla = this.MODELS[ti];
-                                let columns = tabla.columns;
-                                let c = columns.length;
-                                //get columns
-                                if (c > 0) {
-                                    let options = tabla.options;
-                                    let keyPath;
-                                    let increment;
-                                    if (options) {
-                                        if (options.keyPath) {
-                                            keyPath = options.keyPath;
-                                            if (options.autoIncrement) increment = options.autoIncrement;
-                                            else increment = false;
-                                        }
-                                        else {
-                                            keyPath = 'ssnId';
-                                            increment = true;
-                                        }
-                                    }
-                                    else {
-                                        keyPath = 'ssnId';
-                                        increment = true;
-                                    }
-                                    //if table exist delete, data will lost
-                                    if (db.objectStoreNames.contains(tabla.name)) {
-                                        db.deleteObjectStore(tabla.name);
-                                    }
-                                    //add table
-                                    let objectStore = db.createObjectStore(tabla.name, { keyPath: keyPath, autoIncrement: increment });
-                                    for (let ci = 0; ci < c; ci++) {
-                                        //add columns
-                                        let column = columns[ci];
-                                        objectStore.createIndex(column.name, column.name, { keyPath: column.keyPath, autoIncrement: column.autoIncrement, unique: column.unique });
-                                    }
-                                }
-                            }
-                        }
-                        else reject([this.SetResponse(false, `${this.DB_NAME} => OnUpgrade Error: No tables defined.`)]);
-                    };
-                    dbconnect.onerror = e => {
-                        console.warn(`${this.DB_NAME} => Connection Error: ${e.target.error.message}`);
-                        reject([this.SetResponse(false, `${this.DB_NAME} => Connection Error: ${e.target.error.message}`)]);
-                    }
-                    dbconnect.onsuccess = () => {
-                        resolve();
-                        return;
-                    }
+            if (!dbModel.name) {
+                reject([this.SetResponse(false, `${this.DB_NAME} => Error: Please provide db model {name: 'MyDB', version: 1, tables: [{name: 'Table1', options: {keyPath : 'Id', autoIncrement: true/false}, columns: [{name: 'ColumnName', keyPath: true/false, autoIncrement: true/false, unique: true/false }]}]}`)]);
+                return;
+            }
+
+            this.DB_NAME = dbModel.name;
+            this.DB_VERSION = dbModel.version;
+            this.MODELS = dbModel.tables;
+
+            // What the browser holds is read before any version is asked for. The database can be
+            // ahead of the model: a model that changes without its version being raised still needs
+            // a version change to be applied, and it takes the next one, so from then on the number
+            // in the browser is the higher one. Opening that with a lower version is a VersionError,
+            // which is why nothing here or in the reads and writes asks for a version it has not
+            // checked first.
+            const inspect = this.OpenDB().open(this.DB_NAME);
+            // Deliberately empty. An open with no version creates the database at version 1 when it
+            // is not there, and letting that happen is the point: what comes back is then an empty
+            // database whose every store is missing, which is the same case as any other mismatch
+            // and is handled below by the upgrade. Aborting here instead would leave the whole
+            // first run of a device depending on an aborted version change reporting itself as a
+            // failed open, and there is no reason to need that.
+            inspect.onupgradeneeded = () => { };
+            inspect.onblocked = () => console.warn(`${this.DB_NAME} => open blocked, waiting for the other open connections to close`);
+            inspect.onerror = ev => {
+                const reason = ev.target.error ? ev.target.error.message : 'cannot open database';
+                console.warn(`${this.DB_NAME} => Connection Error: ${reason}`);
+                reject([this.SetResponse(false, `${this.DB_NAME} => Connection Error: ${reason}`)]);
+            };
+            inspect.onsuccess = ev => {
+                const db = ev.target.result;
+                const current = db.version;
+                const changes = this.PendingChanges(db);
+                db.close();
+
+                if (changes.length === 0) {
+                    resolve();
+                    return;
                 }
-                else reject([this.SetResponse(false, `${this.DB_NAME} => Error: Please provide db model {name: 'MyDB', version: 1, tables: [{name: 'Table1', options: {keyPath : 'Id', autoIncrement: true/false}, columns: [{name: 'ColumnName', keyPath: true/false, autoIncrement: true/false, unique: true/false }]}]}`)]);
-            }
+
+                console.info(`${this.DB_NAME} => applying schema changes: ${changes.join(', ')}`);
+                this.Upgrade(this.DB_VERSION > current ? this.DB_VERSION : current + 1)
+                    .then(resolve)
+                    .catch(reject);
+            };
         });
     }
 
+    /**
+     * Open at a version that forces a version change, and migrate inside it.
+     * @param {number} version version to open with
+     */
+    Upgrade(version) {
+        return new Promise((resolve, reject) => {
+            // Checked before opening, so a model that did not make it across is reported as itself
+            // rather than as a transaction that aborted for no stated reason.
+            if (this.Tables().length === 0) {
+                reject([this.SetResponse(false, `${this.DB_NAME} => OnUpgrade Error: No tables defined.`)]);
+                return;
+            }
+
+            // Filled while the version change runs and read once it has committed, so what is
+            // reported is what was actually lost and not what was about to be attempted.
+            const losses = [];
+            const request = this.OpenDB().open(this.DB_NAME, version);
+            request.onblocked = () => console.warn(`${this.DB_NAME} => upgrade blocked, waiting for the other open connections to close`);
+            request.onupgradeneeded = ev => this.Migrate(ev.target.result, ev.target.transaction, losses);
+            request.onerror = ev => {
+                const reason = ev.target.error ? ev.target.error.message : 'cannot open database';
+                console.warn(`${this.DB_NAME} => Upgrade Error: ${reason}`);
+                reject([this.SetResponse(false, `${this.DB_NAME} => Upgrade Error: ${reason}`)]);
+            };
+            request.onsuccess = ev => {
+                ev.target.result.close();
+                this.ReportLosses(losses);
+                resolve();
+            };
+        });
+    }
+
+    /**
+     * The whole migration, inside the version change transaction it is given. Everything it does is
+     * one transaction: rows are read from the old store and written to the new one without leaving
+     * it, so there is nothing to copy anywhere else first, and a failure anywhere aborts the lot and
+     * leaves the database exactly as it was rather than half migrated.
+     * @param {IDBDatabase} db database being upgraded
+     * @param {IDBTransaction} transaction the version change transaction
+     * @param {Array} losses collects what could not be kept
+     */
+    Migrate(db, transaction, losses) {
+        const tables = this.Tables();
+
+        if (tables.length === 0) {
+            // Rejecting is not enough on its own: a version change commits even when the promise is
+            // rejected, and what it would leave behind is a database at this version with no stores,
+            // which every later open then takes as good.
+            transaction.abort();
+            return;
+        }
+
+        for (const name of [...db.objectStoreNames]) {
+            if (tables.some(table => table.name === name)) continue;
+            this.DropStore(db, transaction, name, losses);
+        }
+
+        for (const table of tables) {
+            if (!db.objectStoreNames.contains(table.name)) {
+                this.CreateStore(db, table);
+                continue;
+            }
+
+            const store = transaction.objectStore(table.name);
+            // keyPath and autoIncrement are fixed when the store is created, so those are the only
+            // changes that cannot be made in place. Indexes can, and the rows never move for them.
+            if (this.SameKey(store, table)) this.SyncIndexes(store, table);
+            else this.RebuildStore(db, transaction, table, losses);
+        }
+    }
+
+    /**
+     * A store the model no longer has. Its rows are counted before it goes, because that count is
+     * the only thing anyone can be told about them afterwards.
+     */
+    DropStore(db, transaction, name, losses) {
+        const loss = { store: name, dropped: 0 };
+        losses.push(loss);
+
+        const count = transaction.objectStore(name).count();
+        count.onsuccess = () => {
+            loss.dropped = count.result;
+            db.deleteObjectStore(name);
+        };
+    }
+
+    /**
+     * Create a store from a table of the model, with its indexes.
+     */
+    CreateStore(db, table) {
+        const store = db.createObjectStore(table.name, this.StoreOptions(table));
+        for (const column of table.columns) {
+            store.createIndex(column.name, column.name, { unique: column.unique === true });
+        }
+        return store;
+    }
+
+    /**
+     * Add what the model gained, remove what it dropped, and remake the ones whose uniqueness
+     * changed. An index is built from the rows that are already there, so none of this touches them.
+     */
+    SyncIndexes(store, table) {
+        const wanted = table.columns.map(column => column.name);
+
+        for (const name of [...store.indexNames]) {
+            if (!wanted.includes(name)) store.deleteIndex(name);
+        }
+
+        for (const column of table.columns) {
+            const unique = column.unique === true;
+
+            if (store.indexNames.contains(column.name)) {
+                if (store.index(column.name).unique === unique) continue;
+                store.deleteIndex(column.name);
+            }
+
+            store.createIndex(column.name, column.name, { unique: unique });
+        }
+    }
+
+    /**
+     * The store's key changed, so it has to be made again: the rows are read, the store is replaced,
+     * and they are written back one at a time. A row the new key cannot be taken from is the only
+     * one that cannot come across — it is counted and reported, and preventDefault keeps its failure
+     * from aborting the transaction and taking every other row with it.
+     */
+    RebuildStore(db, transaction, table, losses) {
+        const previous = transaction.objectStore(table.name);
+        const options = this.StoreOptions(table);
+        const loss = {
+            store: table.name,
+            from: this.DescribeKey(previous.keyPath, previous.autoIncrement),
+            to: this.DescribeKey(options.keyPath, options.autoIncrement),
+            total: 0,
+            failures: []
+        };
+        losses.push(loss);
+
+        // The keys are read as well as the rows, so a row that cannot be written back can be named
+        // by the key it used to have instead of just counted.
+        const keys = previous.getAllKeys();
+        keys.onsuccess = () => {
+            const read = transaction.objectStore(table.name).getAll();
+            read.onsuccess = () => {
+                const rows = read.result || [];
+                loss.total = rows.length;
+
+                db.deleteObjectStore(table.name);
+                const store = this.CreateStore(db, table);
+
+                for (let r = 0; r < rows.length; r++) {
+                    this.Carry(store, rows[r], keys.result[r], loss);
+                }
+            };
+        };
+    }
+
+    /**
+     * Write one row into the rebuilt store. A key the row cannot produce throws from add() itself,
+     * a duplicate or an index that refuses it comes back on the request, and both end up in the
+     * report rather than in an exception nobody sees.
+     */
+    Carry(store, row, key, loss) {
+        try {
+            const request = store.add(row);
+            request.onerror = ev => {
+                loss.failures.push(`key ${JSON.stringify(key)}: ${ev.target.error ? ev.target.error.message : 'refused by the store'}`);
+                ev.preventDefault();
+            };
+        } catch (e) {
+            loss.failures.push(`key ${JSON.stringify(key)}: ${e.message}`);
+        }
+    }
+
+    /**
+     * Only what was lost, and nothing at all when nothing was.
+     */
+    ReportLosses(losses) {
+        for (const loss of losses) {
+            if (loss.dropped !== undefined) {
+                if (loss.dropped > 0) {
+                    console.warn(`${this.DB_NAME} => ${loss.store}: ${loss.dropped} row(s) lost, the store is no longer in the model`);
+                }
+                continue;
+            }
+
+            if (loss.failures.length === 0) continue;
+
+            console.warn(`${this.DB_NAME} => ${loss.store}: ${loss.failures.length} of ${loss.total} row(s) lost changing the key from ${loss.from} to ${loss.to}`);
+            for (const failure of loss.failures) console.warn(`${this.DB_NAME} => ${loss.store}: ${failure}`);
+        }
+    }
+
+    /**
+     * The tables of the model that are actually created. One with no columns is skipped by the
+     * creation, so it is not one of them anywhere else either.
+     */
+    Tables() {
+        if (!this.MODELS || this.MODELS.length === 0) return [];
+        return this.MODELS.filter(table => table.columns && table.columns.length > 0);
+    }
+
+    /**
+     * The store options a table asks for, with the same defaults the creation has always used: a
+     * model that names no keyPath gets the generated ssnId.
+     */
+    StoreOptions(table) {
+        const options = table.options;
+        if (options && options.keyPath) {
+            return { keyPath: options.keyPath, autoIncrement: options.autoIncrement === true };
+        }
+        return { keyPath: 'ssnId', autoIncrement: true };
+    }
+
+    /**
+     * Whether the store in the browser is keyed the way the model asks for. String() so a compound
+     * keyPath, which is an array, compares by what it contains.
+     */
+    SameKey(store, table) {
+        const options = this.StoreOptions(table);
+        return String(store.keyPath) === String(options.keyPath)
+            && store.autoIncrement === options.autoIncrement;
+    }
+
+    /**
+     * How a key is named in the report.
+     */
+    DescribeKey(keyPath, autoIncrement) {
+        return `'${keyPath}'${autoIncrement ? ' (auto)' : ''}`;
+    }
+
+    /**
+     * What the model asks for that the database does not have yet, readable, for the console and to
+     * decide whether a version change is needed at all.
+     * @param {IDBDatabase} db database as it is now
+     */
+    PendingChanges(db) {
+        const changes = [];
+        const tables = this.Tables();
+        const existing = [...db.objectStoreNames];
+
+        for (const name of existing) {
+            if (!tables.some(table => table.name === name)) changes.push(`drop ${name}`);
+        }
+
+        const known = tables.filter(table => existing.includes(table.name)).map(table => table.name);
+        // Reading keyPath, autoIncrement and the index names needs a store, and a store needs a
+        // transaction, even when nothing is going to be read from it.
+        const transaction = known.length > 0 ? db.transaction(known, 'readonly') : null;
+
+        for (const table of tables) {
+            if (!existing.includes(table.name)) {
+                changes.push(`create ${table.name}`);
+                continue;
+            }
+
+            const store = transaction.objectStore(table.name);
+
+            if (!this.SameKey(store, table)) {
+                const options = this.StoreOptions(table);
+                changes.push(`rebuild ${table.name} ${this.DescribeKey(store.keyPath, store.autoIncrement)}`
+                    + ` -> ${this.DescribeKey(options.keyPath, options.autoIncrement)}`);
+                continue;
+            }
+
+            const indexes = this.IndexChanges(store, table);
+            if (indexes.length > 0) changes.push(`reindex ${table.name} [${indexes.join(' ')}]`);
+        }
+
+        return changes;
+    }
+
+    /**
+     * The indexes of a store that do not match the columns of its table.
+     */
+    IndexChanges(store, table) {
+        const changes = [];
+        const wanted = table.columns.map(column => column.name);
+
+        for (const name of [...store.indexNames]) {
+            if (!wanted.includes(name)) changes.push(`-${name}`);
+        }
+
+        for (const column of table.columns) {
+            if (!store.indexNames.contains(column.name)) {
+                changes.push(`+${column.name}`);
+                continue;
+            }
+            if (store.index(column.name).unique !== (column.unique === true)) changes.push(`~${column.name}`);
+        }
+
+        return changes;
+    }
+    /**
+     * A read or a write must never be what creates the database. It has no model to make the stores
+     * from, so what it would leave behind is an empty database at the current version, which
+     * Initialize used to accept as good for the rest of the application's life. Aborting the version
+     * change keeps the database absent and says so.
+     * @param {IDBOpenDBRequest} dbconnect open request to guard
+     * @param {function} reject called with the reason
+     * @param {string} label operation and store, for the message
+     */
+    GuardCreation(dbconnect, reject, label) {
+        dbconnect.onupgradeneeded = ev => {
+            ev.target.transaction.abort();
+            const message = `${label}: the database ${this.DB_NAME} is not initialized, there are no stores to work with`;
+            console.warn(message);
+            reject([this.SetResponse(false, message)]);
+        };
+    }
     /**
      * Open a indexedDb with all the compatibilities from the browsers
      */
@@ -246,7 +539,8 @@ class jsDB {
             return new Promise((resolve, error) => {
                 if (table == null) error([context.SetResponse(false, 'Not store name selected')]);
                 else {
-                    const dbconnect = context.OpenDB().open(context.DB_NAME, context.DB_VERSION);
+                    const dbconnect = context.OpenDB().open(context.DB_NAME);
+                    context.GuardCreation(dbconnect, error, `Select => ${table}`);
                     dbconnect.onsuccess = function () {
                         const db = this.result;
                         try {
@@ -298,7 +592,8 @@ class jsDB {
         return new Promise((resolve, error) => {
             if (table == null) error([context.SetResponse(false, 'Not store name selected')]);
             else {
-                const dbconnect = context.OpenDB().open(context.DB_NAME, context.DB_VERSION);
+                const dbconnect = context.OpenDB().open(context.DB_NAME);
+                context.GuardCreation(dbconnect, error, `SelectId => ${table}.${id}`);
                 dbconnect.onsuccess = function () {
                     const db = this.result;
                     try {
@@ -342,7 +637,8 @@ class jsDB {
         return new Promise((resolve, error) => {
             if (table == null) error([context.SetResponse(false, 'Not store name selected')]);
             else {
-                const dbconnect = context.OpenDB().open(context.DB_NAME, context.DB_VERSION);
+                const dbconnect = context.OpenDB().open(context.DB_NAME);
+                context.GuardCreation(dbconnect, error, `SelectWhere => ${table}.${column}`);
                 dbconnect.onsuccess = function () {
                     const db = this.result;
                     try {
@@ -439,7 +735,8 @@ class jsDB {
                     return;
                 }
 
-                const dbconnect = context.OpenDB().open(context.DB_NAME, context.DB_VERSION);
+                const dbconnect = context.OpenDB().open(context.DB_NAME);
+                context.GuardCreation(dbconnect, reason => { transactionResult.push(reason[0]); finish(); }, `Insert => ${table}`);
                 // Opening can fail or be blocked. Nothing used to handle that, which was survivable
                 // only because the old timeout resolved regardless; now it would hang forever.
                 dbconnect.onerror = ev => {
@@ -545,7 +842,8 @@ class jsDB {
                     array.push(data);
                     data = array;
                 }
-                const dbconnect = context.OpenDB().open(context.DB_NAME, context.DB_VERSION);
+                const dbconnect = context.OpenDB().open(context.DB_NAME);
+                context.GuardCreation(dbconnect, reason => { transactionResult.push(reason[0]); finish(); }, `Update => ${table}`);
                 dbconnect.onerror = ev => {
                     transactionResult.push(context.SetResponse(false, `Update => ${table}: ${ev.target.error ? ev.target.error.message : 'cannot open database'}`));
                     finish();
@@ -678,7 +976,8 @@ class jsDB {
                 finish([context.SetResponse(true, 'Delete done! Nothing to delete')]);
                 return;
             }
-            const dbconnect = context.OpenDB().open(context.DB_NAME, context.DB_VERSION);
+            const dbconnect = context.OpenDB().open(context.DB_NAME);
+            context.GuardCreation(dbconnect, reason => finish(reason), `Delete => ${table}`);
             dbconnect.onerror = ev => finish([context.SetResponse(false, `Delete => ${table}: ${ev.target.error ? ev.target.error.message : 'cannot open database'}`)]);
             dbconnect.onblocked = () => console.warn(`Delete => ${table}: database blocked, waiting for the other open connections to close`);
             dbconnect.onsuccess = function () {
@@ -724,7 +1023,8 @@ class jsDB {
         return new Promise((resolve, error) => {
             if (table == null) error([context.SetResponse(false, 'Not store name selected')]);
             else {
-                const dbconnect = context.OpenDB().open(context.DB_NAME, context.DB_VERSION);
+                const dbconnect = context.OpenDB().open(context.DB_NAME);
+                context.GuardCreation(dbconnect, error, `Clean => ${table}`);
                 dbconnect.onsuccess = function () {
                     const db = this.result;
                     try {

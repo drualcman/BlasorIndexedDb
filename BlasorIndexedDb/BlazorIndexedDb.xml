@@ -199,6 +199,22 @@
             <exception cref="T:BlazorIndexedDb.Models.ResponseException"></exception>
             <returns></returns>
         </member>
+        <member name="M:BlazorIndexedDb.Commands.InsertActions.DbInsert``1(System.String,System.Collections.Generic.List{``0})">
+            <summary>
+            Insert into a table to a db
+            </summary>
+            <remarks>
+            The store is named by the caller instead of being resolved again from the rows. The
+            offline write turns every row into an ExpandoObject, so resolving it here looked up a
+            store for "Object", found none, and the write failed with "StoreName can't be null"
+            before it ever reached the database.
+            </remarks>
+            <typeparam name="TModel">Table or store to use</typeparam>
+            <param name="storeName">store the rows belong to</param>
+            <param name="rows">data to insert</param>
+            <exception cref="T:BlazorIndexedDb.Models.ResponseException"></exception>
+            <returns></returns>
+        </member>
         <member name="M:BlazorIndexedDb.Commands.InsertActions.DbInserOffline``1(``0)">
             <summary>
             Insert into a table to a db
@@ -309,6 +325,22 @@
             Update table to a db
             </summary>
             <typeparam name="TModel">Table or store to use</typeparam>
+            <param name="rows">data to insert</param>
+            <exception cref="T:BlazorIndexedDb.Models.ResponseException"></exception>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorIndexedDb.Commands.UpdateActions.DbUpdate``1(System.String,System.Collections.Generic.List{``0})">
+            <summary>
+            Update table to a db
+            </summary>
+            <remarks>
+            The store is named by the caller instead of being resolved again from the rows. The
+            offline write turns every row into an ExpandoObject, so resolving it here looked up a
+            store for "Object", found none, and the write failed with "StoreName can't be null"
+            before it ever reached the database.
+            </remarks>
+            <typeparam name="TModel">Table or store to use</typeparam>
+            <param name="storeName">store the rows belong to</param>
             <param name="rows">data to insert</param>
             <exception cref="T:BlazorIndexedDb.Models.ResponseException"></exception>
             <returns></returns>

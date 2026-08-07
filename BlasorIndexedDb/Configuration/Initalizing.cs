@@ -199,12 +199,16 @@
                 }
                 else
                 {
-                    if (Settings.EnableDebug) Console.WriteLine("{0} => No tables in a DB Model = {1}", Setup.DBName, model);
+                    // Never behind the debug flag. A model with no tables cannot create a single
+                    // store, so every read and write that follows fails, and with this silent the
+                    // only symptom was "one of the specified object stores was not found" coming
+                    // from somewhere else entirely.
+                    Console.WriteLine("{0} => No tables in a DB Model = {1}", Setup.DBName, model);
                 }
             }
             catch (Exception ex)
             {
-                if (Settings.EnableDebug) Console.WriteLine("{0} => DbInit exception {1}", Setup.DBName, ex.Message);
+                Console.WriteLine("{0} => DbInit exception {1}", Setup.DBName, ex);
             }
             finally
             {

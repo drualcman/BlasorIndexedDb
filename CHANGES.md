@@ -276,6 +276,121 @@ just deleted was enough.
 
 ---
 
+## A database that ends up with no stores stays broken for good
+
+Reported as two errors that look unrelated:
+
+```
+Insert => OneFormSubmissions: Failed to execute 'transaction' on 'IDBDatabase':
+One of the specified object stores was not found.
+
+[DbSelect] OneFormSubmissions - [object Object]
+```
+
+They are the same thing: the database exists, and the store does not. What is interesting is how
+it got that way and why it could never recover.
+
+**Any read or write could create the database.** Only `Initialize` had an `onupgradeneeded`
+handler. Every other operation opened with `open(DB_NAME, DB_VERSION)` and no handler at all — and
+in IndexedDB that open *creates* the database when it is missing. So a single `Select` running
+before, or instead of, a successful initialization left behind a database at the current version
+with **zero stores**, then failed on `transaction(table)`.
+
+**A failed creation committed anyway.** When the model carried no tables, `onupgradeneeded`
+rejected the promise and returned. Rejecting a promise does not abort a version change: the
+transaction committed and the empty database was created regardless.
+
+**And `Initialize` never noticed.** A database already at the requested version does not fire
+`onupgradeneeded`, so initialization resolved on `onsuccess` without ever looking inside. From
+then on the database was at version 6, initialization was happy, no upgrade would ever run again,
+and every operation failed on a missing store — until someone bumped the version or deleted the
+database by hand. The same trap caught a store added to the model without a version bump.
+
+Three fixes, one per step:
+
+- `onupgradeneeded` with no tables now calls `transaction.abort()` before rejecting, so nothing is
+  left behind and the next attempt with a real model can still create the database.
+- Reads and writes now guard their open: if it turns into a version change, the transaction is
+  aborted and the operation reports that the database is not initialized. A read can no longer be
+  the thing that creates an empty database.
+- `Initialize` compares `objectStoreNames` against the model on `onsuccess`. If stores are
+  missing, the database is deleted and created again from the model. There is nothing to preserve
+  in a store that does not exist, and this heals every device already stuck this way without
+  touching the version.
+
+`Initialize` also closes its connection now instead of holding it open for the life of the page,
+which is what made later version changes report themselves as blocked.
+
+One more, on the C# side: `DbInit` builds the model by reflection inside a `try` whose `catch`
+only wrote to the console when `EnableDebug` was on. A model that failed to build was therefore
+silent, and the only symptom was a missing store reported from somewhere else entirely. The
+failure and the "no tables in a DB model" case are now always logged.
+
+---
+
+## A schema change no longer costs you the database
+
+This was the standing promise in the readme: *"working on changing version control to avoid the need
+to delete the existing database when adding, removing, or modifying a StoreSet"*. It is done.
+
+What made it necessary was the old `onupgradeneeded`, which for every table in the model did this:
+
+```javascript
+//if table exist delete, data will lost
+if (db.objectStoreNames.contains(tabla.name)) {
+    db.deleteObjectStore(tabla.name);
+}
+```
+
+Every store, on every version change, deleted and made again. Adding one field to one entity threw
+away every row of every store on the device.
+
+Now the schema in the browser is read first and compared with the model, and only the difference is
+applied:
+
+| Change | What happens |
+| --- | --- |
+| Store missing | Created. Nothing else is touched. |
+| Store not in the model | Dropped, and the rows it held are counted first so the loss can be reported. |
+| Index added or removed | `createIndex` / `deleteIndex` in place. An index is built from the rows that are already there, so they do not move. |
+| Index uniqueness changed | Dropped and made again, same as above. |
+| `keyPath` or `autoIncrement` changed | The store is rebuilt: the rows and their keys are read, the store is replaced, and the rows are written back one at a time. |
+
+`keyPath` and `autoIncrement` are the only things IndexedDB fixes at creation time, which is why they
+are the only ones that need the rows to move at all.
+
+### Why there is no temporary copy anywhere
+
+The obvious design is to dump the database somewhere — another store, local storage — upgrade, and
+put it back. It is also the wrong one. A `versionchange` transaction spans the whole database and
+can read the old store and write the new one **inside itself**, so the rows never leave the
+transaction that is replacing them. That buys atomicity for free: anything that throws aborts the
+transaction and the database is exactly as it was, with no half-migrated state and no orphaned copy
+to clean up. Local storage would also have been a poor place to put it — a few scanned documents as
+base64 is already past its quota.
+
+### The version does not have to be bumped
+
+A schema change can only be applied inside a version change, so a model that changed without its
+version being raised takes the next one. That means the number in the browser can end up ahead of
+the number in your settings, and opening a database with a version lower than its own is a
+`VersionError` — so nothing asks for a version it has not checked first. Reads and writes now open
+with no version at all, which is what they always wanted: they have no business deciding the schema.
+
+### Only the losses are reported
+
+```
+MobileApServiceApplication => OldStore: 12 row(s) lost, the store is no longer in the model
+MobileApServiceApplication => Documents: 2 of 340 row(s) lost changing the key from 'Id' to 'Key'
+MobileApServiceApplication => Documents: key "a3f-1": Evaluating the object store's key path yielded a value that is not a valid key
+```
+
+A row that cannot be written back calls `preventDefault()` so its failure stays its own instead of
+aborting the transaction and taking the other 339 with it. A migration that keeps everything prints
+nothing at all.
+
+---
+
 ## Upgrading
 
 No API was removed and no signature changed, so nothing should stop compiling. Two behaviours do
